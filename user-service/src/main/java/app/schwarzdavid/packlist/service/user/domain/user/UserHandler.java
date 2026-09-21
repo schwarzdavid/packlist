@@ -1,0 +1,25 @@
+package app.schwarzdavid.packlist.service.user.domain.user;
+
+import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
+import app.schwarzdavid.packlist.service.user.domain.user.dto.UserDto;
+import io.vertx.ext.web.RoutingContext;
+
+public class UserHandler {
+    private final UserService userService;
+
+    public UserHandler(UserService userService) {
+        this.userService = userService;
+    }
+
+    public void createUser(RoutingContext ctx) {
+        var userCreateDto = ctx.body().asPojo(UserCreateDto.class);
+
+        userService.createUser(userCreateDto)
+                .map(userData -> new UserDto(userData.userId(), userData.username(), userData.email()))
+                .onSuccess(userDto -> {
+                    ctx.response().setStatusCode(201);
+                    ctx.json(userDto);
+                })
+                .onFailure(ctx::fail);
+    }
+}

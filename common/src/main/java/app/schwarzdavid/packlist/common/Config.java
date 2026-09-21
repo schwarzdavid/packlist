@@ -7,6 +7,10 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
 public final class Config {
     private final JsonObject values;
 
@@ -19,7 +23,7 @@ public final class Config {
                 .setType("file")
                 .setFormat("properties")
                 .setOptional(true)
-                .setConfig(new JsonObject().put("path", ".env"));
+                .setConfig(new JsonObject().put("path", getEnvFileLocation()));
 
         var systemEnv = new ConfigStoreOptions()
                 .setType("env");
@@ -34,17 +38,36 @@ public final class Config {
         return retriever.getConfig().map(Config::new);
     }
 
+    private static String getEnvFileLocation() {
+        return Optional.ofNullable(System.getProperty("packlist.env"))
+                .or(() -> Optional.ofNullable(System.getenv("PACKLIST_ENV_FILE")))
+                .orElseGet(Config::getEnvFileLocation);
+    }
+
+    private static String findEnvFileLocation() {
+        Path dir = Path.of("").toAbsolutePath();
+        while(dir != null) {
+            Path candidate = dir.resolve(".env");
+            if(Files.isRegularFile(candidate)) {
+                return candidate.toString();
+            }
+            dir = dir.getParent();
+        }
+        return ".env";
+    }
+
     public JsonObject getValues() {
         return values;
     }
 
     public DatabaseConfig getDatabaseConfig(String prefix) {
+        String normalizedPrefix = prefix.toUpperCase().trim();
         return new DatabaseConfig(
-                values.getString(prefix + "_POSTGRES_HOST", "localhost"),
-                values.getInteger(prefix + "_POSTGRES_PORT"),
-                values.getString(prefix + "_POSTGRES_DATABASE"),
-                values.getString(prefix + "_POSTGRES_USER"),
-                values.getString(prefix + "_POSTGRES_PASSWORD")
+                values.getString(normalizedPrefix + "_POSTGRES_HOST", "localhost"),
+                values.getInteger(normalizedPrefix + "_POSTGRES_PORT", 5432),
+                values.getString(normalizedPrefix + "_POSTGRES_DB"),
+                values.getString(normalizedPrefix + "_POSTGRES_USER"),
+                values.getString(normalizedPrefix + "_POSTGRES_PASSWORD")
         );
     }
 

@@ -15,7 +15,7 @@ services:
       # so the volume is mounted at the parent directory (not .../data as in 17 and older).
       - postgres-user-data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U recipes -d recipes"]
+      test: ["CMD-SHELL", "pg_isready -U ${USER_POSTGRES_USER:-users} -d ${USER_POSTGRES_DB:-users}"]
       interval: 5s
       timeout: 3s
       retries: 10

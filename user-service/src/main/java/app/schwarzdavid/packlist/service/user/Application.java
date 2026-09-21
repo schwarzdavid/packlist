@@ -2,6 +2,7 @@ package app.schwarzdavid.packlist.service.user;
 
 import app.schwarzdavid.packlist.common.Config;
 import app.schwarzdavid.packlist.common.Database;
+import app.schwarzdavid.packlist.common.Migrator;
 import app.schwarzdavid.packlist.service.user.runtime.HttpVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -15,11 +16,12 @@ public class Application {
     static void main(String[] args) {
         var vertx = Vertx.vertx();
         Config.create(vertx)
+                .compose(config -> Migrator.migrate(vertx, config, "user").map(config))
                 .compose(config -> {
                     Pool pool = Database.create(vertx, config, "user");
 
                     return vertx.deployVerticle(
-                            new HttpVerticle(),
+                            new HttpVerticle(config, pool),
                             new DeploymentOptions()
                                     .setConfig(config.getValues())
                     );
