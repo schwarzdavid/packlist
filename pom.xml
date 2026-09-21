@@ -7,6 +7,7 @@
     <groupId>app.schwarzdavid</groupId>
     <artifactId>packlist</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
@@ -16,7 +17,8 @@
     </properties>
 
     <modules>
-        <module>user-auth-service</module>
+        <module>user-service</module>
+        <module>common</module>
     </modules>
 
     <dependencyManagement>
