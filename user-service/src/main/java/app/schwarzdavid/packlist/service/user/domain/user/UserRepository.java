@@ -32,7 +32,7 @@ public class UserRepository {
         return pool.preparedQuery("SELECT * FROM users WHERE username=$1 OR email=$1 LIMIT 1")
                 .execute(Tuple.of(identifier))
                 .map(result -> {
-                    var row = result.iterator().next();
+                    var row = result.stream().findFirst().orElseThrow();
 
                     return new UserDataWithPassword(
                             row.getLong("userId"),
