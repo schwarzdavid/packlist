@@ -41,7 +41,7 @@ public final class Config {
     private static String getEnvFileLocation() {
         return Optional.ofNullable(System.getProperty("packlist.env"))
                 .or(() -> Optional.ofNullable(System.getenv("PACKLIST_ENV_FILE")))
-                .orElseGet(Config::getEnvFileLocation);
+                .orElseGet(Config::findEnvFileLocation);
     }
 
     private static String findEnvFileLocation() {
@@ -65,9 +65,9 @@ public final class Config {
         return new DatabaseConfig(
                 values.getString(normalizedPrefix + "_POSTGRES_HOST", "localhost"),
                 values.getInteger(normalizedPrefix + "_POSTGRES_PORT", 5432),
-                values.getString(normalizedPrefix + "_POSTGRES_DB"),
-                values.getString(normalizedPrefix + "_POSTGRES_USER"),
-                values.getString(normalizedPrefix + "_POSTGRES_PASSWORD")
+                values.getString(normalizedPrefix + "_POSTGRES_DB", "users"),
+                values.getString(normalizedPrefix + "_POSTGRES_USER", "users"),
+                values.getString(normalizedPrefix + "_POSTGRES_PASSWORD", "users")
         );
     }
 
