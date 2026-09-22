@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
+import app.schwarzdavid.packlist.common.Config;
 import app.schwarzdavid.packlist.service.user.domain.user.UserModule;
 import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
 import io.vertx.core.Vertx;
@@ -9,9 +10,10 @@ import io.vertx.sqlclient.Pool;
 public record AuthModule(
         Router router
 ) {
-    public static AuthModule create(Vertx vertx, Pool pool, UserModule userModule, PasswordHashingService passwordHashingService) {
+    public static AuthModule create(Vertx vertx, Pool pool, Config config, UserModule userModule, PasswordHashingService passwordHashingService) {
         var authenticationRepository = new AuthRepository(pool);
-        var credentialsService = new CredentialsService(authenticationRepository, userModule.userService(), passwordHashingService);
+        var jwtService = new JwtService(vertx, config);
+        var credentialsService = new CredentialsService(authenticationRepository, userModule.userService(), passwordHashingService, jwtService);
         var authenticationHandler = new AuthHandler(credentialsService);
         var authenticationRouter = new AuthRouter(authenticationHandler);
 
