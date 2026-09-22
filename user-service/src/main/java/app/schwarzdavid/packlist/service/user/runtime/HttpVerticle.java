@@ -1,9 +1,9 @@
 package app.schwarzdavid.packlist.service.user.runtime;
 
 import app.schwarzdavid.packlist.common.Config;
-import app.schwarzdavid.packlist.service.user.domain.authentication.AuthenticationModule;
+import app.schwarzdavid.packlist.service.user.domain.auth.AuthModule;
 import app.schwarzdavid.packlist.service.user.domain.user.UserModule;
-import app.schwarzdavid.packlist.service.user.domain.user.UserRouter;
+import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
 import io.vertx.core.Future;
 import io.vertx.core.VerticleBase;
 import io.vertx.core.internal.logging.Logger;
@@ -26,11 +26,14 @@ public class HttpVerticle extends VerticleBase {
     public Future<?> start() {
         var router = Router.router(vertx);
 
-        var authenticationModule = AuthenticationModule.create(vertx);
-        var userModule = UserModule.create(vertx, pool, authenticationModule);
+        var passwordHashingService = new PasswordHashingService(vertx);
+
+        var userModule = UserModule.create(vertx, pool, passwordHashingService);
+        var authModule = AuthModule.create(vertx, pool, userModule);
 
         router.route().handler(BodyHandler.create());
         router.route("/api/*")
+                .subRouter(authModule.router())
                 .subRouter(userModule.router());
 
         return vertx.createHttpServer()

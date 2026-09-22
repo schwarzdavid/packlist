@@ -1,4 +1,4 @@
-package app.schwarzdavid.packlist.service.user.domain.authentication;
+package app.schwarzdavid.packlist.service.user.service.security;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import at.favre.lib.crypto.bcrypt.LongPasswordStrategies;
