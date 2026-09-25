@@ -18,8 +18,8 @@
     </properties>
 
     <modules>
-        <module>user-service</module>
-        <module>common</module>
+        <module>backend-user-service</module>
+        <module>backend-common</module>
     </modules>
 
     <dependencyManagement>
