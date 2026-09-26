@@ -8,10 +8,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.json.JsonObject;
+import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public final class Config {
     private static final Logger logger = LoggerFactory.getLogger(Config.class);
@@ -63,19 +63,23 @@ public final class Config {
     }
 
     public DatabaseConfig getDatabaseConfig(String prefix) {
+        return getDatabaseConfig(prefix, new DatabaseConfig(null, null, null, null, null));
+    }
+
+    public DatabaseConfig getDatabaseConfig(String prefix, @NonNull DatabaseConfig defaults) {
         String normalizedPrefix = prefix.toUpperCase().trim();
         return new DatabaseConfig(
-                values.getString(normalizedPrefix + "_POSTGRES_HOST", "localhost"),
-                values.getInteger(normalizedPrefix + "_POSTGRES_PORT", 5432),
-                values.getString(normalizedPrefix + "_POSTGRES_DB", "users"),
-                values.getString(normalizedPrefix + "_POSTGRES_USER", "users"),
-                values.getString(normalizedPrefix + "_POSTGRES_PASSWORD", "users")
+                values.getString(normalizedPrefix + "_POSTGRES_HOST", defaults.host),
+                values.getInteger(normalizedPrefix + "_POSTGRES_PORT", defaults.port),
+                values.getString(normalizedPrefix + "_POSTGRES_DB", defaults.database),
+                values.getString(normalizedPrefix + "_POSTGRES_USER", defaults.user),
+                values.getString(normalizedPrefix + "_POSTGRES_PASSWORD", defaults.password)
         );
     }
 
     public record DatabaseConfig (
             String host,
-            int port,
+            Integer port,
             String database,
             String user,
             String password
