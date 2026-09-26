@@ -5,6 +5,8 @@ import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.internal.logging.Logger;
+import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.json.JsonObject;
 
 import java.nio.file.Files;
@@ -12,6 +14,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public final class Config {
+    private static final Logger logger = LoggerFactory.getLogger(Config.class);
     private final JsonObject values;
 
     private Config(JsonObject values) {
@@ -19,33 +22,32 @@ public final class Config {
     }
 
     public static Future<Config> create(Vertx vertx) {
-        var localEnv = new ConfigStoreOptions()
-                .setType("file")
-                .setFormat("properties")
-                .setOptional(true)
-                .setConfig(new JsonObject().put("path", getEnvFileLocation()));
+        var options = new ConfigRetrieverOptions()
+                .setIncludeDefaultStores(false);
+
+        var envFileLocation = getEnvFileLocation(Path.of("").toAbsolutePath());
+        if(envFileLocation == null) {
+            logger.info("No environment file location found.");
+        } else {
+            var localEnv = new ConfigStoreOptions()
+                    .setType("file")
+                    .setFormat("properties")
+                    .setOptional(false)
+                    .setConfig(new JsonObject().put("path", envFileLocation));
+            options.addStore(localEnv);
+        }
 
         var systemEnv = new ConfigStoreOptions()
                 .setType("env");
-
-        var options = new ConfigRetrieverOptions()
-                .setIncludeDefaultStores(false)
-                .addStore(localEnv)
-                .addStore(systemEnv);
+        options.addStore(systemEnv);
 
         var retriever = ConfigRetriever.create(vertx, options);
 
         return retriever.getConfig().map(Config::new);
     }
 
-    private static String getEnvFileLocation() {
-        return Optional.ofNullable(System.getProperty("packlist.env"))
-                .or(() -> Optional.ofNullable(System.getenv("PACKLIST_ENV_FILE")))
-                .orElseGet(Config::findEnvFileLocation);
-    }
-
-    private static String findEnvFileLocation() {
-        Path dir = Path.of("").toAbsolutePath();
+    static String getEnvFileLocation(Path startDir) {
+        Path dir = startDir;
         while(dir != null) {
             Path candidate = dir.resolve(".env");
             if(Files.isRegularFile(candidate)) {
@@ -53,7 +55,7 @@ public final class Config {
             }
             dir = dir.getParent();
         }
-        return ".env";
+        return null;
     }
 
     public JsonObject getValues() {
