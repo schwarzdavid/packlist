@@ -5,11 +5,11 @@ import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassw
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
 import io.vertx.core.Future;
 import io.vertx.sqlclient.Pool;
-import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.Tuple;
 import io.vertx.sqlclient.templates.SqlTemplate;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class UserRepository {
     private final Pool pool;
@@ -28,18 +28,23 @@ public class UserRepository {
                 .map(result -> result.iterator().next());
     }
 
-    public Future<UserDataWithPassword> findUserWithPasswordByIdentifier(String identifier) {
+    public Future<Optional<UserDataWithPassword>> findUserWithPasswordByIdentifier(String identifier) {
         return pool.preparedQuery("SELECT * FROM users WHERE username=$1 OR email=$1 LIMIT 1")
                 .execute(Tuple.of(identifier))
                 .map(result -> {
-                    var row = result.stream().findFirst().orElseThrow();
+                    var rowOptional = result.stream().findFirst();
 
-                    return new UserDataWithPassword(
+                    if (rowOptional.isEmpty()) {
+                        return Optional.empty();
+                    }
+
+                    var row = rowOptional.get();
+                    return Optional.of(new UserDataWithPassword(
                             row.getLong("userId"),
                             row.getString("username"),
                             row.getString("email"),
                             row.getString("password")
-                    );
+                    ));
                 });
     }
 }

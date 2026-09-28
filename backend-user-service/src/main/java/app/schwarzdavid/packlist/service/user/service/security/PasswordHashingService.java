@@ -24,7 +24,8 @@ public class PasswordHashingService {
         return vertx.executeBlocking(() -> HASHER.hashToString(10, plainPassword.toCharArray()));
     }
 
-    public Future<BCrypt.Result> verifyPassword(String hashedPassword, String plainPassword) {
-        return vertx.executeBlocking(() -> VERIFYER.verify(plainPassword.toCharArray(), hashedPassword.toCharArray()));
+    public Future<Boolean> verifyPassword(String hashedPassword, String plainPassword) {
+        return vertx.executeBlocking(() -> VERIFYER.verify(plainPassword.toCharArray(), hashedPassword.toCharArray()))
+                .map(result -> result.verified);
     }
 }

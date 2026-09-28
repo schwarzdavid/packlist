@@ -2,11 +2,13 @@ package app.schwarzdavid.packlist.service.user.domain.auth;
 
 import app.schwarzdavid.packlist.service.user.domain.auth.data.AuthData;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.CredentialsData;
+import app.schwarzdavid.packlist.service.user.domain.auth.dto.AuthDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.CredentialsDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.RegistrationDto;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
+import app.schwarzdavid.packlist.service.user.domain.user.dto.UserDto;
+import io.vertx.core.Future;
 import io.vertx.ext.web.RoutingContext;
 import lombok.RequiredArgsConstructor;
 
@@ -16,20 +18,30 @@ public class AuthHandler {
     private final UserService userService;
     private final JwtService jwtService;
 
-    public void login(RoutingContext ctx) {
+    public Future<AuthDto> login(RoutingContext ctx) {
         var credentials = ctx.body().asPojo(CredentialsDto.class);
 
-        credentialsService.authenticate(new CredentialsData(credentials.identifier(), credentials.password()))
-                .onSuccess(ctx::json)
-                .onFailure(ctx::fail);
+        return credentialsService.authenticate(new CredentialsData(credentials.identifier(), credentials.password()))
+                .map(this::mapAuthDataToDto);
     }
 
-    public void register(RoutingContext ctx) {
+    public Future<AuthDto> register(RoutingContext ctx) {
         var credentials = ctx.body().asPojo(RegistrationDto.class);
 
-        userService.createUser(new UserCreateDto(credentials.email(), credentials.username(), credentials.password()))
+        return userService.createUser(new UserCreateDto(credentials.email(), credentials.username(), credentials.password()))
                 .map(user -> new AuthData(user.userId(), jwtService.generateTokenForUser(user), user))
-                .onSuccess(ctx::json)
-                .onFailure(ctx::fail);
+                .map(this::mapAuthDataToDto);
+    }
+
+    private AuthDto mapAuthDataToDto(AuthData authData) {
+        return new AuthDto(
+                authData.userId(),
+                authData.token(),
+                new UserDto(
+                        authData.user().userId(),
+                        authData.user().username(),
+                        authData.user().email()
+                )
+        );
     }
 }

@@ -29,7 +29,7 @@ public class HttpVerticle extends VerticleBase {
         var passwordHashingService = new PasswordHashingService(vertx);
 
         var userModule = UserModule.create(vertx, pool, passwordHashingService);
-        var authModule = AuthModule.create(vertx, pool, config, userModule, passwordHashingService);
+        var authModule = AuthModule.create(vertx, config, userModule, passwordHashingService);
 
         router.route().handler(BodyHandler.create());
         router.route("/api/*").subRouter(authModule.router());

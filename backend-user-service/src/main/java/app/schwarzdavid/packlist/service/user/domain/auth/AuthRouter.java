@@ -13,8 +13,8 @@ public class AuthRouter {
     public Router createRouter(Vertx vertx) {
         var router = Router.router(vertx);
 
-        router.post("/login").handler(authHandler::login);
-        router.post("/register").handler(authHandler::register);
+        router.post("/login").respond(authHandler::login);
+        router.post("/register").respond(authHandler::register);
 
         return router;
     }
