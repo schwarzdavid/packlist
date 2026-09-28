@@ -17,8 +17,10 @@ public class JwtService {
 
     public JwtService(Vertx vertx, Config config) {
         var secret = config.getValues().getString("JWT_SECRET");
+        var tokenTTL = config.getValues().getInteger("JWT_TTL_MINUTES", 60 * 24 * 30);
+
         var pubSecKeyOptions = new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret);
-        var jwtOptions = new JWTOptions().setExpiresInMinutes(60 * 24 * 30);
+        var jwtOptions = new JWTOptions().setExpiresInMinutes(tokenTTL);
         var jwtAuthOptions = new JWTAuthOptions()
                 .addPubSecKey(pubSecKeyOptions)
                 .setJWTOptions(jwtOptions);
@@ -30,7 +32,7 @@ public class JwtService {
     public String generateTokenForUser(UserData userData) {
         JsonObject claims = new JsonObject();
 
-        claims.put("sub", userData.userId());
+        claims.put("sub", userData.userId().toString());
         claims.put("email", userData.email());
         claims.put("nickname", userData.username());
 
