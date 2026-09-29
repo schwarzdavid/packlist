@@ -17,6 +17,9 @@ public class JwtService {
 
     public JwtService(Vertx vertx, Config config) {
         var secret = config.getValues().getString("JWT_SECRET");
+        if (secret == null) {
+            throw new IllegalArgumentException("JWT_SECRET must be set");
+        }
         var tokenTTL = config.getValues().getInteger("JWT_TTL_MINUTES", 60 * 24 * 30);
 
         var pubSecKeyOptions = new PubSecKeyOptions().setAlgorithm("HS256").setBuffer(secret);

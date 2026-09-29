@@ -3,6 +3,7 @@ package app.schwarzdavid.packlist.service.user.domain.auth;
 import app.schwarzdavid.packlist.common.Config;
 import app.schwarzdavid.packlist.service.user.Application;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.CredentialsDto;
+import app.schwarzdavid.packlist.service.user.domain.auth.dto.RegistrationDto;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 import app.schwarzdavid.packlist.service.user.fixture.UserDatabaseFixtures;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
@@ -65,21 +66,21 @@ public class AuthApiTest {
     public void shouldLoginWithValidUsername(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(user -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
-                            .sendJsonObject(JsonObject.mapFrom(UserFixtures.credentialsWithUsernameIdentity()))
-                            .onComplete(ctx.succeeding(response -> {
-                                assertEquals(200, response.statusCode());
+                        .sendJsonObject(JsonObject.mapFrom(UserFixtures.credentialsWithUsernameIdentity()))
+                        .onComplete(ctx.succeeding(response -> {
+                            assertEquals(200, response.statusCode());
 
-                                var body = response.bodyAsJsonObject();
+                            var body = response.bodyAsJsonObject();
 
-                                assertEquals(user.userId(), body.getLong("userId"));
-                                assertNotEquals(0, body.getString("token").length());
-                                assertEquals(user.userId(), body.getJsonObject("user").getLong("userId"));
-                                assertEquals(user.username(), body.getJsonObject("user").getString("username"));
-                                assertEquals(user.email(), body.getJsonObject("user").getString("email"));
-                                assertNull(body.getJsonObject("user").getString("password"));
+                            assertEquals(user.userId(), body.getLong("userId"));
+                            assertNotEquals(0, body.getString("token").length());
+                            assertEquals(user.userId(), body.getJsonObject("user").getLong("userId"));
+                            assertEquals(user.username(), body.getJsonObject("user").getString("username"));
+                            assertEquals(user.email(), body.getJsonObject("user").getString("email"));
+                            assertNull(body.getJsonObject("user").getString("password"));
 
-                                ctx.completeNow();
-                            })))
+                            ctx.completeNow();
+                        })))
                 .onFailure(ctx::failNow);
     }
 
@@ -164,6 +165,53 @@ public class AuthApiTest {
                 }));
     }
 
-    // TODO: Add test for malformed request body (email is not email, password too short)
-    // TODO: Test for registration
+    @Test
+    public void shouldNotRegisterIfEmailAlreadyExists(Vertx vertx, VertxTestContext ctx) {
+        UserDatabaseFixtures.create(vertx, pool)
+                .compose(user -> WebClient.create(vertx).post(port, "localhost", REGISTER_ROUTE)
+                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto("other-username", UserFixtures.DEFAULT_EMAIL, UserFixtures.DEFAULT_PASSWORD))))
+                .onComplete(ctx.succeeding(response -> {
+                    assertEquals(409, response.statusCode());
+                    assertTrue(response.bodyAsString().contains("e-mail"));
+
+                    pool.preparedQuery("SELECT * FROM users WHERE email = $1")
+                            .execute(Tuple.of(UserFixtures.DEFAULT_EMAIL))
+                            .onSuccess(rowSet -> {
+                                assertEquals(1, rowSet.size());
+
+                                var user = rowSet.iterator().next().toJson();
+
+                                assertEquals(UserFixtures.DEFAULT_USERNAME, user.getString("username"));
+
+                                ctx.completeNow();
+                            })
+                            .onFailure(ctx::failNow);
+                }));
+    }
+
+    @Test
+    public void shouldNotRegisterIfUsernameAlreadyExists(Vertx vertx, VertxTestContext ctx) {
+        UserDatabaseFixtures.create(vertx, pool)
+                .compose(user -> WebClient.create(vertx).post(port, "localhost", REGISTER_ROUTE)
+                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto(UserFixtures.DEFAULT_USERNAME, "other@email.address", UserFixtures.DEFAULT_PASSWORD))))
+                .onComplete(ctx.succeeding(response -> {
+                    assertEquals(409, response.statusCode());
+                    assertTrue(response.bodyAsString().contains("username"));
+
+                    pool.preparedQuery("SELECT * FROM users WHERE username = $1")
+                            .execute(Tuple.of(UserFixtures.DEFAULT_USERNAME))
+                            .onSuccess(rowSet -> {
+                                assertEquals(1, rowSet.size());
+
+                                var user = rowSet.iterator().next().toJson();
+
+                                assertEquals(UserFixtures.DEFAULT_USERNAME, user.getString("username"));
+
+                                ctx.completeNow();
+                            })
+                            .onFailure(ctx::failNow);
+                }));
+    }
+
+    // TODO: Add test for malformed request body (email is not email, password too short, ...)
 }

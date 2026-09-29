@@ -3,7 +3,10 @@ package app.schwarzdavid.packlist.common.exception;
 import app.schwarzdavid.packlist.common.exception.api.ApiException;
 import io.vertx.ext.web.RoutingContext;
 
-public class ExceptionHandler {
+public class RouterExceptionHandler {
+    private RouterExceptionHandler() {
+    }
+
     public static void handleFailure(RoutingContext ctx) {
         Throwable throwable = ctx.failure();
 

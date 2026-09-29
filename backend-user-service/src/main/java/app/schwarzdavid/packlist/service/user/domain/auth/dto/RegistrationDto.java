@@ -2,7 +2,7 @@ package app.schwarzdavid.packlist.service.user.domain.auth.dto;
 
 public record RegistrationDto(
         String username,
-        String password,
-        String email
+        String email,
+        String password
 ) {
 }

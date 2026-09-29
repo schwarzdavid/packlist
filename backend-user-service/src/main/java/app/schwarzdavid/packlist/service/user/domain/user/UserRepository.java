@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
+import app.schwarzdavid.packlist.common.exception.PostgresExceptionHandler;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
@@ -25,7 +26,8 @@ public class UserRepository {
                 .forUpdate(pool, "INSERT INTO users (username, email, password) VALUES (#{username}, #{email}, #{password}) RETURNING *")
                 .mapTo(UserData.class)
                 .execute(params)
-                .map(result -> result.iterator().next());
+                .map(result -> result.iterator().next())
+                .recover(PostgresExceptionHandler::recover);
     }
 
     public Future<Optional<UserDataWithPassword>> findUserWithPasswordByIdentifier(String identifier) {
