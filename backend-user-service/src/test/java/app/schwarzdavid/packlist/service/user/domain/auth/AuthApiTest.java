@@ -59,9 +59,7 @@ public class AuthApiTest {
 
                     return verticle.getPool().query("TRUNCATE TABLE users RESTART IDENTITY  CASCADE").execute();
                 })
-                .onComplete(ctx.succeeding(_ -> {
-                    ctx.completeNow();
-                }));
+                .onComplete(ctx.succeeding(_ -> ctx.completeNow()));
     }
 
     @Test
@@ -148,7 +146,7 @@ public class AuthApiTest {
                     assertNotNull(body.getJsonObject("user"));
                     assertNotNull(body.getJsonObject("user").getLong("userId"));
                     assertEquals(UserFixtures.DEFAULT_USERNAME, body.getJsonObject("user").getString("username"));
-                    assertEquals(UserFixtures.DEFAULT_EMAIL, body.getString("email"));
+                    assertEquals(UserFixtures.DEFAULT_EMAIL, body.getJsonObject("user").getString("email"));
                     assertNull(body.getJsonObject("user").getString("password"));
 
                     pool.preparedQuery("SELECT * FROM users WHERE \"userId\" = $1").execute(Tuple.of(body.getLong("userId")))

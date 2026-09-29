@@ -7,7 +7,6 @@ import app.schwarzdavid.packlist.service.user.domain.auth.dto.CredentialsDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.RegistrationDto;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
-import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserDto;
 import io.vertx.core.Future;
 import io.vertx.ext.web.RoutingContext;
