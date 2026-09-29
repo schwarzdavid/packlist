@@ -1,6 +1,7 @@
 package app.schwarzdavid.packlist.service.user.runtime;
 
 import app.schwarzdavid.packlist.common.Config;
+import app.schwarzdavid.packlist.common.exception.ExceptionHandler;
 import app.schwarzdavid.packlist.service.user.domain.auth.AuthModule;
 import app.schwarzdavid.packlist.service.user.domain.user.UserModule;
 import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
@@ -41,6 +42,7 @@ public class HttpVerticle extends VerticleBase {
         router.route("/api/*").subRouter(authModule.router());
         router.route().handler(authModule.jwtService().getHandler());
         router.route("/api/*").subRouter(userModule.router());
+        router.route().failureHandler(ExceptionHandler::handleFailure);
 
         return vertx.createHttpServer()
                 .requestHandler(router)

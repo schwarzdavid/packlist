@@ -127,4 +127,7 @@ public class AuthApiTest {
                     ctx.completeNow();
                 }));
     }
+
+    // TODO: Add test for malformed request body
+    // TODO: Test for registration
 }
