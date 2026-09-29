@@ -3,7 +3,6 @@ package app.schwarzdavid.packlist.service.user.domain.user;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
-import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
 import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
