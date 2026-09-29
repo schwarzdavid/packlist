@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
+import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
@@ -14,7 +15,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordHashingService passwordHashingService;
 
-    public Future<UserData> createUser(UserCreateDto userCreateDto) {
+    public Future<UserData> createUser(UserCreateData userCreateDto) {
         return passwordHashingService.hashPassword(userCreateDto.password())
                 .compose(hashedPassword -> userRepository.createUser(userCreateDto, hashedPassword));
     }

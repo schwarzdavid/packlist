@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
+import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
@@ -18,7 +19,7 @@ public class UserRepository {
         this.pool = pool;
     }
 
-    public Future<UserData> createUser(UserCreateDto userCreateDto,  String hashedPassword) {
+    public Future<UserData> createUser(UserCreateData userCreateDto, String hashedPassword) {
         Map<String, Object> params = Map.of("username", userCreateDto.username(), "email", userCreateDto.email(), "password", hashedPassword);
 
         return SqlTemplate

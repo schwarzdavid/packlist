@@ -6,6 +6,7 @@ import app.schwarzdavid.packlist.service.user.domain.auth.dto.AuthDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.CredentialsDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.RegistrationDto;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
+import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserDto;
 import io.vertx.core.Future;
@@ -28,9 +29,10 @@ public class AuthHandler {
     public Future<AuthDto> register(RoutingContext ctx) {
         var credentials = ctx.body().asPojo(RegistrationDto.class);
 
-        return userService.createUser(new UserCreateDto(credentials.email(), credentials.username(), credentials.password()))
+        return userService.createUser(new UserCreateData(credentials.username(), credentials.email(), credentials.password()))
                 .map(user -> new AuthData(user.userId(), jwtService.generateTokenForUser(user), user))
-                .map(this::mapAuthDataToDto);
+                .map(this::mapAuthDataToDto)
+                .onSuccess(_ -> ctx.response().setStatusCode(201));
     }
 
     private AuthDto mapAuthDataToDto(AuthData authData) {
