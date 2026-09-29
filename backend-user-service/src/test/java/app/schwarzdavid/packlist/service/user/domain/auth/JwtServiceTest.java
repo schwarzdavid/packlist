@@ -8,6 +8,7 @@ import io.vertx.ext.auth.PubSecKeyOptions;
 import io.vertx.ext.auth.authentication.TokenCredentials;
 import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.ext.auth.jwt.JWTAuthOptions;
+import io.vertx.ext.web.handler.JWTAuthHandler;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, VertxExtension.class})
@@ -68,5 +69,31 @@ public class JwtServiceTest {
 
                     ctx.completeNow();
                 }));
+    }
+
+    @Test
+    public void shouldGenerateTokenWithCustomLifetime(Vertx vertx, VertxTestContext ctx) {
+        when(config.getValues()).thenReturn(getConfigValues(100));
+
+        var jwtService = new JwtService(vertx, config);
+        var verifier = getVerifier(vertx);
+        var user = new UserData(1L, "username", "email");
+        var token = jwtService.generateTokenForUser(user);
+
+        verifier.authenticate(new TokenCredentials(token))
+                .onComplete(ctx.succeeding(tokenUser -> {
+                    assertEquals(100 * 60, tokenUser.attributes().getInteger("exp") - tokenUser.attributes().getInteger("iat"));
+                    ctx.completeNow();
+                }));
+    }
+
+    @Test
+    public void shouldGenerateAuthHandler(Vertx vertx) {
+        when(config.getValues()).thenReturn(getConfigValues());
+
+        var jwtService = new JwtService(vertx, config);
+
+        assertNotNull(jwtService.getHandler());
+        assertInstanceOf(JWTAuthHandler.class, jwtService.getHandler());
     }
 }

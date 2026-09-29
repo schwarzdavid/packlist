@@ -11,11 +11,15 @@ import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.sqlclient.Pool;
+import lombok.Getter;
 
 public class HttpVerticle extends VerticleBase {
     private final Logger logger = LoggerFactory.getLogger(HttpVerticle.class);
     private final Config config;
     private final Pool pool;
+
+    @Getter
+    private Integer port;
 
     public HttpVerticle(Config config, Pool pool) {
         this.config = config;
@@ -39,7 +43,17 @@ public class HttpVerticle extends VerticleBase {
         return vertx.createHttpServer()
                 .requestHandler(router)
                 .listen(8881)
-                .onSuccess(server -> logger.info("Server started on port %d".formatted(server.actualPort())))
+                .onSuccess(server -> {
+                    port = server.actualPort();
+                    logger.info("Server started on port %d".formatted(server.actualPort()));
+                })
                 .onFailure(err -> logger.error("Failed to start server", err));
+    }
+
+    @Override
+    public Future<?> stop() throws Exception {
+        port = null;
+
+        return super.stop();
     }
 }

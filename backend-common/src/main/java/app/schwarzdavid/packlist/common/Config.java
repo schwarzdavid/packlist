@@ -8,6 +8,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.json.JsonObject;
+import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 
 import java.nio.file.Files;
@@ -15,6 +16,8 @@ import java.nio.file.Path;
 
 public final class Config {
     private static final Logger logger = LoggerFactory.getLogger(Config.class);
+
+    @Getter
     private final JsonObject values;
 
     private Config(JsonObject values) {
@@ -46,6 +49,18 @@ public final class Config {
         return retriever.getConfig().map(Config::new);
     }
 
+    public static Future<Config> of(Vertx vertx, JsonObject values) {
+        var options = new ConfigRetrieverOptions()
+                .setIncludeDefaultStores(false)
+                .addStore(
+                        new ConfigStoreOptions()
+                                .setType("json")
+                                .setConfig(values)
+                );
+
+        return ConfigRetriever.create(vertx, options).getConfig().map(Config::new);
+    }
+
     static String getEnvFileLocation(Path startDir) {
         Path dir = startDir;
         while(dir != null) {
@@ -56,10 +71,6 @@ public final class Config {
             dir = dir.getParent();
         }
         return null;
-    }
-
-    public JsonObject getValues() {
-        return values;
     }
 
     public DatabaseConfig getDatabaseConfig(String prefix) {
