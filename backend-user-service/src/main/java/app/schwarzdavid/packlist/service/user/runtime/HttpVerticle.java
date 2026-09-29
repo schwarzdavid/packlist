@@ -16,6 +16,8 @@ import lombok.Getter;
 public class HttpVerticle extends VerticleBase {
     private final Logger logger = LoggerFactory.getLogger(HttpVerticle.class);
     private final Config config;
+
+    @Getter
     private final Pool pool;
 
     @Getter

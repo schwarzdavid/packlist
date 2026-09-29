@@ -17,14 +17,3 @@ The purpose of this project is for me to learn by writing the code myself.
 - This also applies to "small" changes such as typo fixes, imports, formatting, or config tweaks.
 
 Only write code when I use clear wording like "write it", "implement it", "fix it for me", or "make the change".
-
-## Project overview
-
-Packlist is a monorepo with:
-
-- `backend-common`: shared Java code (config, database setup)
-- `backend-user-service`: user/auth service (Java 25, Vert.x, Flyway, Lombok, JSpecify, JUnit 5 + Mockito)
-- `frontend-app`: Vue 3 + Vite + TypeScript, Vuetify, Pinia / Pinia Colada, Vue Router; Vitest and Playwright for tests
-
-Backend modules are built with Maven (root `pom.xml`). The frontend uses pnpm workspaces.
-Local services are defined in `compose.yml`, and environment variables are in `.env` (see `.env.example`).
