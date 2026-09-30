@@ -109,7 +109,7 @@ public class AuthApiTest {
     public void shouldFailLoginWithInvalidIdentity(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(_ -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
-                        .sendJsonObject(JsonObject.mapFrom(new CredentialsDto("non-existing", UserFixtures.DEFAULT_PASSWORD))))
+                        .sendJsonObject(JsonObject.mapFrom(new CredentialsDto("non-existing", UserFixtures.PASSWORD))))
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(401, response.statusCode());
                     assertTrue(response.bodyAsString().contains("Invalid Credentials"));
@@ -123,7 +123,7 @@ public class AuthApiTest {
     public void shouldFailLoginWithInvalidPassword(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(_ -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
-                        .sendJsonObject(JsonObject.mapFrom(new CredentialsDto(UserFixtures.DEFAULT_EMAIL, "wrong-password"))))
+                        .sendJsonObject(JsonObject.mapFrom(new CredentialsDto(UserFixtures.EMAIL, "wrong-password"))))
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(401, response.statusCode());
                     assertTrue(response.bodyAsString().contains("Invalid Credentials"));
@@ -145,8 +145,8 @@ public class AuthApiTest {
                     assertNotEquals(0, body.getString("token").length());
                     assertNotNull(body.getJsonObject("user"));
                     assertNotNull(body.getJsonObject("user").getLong("userId"));
-                    assertEquals(UserFixtures.DEFAULT_USERNAME, body.getJsonObject("user").getString("username"));
-                    assertEquals(UserFixtures.DEFAULT_EMAIL, body.getJsonObject("user").getString("email"));
+                    assertEquals(UserFixtures.USERNAME, body.getJsonObject("user").getString("username"));
+                    assertEquals(UserFixtures.EMAIL, body.getJsonObject("user").getString("email"));
                     assertNull(body.getJsonObject("user").getString("password"));
 
                     pool.preparedQuery("SELECT * FROM users WHERE \"userId\" = $1").execute(Tuple.of(body.getLong("userId")))
@@ -156,9 +156,9 @@ public class AuthApiTest {
 
                                 var user = userOptional.get();
 
-                                assertEquals(UserFixtures.DEFAULT_USERNAME, user.username());
-                                assertEquals(UserFixtures.DEFAULT_EMAIL, user.email());
-                                assertNotEquals(UserFixtures.DEFAULT_PASSWORD, user.password());
+                                assertEquals(UserFixtures.USERNAME, user.username());
+                                assertEquals(UserFixtures.EMAIL, user.email());
+                                assertNotEquals(UserFixtures.PASSWORD, user.password());
 
                                 ctx.completeNow();
                             }));
@@ -169,19 +169,19 @@ public class AuthApiTest {
     public void shouldNotRegisterIfEmailAlreadyExists(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(user -> WebClient.create(vertx).post(port, "localhost", REGISTER_ROUTE)
-                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto("other-username", UserFixtures.DEFAULT_EMAIL, UserFixtures.DEFAULT_PASSWORD))))
+                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto("other-username", UserFixtures.EMAIL, UserFixtures.PASSWORD))))
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(409, response.statusCode());
                     assertTrue(response.bodyAsString().contains("e-mail"));
 
                     pool.preparedQuery("SELECT * FROM users WHERE email = $1")
-                            .execute(Tuple.of(UserFixtures.DEFAULT_EMAIL))
+                            .execute(Tuple.of(UserFixtures.EMAIL))
                             .onSuccess(rowSet -> {
                                 assertEquals(1, rowSet.size());
 
                                 var user = rowSet.iterator().next().toJson();
 
-                                assertEquals(UserFixtures.DEFAULT_USERNAME, user.getString("username"));
+                                assertEquals(UserFixtures.USERNAME, user.getString("username"));
 
                                 ctx.completeNow();
                             })
@@ -193,19 +193,19 @@ public class AuthApiTest {
     public void shouldNotRegisterIfUsernameAlreadyExists(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(user -> WebClient.create(vertx).post(port, "localhost", REGISTER_ROUTE)
-                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto(UserFixtures.DEFAULT_USERNAME, "other@email.address", UserFixtures.DEFAULT_PASSWORD))))
+                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto(UserFixtures.USERNAME, "other@email.address", UserFixtures.PASSWORD))))
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(409, response.statusCode());
                     assertTrue(response.bodyAsString().contains("username"));
 
                     pool.preparedQuery("SELECT * FROM users WHERE username = $1")
-                            .execute(Tuple.of(UserFixtures.DEFAULT_USERNAME))
+                            .execute(Tuple.of(UserFixtures.USERNAME))
                             .onSuccess(rowSet -> {
                                 assertEquals(1, rowSet.size());
 
                                 var user = rowSet.iterator().next().toJson();
 
-                                assertEquals(UserFixtures.DEFAULT_USERNAME, user.getString("username"));
+                                assertEquals(UserFixtures.USERNAME, user.getString("username"));
 
                                 ctx.completeNow();
                             })
