@@ -65,8 +65,8 @@ public class CredentialsServiceTest {
         credentialsService.authenticate(credentials)
                 .onComplete(ctx.failing(exception -> {
                     verify(userServiceMock).getUserDataWithPasswordByIdentifier(credentials.identifier());
-                    verify(passwordHashingServiceMock, times(0)).verifyPassword(anyString(), anyString());
-                    verify(jwtServiceMock, times(0)).generateTokenForUser(any());
+                    verifyNoInteractions(passwordHashingServiceMock);
+                    verifyNoInteractions(jwtServiceMock);
 
                     assertInstanceOf(InvalidCredentialsException.class, exception);
                     assertEquals(401, ((InvalidCredentialsException) exception).getStatusCode());
@@ -85,9 +85,9 @@ public class CredentialsServiceTest {
 
         credentialsService.authenticate(credentials)
                 .onComplete(ctx.failing(exception -> {
-                    verify(userServiceMock).getUserDataWithPasswordByIdentifier("foo");
-                    verify(passwordHashingServiceMock).verifyPassword("hashed-password", "wrong-password");
-                    verify(jwtServiceMock, times(0)).generateTokenForUser(any());
+                    verify(userServiceMock).getUserDataWithPasswordByIdentifier(UserFixtures.EMAIL);
+                    verify(passwordHashingServiceMock).verifyPassword(UserFixtures.HASHED_PASSWORD, UserFixtures.PLAIN_PASSWORD);
+                    verifyNoInteractions(jwtServiceMock);
 
                     assertInstanceOf(InvalidCredentialsException.class, exception);
                     assertEquals(401, ((InvalidCredentialsException) exception).getStatusCode());

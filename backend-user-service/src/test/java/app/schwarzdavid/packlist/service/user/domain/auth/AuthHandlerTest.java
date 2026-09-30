@@ -56,7 +56,6 @@ public class AuthHandlerTest {
     @BeforeEach
     public void setUp() {
         when(routingContext.body()).thenReturn(requestBody);
-        when(routingContext.response()).thenReturn(routingResponse);
     }
 
     @Test
@@ -95,6 +94,7 @@ public class AuthHandlerTest {
 
     @Test
     public void shouldRegister(VertxTestContext ctx) {
+        when(routingContext.response()).thenReturn(routingResponse);
         when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
         when(userService.createUser(any())).thenReturn(Future.succeededFuture(UserFixtures.userData()));
         when(jwtService.generateTokenForUser(any())).thenReturn("token");
@@ -129,7 +129,7 @@ public class AuthHandlerTest {
 
         ctx.assertFailure(authHandler.register(routingContext))
                 .onFailure(throwable -> ctx.verify(() -> {
-                    verify(jwtService, times(0)).generateTokenForUser(any());
+                    verifyNoInteractions(jwtService);
 
                     ctx.completeNow();
                 }));
