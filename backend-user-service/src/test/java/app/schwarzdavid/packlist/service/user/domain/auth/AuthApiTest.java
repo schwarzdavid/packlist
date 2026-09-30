@@ -7,8 +7,10 @@ import app.schwarzdavid.packlist.service.user.domain.auth.dto.RegistrationDto;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 import app.schwarzdavid.packlist.service.user.fixture.UserDatabaseFixtures;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
@@ -109,7 +111,7 @@ public class AuthApiTest {
     public void shouldFailLoginWithInvalidIdentity(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(_ -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
-                        .sendJsonObject(JsonObject.mapFrom(new CredentialsDto("non-existing", UserFixtures.PASSWORD))))
+                        .sendJsonObject(JsonObject.mapFrom(new CredentialsDto("non-existing", UserFixtures.PLAIN_PASSWORD))))
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(401, response.statusCode());
                     assertTrue(response.bodyAsString().contains("Invalid Credentials"));
@@ -130,6 +132,101 @@ public class AuthApiTest {
 
                     ctx.completeNow();
                 }));
+    }
+
+    @Test
+    public void shouldLoginWithDifferentIdentifierCasing(Vertx vertx, VertxTestContext ctx) {
+        var credentials = new CredentialsDto(UserFixtures.EMAIL.toLowerCase(), UserFixtures.PLAIN_PASSWORD);
+
+        UserDatabaseFixtures.create(vertx, pool)
+                .compose(user -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
+                        .sendJsonObject(JsonObject.mapFrom(credentials)).onComplete(ctx.succeeding(response -> {
+                            assertEquals(200, response.statusCode());
+
+                            var body = response.bodyAsJsonObject();
+
+                            assertEquals(user.userId(), body.getLong("userId"));
+                            assertEquals(user.userId(), body.getJsonObject("user").getLong("userId"));
+                            assertEquals(user.email(), body.getJsonObject("user").getString("email"));
+                            assertEquals(user.username(), body.getJsonObject("user").getString("username"));
+
+                            ctx.completeNow();
+                        })))
+                .onFailure(ctx::failNow);
+    }
+
+    @Test
+    public void shouldNotLoginWithDifferentPasswordCasing(Vertx vertx, VertxTestContext ctx) {
+        var credentials = new CredentialsDto(UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD.toUpperCase());
+
+        UserDatabaseFixtures.create(vertx, pool)
+                .compose(user -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
+                        .sendJsonObject(JsonObject.mapFrom(credentials))
+                        .onComplete(ctx.succeeding(response -> {
+                            assertEquals(401, response.statusCode());
+                            ctx.completeNow();
+                        })))
+                .onFailure(ctx::failNow);
+    }
+
+    @Test
+    public void shouldLoginWithIdentifierStartingWithSpaces(Vertx vertx, VertxTestContext ctx) {
+        var credentials = new CredentialsDto(" " + UserFixtures.EMAIL + " ", UserFixtures.PLAIN_PASSWORD);
+
+        UserDatabaseFixtures.create(vertx, pool)
+                .compose(user -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
+                        .sendJsonObject(JsonObject.mapFrom(credentials))
+                        .onComplete(ctx.succeeding(response -> {
+                            assertEquals(200, response.statusCode());
+
+                            var body = response.bodyAsJsonObject();
+
+                            assertEquals(user.userId(), body.getLong("userId"));
+                            assertEquals(user.userId(), body.getJsonObject("user").getLong("userId"));
+                            assertEquals(user.email(), body.getJsonObject("user").getString("email"));
+                            assertEquals(user.username(), body.getJsonObject("user").getString("username"));
+
+                            ctx.completeNow();
+                        })))
+                .onFailure(ctx::failNow);
+    }
+
+    @Test
+    public void shouldNotLoginWithPasswordStartingWithSpaces(Vertx vertx, VertxTestContext ctx) {
+        var credentials = new CredentialsDto(UserFixtures.EMAIL, " " + UserFixtures.PLAIN_PASSWORD + " ");
+
+        UserDatabaseFixtures.create(vertx, pool)
+                .compose(user -> WebClient.create(vertx).post(port, "localhost", LOGIN_ROUTE)
+                        .sendJsonObject(JsonObject.mapFrom(credentials))
+                        .onComplete(ctx.succeeding(response -> {
+                            assertEquals(401, response.statusCode());
+                            ctx.completeNow();
+                        })))
+                .onFailure(ctx::failNow);
+    }
+
+    @Test
+    public void shouldHaveSameErrorMessageWithInvalidIdentifierAndPassword(Vertx vertx, VertxTestContext ctx) {
+        var invalidIdentifierCredentials = new CredentialsDto("wrong-identifier", UserFixtures.PLAIN_PASSWORD);
+        var invalidPasswordCredentials = new CredentialsDto(UserFixtures.EMAIL, "wrong-password");
+        var client = WebClient.create(vertx);
+
+        UserDatabaseFixtures.create(vertx, pool)
+                .compose(user -> Future.all(
+                        client.post(port, "localhost", LOGIN_ROUTE).sendJsonObject(JsonObject.mapFrom(invalidIdentifierCredentials)),
+                        client.post(port, "localhost", LOGIN_ROUTE).sendJsonObject(JsonObject.mapFrom(invalidPasswordCredentials))
+                ))
+                .onComplete(ctx.succeeding(responses -> {
+                    var invalidIdentityResponse = responses.<HttpResponse<?>>resultAt(0);
+                    var invalidPasswordResponse = responses.<HttpResponse<?>>resultAt(1);
+
+                    assertEquals(401, invalidIdentityResponse.statusCode());
+                    assertEquals(401, invalidPasswordResponse.statusCode());
+                    assertEquals(invalidIdentityResponse.bodyAsString(), invalidPasswordResponse.bodyAsString());
+
+                    ctx.completeNow();
+                }))
+                .onFailure(ctx::failNow);
     }
 
     @Test
@@ -158,7 +255,7 @@ public class AuthApiTest {
 
                                 assertEquals(UserFixtures.USERNAME, user.username());
                                 assertEquals(UserFixtures.EMAIL, user.email());
-                                assertNotEquals(UserFixtures.PASSWORD, user.password());
+                                assertNotEquals(UserFixtures.PLAIN_PASSWORD, user.password());
 
                                 ctx.completeNow();
                             }));
@@ -169,7 +266,7 @@ public class AuthApiTest {
     public void shouldNotRegisterIfEmailAlreadyExists(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(user -> WebClient.create(vertx).post(port, "localhost", REGISTER_ROUTE)
-                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto("other-username", UserFixtures.EMAIL, UserFixtures.PASSWORD))))
+                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto("other-username", UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD))))
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(409, response.statusCode());
                     assertTrue(response.bodyAsString().contains("e-mail"));
@@ -193,7 +290,7 @@ public class AuthApiTest {
     public void shouldNotRegisterIfUsernameAlreadyExists(Vertx vertx, VertxTestContext ctx) {
         UserDatabaseFixtures.create(vertx, pool)
                 .compose(user -> WebClient.create(vertx).post(port, "localhost", REGISTER_ROUTE)
-                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto(UserFixtures.USERNAME, "other@email.address", UserFixtures.PASSWORD))))
+                        .sendJsonObject(JsonObject.mapFrom(new RegistrationDto(UserFixtures.USERNAME, "other@email.address", UserFixtures.PLAIN_PASSWORD))))
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(409, response.statusCode());
                     assertTrue(response.bodyAsString().contains("username"));

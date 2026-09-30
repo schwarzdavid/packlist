@@ -9,12 +9,13 @@ public class UserFixtures {
     public static final Long ID = 1L;
     public static final String USERNAME = "username";
     public static final String EMAIL = "email@example.com";
-    public static final String PASSWORD = "plain-password";
+    public static final String PLAIN_PASSWORD = "plain-password";
+    public static final String HASHED_PASSWORD = "hashed-password";
 
     private UserFixtures() {}
 
     public static UserDataWithPassword withPassword() {
-        return new UserDataWithPassword(ID, USERNAME, EMAIL, PASSWORD);
+        return new UserDataWithPassword(ID, USERNAME, EMAIL, HASHED_PASSWORD);
     }
 
     public static UserData userData() {
@@ -22,14 +23,14 @@ public class UserFixtures {
     }
 
     public static CredentialsData credentialsWithUsernameIdentity() {
-        return new CredentialsData(USERNAME, PASSWORD);
+        return new CredentialsData(USERNAME, PLAIN_PASSWORD);
     }
 
     public static CredentialsData credentialsWithEmailIdentity() {
-        return new CredentialsData(EMAIL, PASSWORD);
+        return new CredentialsData(EMAIL, PLAIN_PASSWORD);
     }
 
     public static UserCreateData create() {
-        return new UserCreateData(USERNAME, EMAIL, PASSWORD);
+        return new UserCreateData(USERNAME, EMAIL, PLAIN_PASSWORD);
     }
 }

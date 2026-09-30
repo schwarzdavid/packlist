@@ -20,7 +20,7 @@ public class UserRepository {
     }
 
     public Future<UserData> createUser(UserCreateData userCreateDto, String hashedPassword) {
-        Map<String, Object> params = Map.of("username", userCreateDto.username(), "email", userCreateDto.email(), "password", hashedPassword);
+        Map<String, Object> params = Map.of("username", userCreateDto.username().trim(), "email", userCreateDto.email().trim(), "password", hashedPassword);
 
         return SqlTemplate
                 .forUpdate(pool, "INSERT INTO users (username, email, password) VALUES (#{username}, #{email}, #{password}) RETURNING *")
@@ -32,7 +32,7 @@ public class UserRepository {
 
     public Future<Optional<UserDataWithPassword>> findUserWithPasswordByIdentifier(String identifier) {
         return pool.preparedQuery("SELECT * FROM users WHERE username=$1 OR email=$1 LIMIT 1")
-                .execute(Tuple.of(identifier))
+                .execute(Tuple.of(identifier.trim()))
                 .map(result -> {
                     var rowOptional = result.stream().findFirst();
 

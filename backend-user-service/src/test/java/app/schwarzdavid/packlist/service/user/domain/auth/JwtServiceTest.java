@@ -1,7 +1,7 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
 import app.schwarzdavid.packlist.common.Config;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
+import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.PubSecKeyOptions;
@@ -52,19 +52,29 @@ public class JwtServiceTest {
     }
 
     @Test
+    public void shouldThrowIfNoSecretSet(Vertx vertx) {
+        var customConfigValues = getConfigValues();
+        customConfigValues.remove("JWT_SECRET");
+
+        when(config.getValues()).thenReturn(customConfigValues);
+
+        assertThrows(IllegalArgumentException.class, () -> new JwtService(vertx, config));
+    }
+
+    @Test
     public void shouldGenerateTokenWithDefaultLifetime(Vertx vertx, VertxTestContext ctx) {
         when(config.getValues()).thenReturn(getConfigValues());
 
         var jwtService = new JwtService(vertx, config);
         var verifier = getVerifier(vertx);
-        var user = new UserData(1L, "username", "email@example.com");
+        var user = UserFixtures.userData();
         var token = jwtService.generateTokenForUser(user);
 
         verifier.authenticate(new TokenCredentials(token))
                 .onComplete(ctx.succeeding(tokenUser -> {
-                    assertEquals("1", tokenUser.subject());
-                    assertEquals("email@example.com", tokenUser.principal().getString("email"));
-                    assertEquals("username", tokenUser.principal().getString("nickname"));
+                    assertEquals(UserFixtures.ID.toString(), tokenUser.subject());
+                    assertEquals(UserFixtures.EMAIL, tokenUser.principal().getString("email"));
+                    assertEquals(UserFixtures.USERNAME, tokenUser.principal().getString("nickname"));
                     assertEquals(JWT_DEFAULT_LIFETIME_SECONDS, tokenUser.attributes().getInteger("exp") - tokenUser.attributes().getInteger("iat"));
 
                     ctx.completeNow();
@@ -77,7 +87,7 @@ public class JwtServiceTest {
 
         var jwtService = new JwtService(vertx, config);
         var verifier = getVerifier(vertx);
-        var user = new UserData(1L, "username", "email");
+        var user = UserFixtures.userData();
         var token = jwtService.generateTokenForUser(user);
 
         verifier.authenticate(new TokenCredentials(token))

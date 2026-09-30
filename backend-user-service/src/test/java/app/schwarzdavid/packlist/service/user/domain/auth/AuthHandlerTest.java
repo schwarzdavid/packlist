@@ -12,6 +12,7 @@ import app.schwarzdavid.packlist.service.user.domain.user.dto.UserDto;
 import app.schwarzdavid.packlist.service.user.domain.user.exception.UserAlreadyExistsException;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
 import io.vertx.core.Future;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RequestBody;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.junit5.VertxExtension;
@@ -44,6 +45,9 @@ public class AuthHandlerTest {
     private RoutingContext routingContext;
 
     @Mock
+    private HttpServerResponse routingResponse;
+
+    @Mock
     private RequestBody requestBody;
 
     @InjectMocks
@@ -52,11 +56,12 @@ public class AuthHandlerTest {
     @BeforeEach
     public void setUp() {
         when(routingContext.body()).thenReturn(requestBody);
+        when(routingContext.response()).thenReturn(routingResponse);
     }
 
     @Test
     public void shouldLogin(VertxTestContext ctx) {
-        when(requestBody.asPojo(any())).thenReturn(new CredentialsDto(UserFixtures.EMAIL, UserFixtures.PASSWORD));
+        when(requestBody.asPojo(any())).thenReturn(new CredentialsDto(UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
         when(credentialsService.authenticate(any())).thenReturn(Future.succeededFuture(new AuthData(UserFixtures.ID, "token", UserFixtures.userData())));
 
         authHandler.login(routingContext)
@@ -64,7 +69,7 @@ public class AuthHandlerTest {
                     verify(credentialsService).authenticate(assertArg(credentials -> {
                         assertInstanceOf(CredentialsData.class, credentials);
                         assertEquals(UserFixtures.EMAIL, credentials.identifier());
-                        assertEquals(UserFixtures.PASSWORD, credentials.password());
+                        assertEquals(UserFixtures.PLAIN_PASSWORD, credentials.password());
                     }));
 
                     assertInstanceOf(AuthDto.class, authDto);
@@ -81,7 +86,7 @@ public class AuthHandlerTest {
 
     @Test
     public void shouldFailFutureOnLoginIfErrorHappened(VertxTestContext ctx) {
-        when(requestBody.asPojo(any())).thenReturn(new CredentialsDto(UserFixtures.USERNAME, UserFixtures.PASSWORD));
+        when(requestBody.asPojo(any())).thenReturn(new CredentialsDto(UserFixtures.USERNAME, UserFixtures.PLAIN_PASSWORD));
         when(credentialsService.authenticate(any())).thenReturn(Future.failedFuture(new InvalidCredentialsException()));
 
         ctx.assertFailure(authHandler.login(routingContext))
@@ -90,7 +95,7 @@ public class AuthHandlerTest {
 
     @Test
     public void shouldRegister(VertxTestContext ctx) {
-        when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PASSWORD));
+        when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
         when(userService.createUser(any())).thenReturn(Future.succeededFuture(UserFixtures.userData()));
         when(jwtService.generateTokenForUser(any())).thenReturn("token");
 
@@ -100,8 +105,10 @@ public class AuthHandlerTest {
                         assertInstanceOf(UserCreateData.class, userCreateData);
                         assertEquals(UserFixtures.USERNAME, userCreateData.username());
                         assertEquals(UserFixtures.EMAIL, userCreateData.email());
-                        assertEquals(UserFixtures.PASSWORD, userCreateData.password());
+                        assertEquals(UserFixtures.PLAIN_PASSWORD, userCreateData.password());
                     }));
+
+                    verify(routingResponse).setStatusCode(201);
 
                     assertInstanceOf(AuthDto.class, auth);
                     assertEquals(UserFixtures.ID, auth.userId());
@@ -117,7 +124,7 @@ public class AuthHandlerTest {
 
     @Test
     public void shouldFailRegisterOnUserCreationError(VertxTestContext ctx) {
-        when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PASSWORD));
+        when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
         when(userService.createUser(any())).thenReturn(Future.failedFuture(new UserAlreadyExistsException(UserAlreadyExistsException.Field.EMAIL)));
 
         ctx.assertFailure(authHandler.register(routingContext))
@@ -130,7 +137,7 @@ public class AuthHandlerTest {
 
     @Test
     public void shouldFailRegisterOnJwtError(VertxTestContext ctx) {
-        when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PASSWORD));
+        when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
         when(userService.createUser(any())).thenReturn(Future.succeededFuture(UserFixtures.userData()));
         when(jwtService.generateTokenForUser(any())).thenThrow(new RuntimeException());
 

@@ -1,9 +1,8 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
-import app.schwarzdavid.packlist.service.user.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.service.user.domain.auth.exception.InvalidCredentialsException;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
+import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
 import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
 import io.vertx.core.Future;
 import io.vertx.junit5.VertxExtension;
@@ -34,8 +33,8 @@ public class CredentialsServiceTest {
 
     @Test
     public void authenticateCorrectCredentials(VertxTestContext ctx) {
-        var user = new UserDataWithPassword(1L, "foo", "bar", "hashed-password");
-        var credentials = new CredentialsData("foo", "plain-password");
+        var user = UserFixtures.withPassword();
+        var credentials = UserFixtures.credentialsWithEmailIdentity();
 
         when(userServiceMock.getUserDataWithPasswordByIdentifier(anyString())).thenReturn(Future.succeededFuture(Optional.of(user)));
         when(passwordHashingServiceMock.verifyPassword(anyString(), anyString())).thenReturn(Future.succeededFuture(true));
@@ -43,15 +42,15 @@ public class CredentialsServiceTest {
 
         ctx.assertComplete(credentialsService.authenticate(credentials))
                 .onSuccess(auth -> ctx.verify(() -> {
-                    verify(userServiceMock).getUserDataWithPasswordByIdentifier("foo");
-                    verify(passwordHashingServiceMock).verifyPassword("hashed-password", "plain-password");
+                    verify(userServiceMock).getUserDataWithPasswordByIdentifier(credentials.identifier());
+                    verify(passwordHashingServiceMock).verifyPassword(UserFixtures.HASHED_PASSWORD, credentials.password());
                     verify(jwtServiceMock).generateTokenForUser(any());
 
                     assertEquals("token", auth.token());
-                    assertEquals(1L, auth.userId());
-                    assertEquals(1L, auth.user().userId());
-                    assertEquals("foo", auth.user().username());
-                    assertEquals("bar", auth.user().email());
+                    assertEquals(UserFixtures.ID, auth.userId());
+                    assertEquals(UserFixtures.ID, auth.user().userId());
+                    assertEquals(UserFixtures.USERNAME, auth.user().username());
+                    assertEquals(UserFixtures.EMAIL, auth.user().email());
 
                     ctx.completeNow();
                 }));
@@ -59,13 +58,13 @@ public class CredentialsServiceTest {
 
     @Test
     public void shouldThrowIfUserIsNotFound(VertxTestContext ctx) {
-        var credentials = new CredentialsData("foo", "plain-password");
+        var credentials = UserFixtures.credentialsWithEmailIdentity();
 
         when(userServiceMock.getUserDataWithPasswordByIdentifier(anyString())).thenReturn(Future.succeededFuture(Optional.empty()));
 
         credentialsService.authenticate(credentials)
                 .onComplete(ctx.failing(exception -> {
-                    verify(userServiceMock).getUserDataWithPasswordByIdentifier("foo");
+                    verify(userServiceMock).getUserDataWithPasswordByIdentifier(credentials.identifier());
                     verify(passwordHashingServiceMock, times(0)).verifyPassword(anyString(), anyString());
                     verify(jwtServiceMock, times(0)).generateTokenForUser(any());
 
@@ -78,8 +77,8 @@ public class CredentialsServiceTest {
 
     @Test
     public void shouldThrowIfPasswordIsWrong(VertxTestContext ctx) {
-        var user = new UserDataWithPassword(1L, "foo", "bar", "hashed-password");
-        var credentials = new CredentialsData("foo", "wrong-password");
+        var user = UserFixtures.withPassword();
+        var credentials = UserFixtures.credentialsWithEmailIdentity();
 
         when(userServiceMock.getUserDataWithPasswordByIdentifier(anyString())).thenReturn(Future.succeededFuture(Optional.of(user)));
         when(passwordHashingServiceMock.verifyPassword(anyString(), anyString())).thenReturn(Future.succeededFuture(false));
