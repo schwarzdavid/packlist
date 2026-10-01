@@ -1,8 +1,8 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
+import app.schwarzdavid.packlist.common.data.UserData;
 import app.schwarzdavid.packlist.common.exception.db.UniqueConstraintValidationException;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.exception.UserAlreadyExistsException;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
 import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;

@@ -1,8 +1,8 @@
 package app.schwarzdavid.packlist.service.user.fixture;
 
+import app.schwarzdavid.packlist.common.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 
 public class UserFixtures {

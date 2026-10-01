@@ -1,10 +1,11 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
+import app.schwarzdavid.packlist.common.JwtService;
+import app.schwarzdavid.packlist.common.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.AuthData;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.service.user.domain.auth.exception.InvalidCredentialsException;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;

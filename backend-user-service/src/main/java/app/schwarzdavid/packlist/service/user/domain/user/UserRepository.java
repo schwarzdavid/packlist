@@ -1,8 +1,8 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
+import app.schwarzdavid.packlist.common.data.UserData;
 import app.schwarzdavid.packlist.common.exception.PostgresExceptionHandler;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 import io.vertx.core.Future;
 import io.vertx.sqlclient.Pool;

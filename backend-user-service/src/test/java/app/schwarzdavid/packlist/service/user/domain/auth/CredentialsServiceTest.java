@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
+import app.schwarzdavid.packlist.common.JwtService;
 import app.schwarzdavid.packlist.service.user.domain.auth.exception.InvalidCredentialsException;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;

@@ -1,7 +1,6 @@
-package app.schwarzdavid.packlist.service.user.domain.auth;
+package app.schwarzdavid.packlist.common;
 
-import app.schwarzdavid.packlist.common.Config;
-import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
+import app.schwarzdavid.packlist.common.data.UserData;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.PubSecKeyOptions;
@@ -11,6 +10,7 @@ import io.vertx.ext.auth.jwt.JWTAuthOptions;
 import io.vertx.ext.web.handler.JWTAuthHandler;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -67,15 +67,15 @@ public class JwtServiceTest {
 
         var jwtService = new JwtService(vertx, config);
         var verifier = getVerifier(vertx);
-        var user = UserFixtures.userData();
+        var user = new UserData(1L, "username", "email@example.com");
         var token = jwtService.generateTokenForUser(user);
 
         verifier.authenticate(new TokenCredentials(token))
                 .onComplete(ctx.succeeding(tokenUser -> {
-                    assertEquals(UserFixtures.ID.toString(), tokenUser.subject());
-                    assertEquals(UserFixtures.EMAIL, tokenUser.principal().getString("email"));
-                    assertEquals(UserFixtures.USERNAME, tokenUser.principal().getString("nickname"));
-                    assertEquals(JWT_DEFAULT_LIFETIME_SECONDS, tokenUser.attributes().getInteger("exp") - tokenUser.attributes().getInteger("iat"));
+                    Assertions.assertEquals("1", tokenUser.subject());
+                    Assertions.assertEquals("email@example.com", tokenUser.principal().getString("email"));
+                    Assertions.assertEquals("username", tokenUser.principal().getString("nickname"));
+                    Assertions.assertEquals(JWT_DEFAULT_LIFETIME_SECONDS, tokenUser.attributes().getInteger("exp") - tokenUser.attributes().getInteger("iat"));
 
                     ctx.completeNow();
                 }));
@@ -87,12 +87,12 @@ public class JwtServiceTest {
 
         var jwtService = new JwtService(vertx, config);
         var verifier = getVerifier(vertx);
-        var user = UserFixtures.userData();
+        var user = new UserData(1L, "username", "email@example.com");
         var token = jwtService.generateTokenForUser(user);
 
         verifier.authenticate(new TokenCredentials(token))
                 .onComplete(ctx.succeeding(tokenUser -> {
-                    assertEquals(100 * 60, tokenUser.attributes().getInteger("exp") - tokenUser.attributes().getInteger("iat"));
+                    Assertions.assertEquals(100 * 60, tokenUser.attributes().getInteger("exp") - tokenUser.attributes().getInteger("iat"));
                     ctx.completeNow();
                 }));
     }

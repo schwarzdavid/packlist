@@ -1,7 +1,6 @@
-package app.schwarzdavid.packlist.service.user.domain.auth;
+package app.schwarzdavid.packlist.common;
 
-import app.schwarzdavid.packlist.common.Config;
-import app.schwarzdavid.packlist.service.user.domain.user.data.UserData;
+import app.schwarzdavid.packlist.common.data.UserData;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.JWTOptions;

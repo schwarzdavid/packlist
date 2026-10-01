@@ -1,4 +1,4 @@
-package app.schwarzdavid.packlist.service.user.domain.user.data;
+package app.schwarzdavid.packlist.common.data;
 
 public record UserData(
         Long userId,
