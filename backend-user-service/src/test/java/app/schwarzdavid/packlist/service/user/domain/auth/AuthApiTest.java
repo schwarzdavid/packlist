@@ -59,9 +59,9 @@ public class AuthApiTest {
                     port = verticle.getPort();
                     pool = verticle.getPool();
 
-                    return verticle.getPool().query("TRUNCATE TABLE users RESTART IDENTITY  CASCADE").execute();
+                    return verticle.getPool().query("TRUNCATE TABLE users RESTART IDENTITY CASCADE").execute();
                 })
-                .onComplete(ctx.succeeding(_ -> ctx.completeNow()));
+                .onComplete(ctx.succeedingThenComplete());
     }
 
     @Test

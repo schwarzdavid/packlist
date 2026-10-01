@@ -13,7 +13,7 @@ public final class UserRouter {
     public Router createRouter(Vertx vertx) {
         var router = Router.router(vertx);
 
-        router.post("/users").handler(userHandler::createUser);
+        router.post("/users").respond(userHandler::createUser);
 
         return router;
     }
