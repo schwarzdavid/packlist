@@ -104,4 +104,52 @@ public class UserApiTest {
                 })
                 .onFailure(ctx::failNow);
     }
+
+    @Test
+    public void shouldDisallowCreateUserIfNotLoggedIn(Vertx vertx, VertxTestContext ctx) {
+        var userCreateDto = new UserCreateDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD);
+
+        WebClient.create(vertx).post(port, "localhost", CREATE_ROUTE)
+                .sendJsonObject(JsonObject.mapFrom(userCreateDto))
+                .onComplete(ctx.succeeding(response -> {
+                    assertEquals(401, response.statusCode());
+                    assertTrue(response.bodyAsString().contains("Unauthorized"));
+                }));
+    }
+
+    @Test
+    public void shouldRejectCreateUserIfUsernameAlreadyExists(Vertx vertx, VertxTestContext ctx) {
+        var userCreateDto = new UserCreateDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD);
+
+        pool.preparedQuery("INSERT INTO users (username, email, password) VALUES ($1, $2, $3)")
+                .execute(Tuple.of(UserFixtures.USERNAME, "nonexistent@example.com", "123456"))
+                .compose(rows -> WebClient.create(vertx).post(port, "localhost", CREATE_ROUTE)
+                        .bearerTokenAuthentication(jwt)
+                        .sendJsonObject(JsonObject.mapFrom(userCreateDto)))
+                .onComplete(ctx.succeeding(response -> {
+                    assertEquals(409, response.statusCode());
+                    assertTrue(response.bodyAsString().contains("username"));
+                    assertFalse(response.bodyAsString().contains("e-mail"));
+
+                    ctx.completeNow();
+                }));
+    }
+
+    @Test
+    public void shouldRejectCreateUserIfEmailAlreadyExists(Vertx vertx, VertxTestContext ctx) {
+        var userCreateDto = new UserCreateDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD);
+
+        pool.preparedQuery("INSERT INTO users (username, email, password) VALUES ($1, $2, $3)")
+                .execute(Tuple.of("other-username", UserFixtures.EMAIL, "123456"))
+                .compose(rows -> WebClient.create(vertx).post(port, "localhost", CREATE_ROUTE)
+                        .bearerTokenAuthentication(jwt)
+                        .sendJsonObject(JsonObject.mapFrom(userCreateDto)))
+                .onComplete(ctx.succeeding(response -> {
+                    assertEquals(409, response.statusCode());
+                    assertTrue(response.bodyAsString().contains("e-mail"));
+                    assertFalse(response.bodyAsString().contains("username"));
+
+                    ctx.completeNow();
+                }));
+    }
 }
