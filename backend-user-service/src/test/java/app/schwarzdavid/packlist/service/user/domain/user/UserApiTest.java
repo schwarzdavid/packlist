@@ -51,6 +51,7 @@ public class UserApiTest {
         configValues.put("USER_POSTGRES_PASSWORD", postgres.getPassword());
         configValues.put("USER_POSTGRES_DB", postgres.getDatabaseName());
 
+        // TODO: maybe Config is not needed. See https://vertx.io/docs/howtos/hibernate-reactive-howto/#_application_startup
         Config
                 .of(vertx, configValues)
                 .onComplete(ctx.succeeding(config -> {
@@ -112,8 +113,11 @@ public class UserApiTest {
         WebClient.create(vertx).post(port, "localhost", CREATE_ROUTE)
                 .sendJsonObject(JsonObject.mapFrom(userCreateDto))
                 .onComplete(ctx.succeeding(response -> {
+                    // TODO: change to .expecting after .sendJsonObject (https://vertx.io/docs/howtos/hibernate-reactive-howto/#_application_startup)
                     assertEquals(401, response.statusCode());
                     assertTrue(response.bodyAsString().contains("Unauthorized"));
+
+                    ctx.completeNow();
                 }));
     }
 
