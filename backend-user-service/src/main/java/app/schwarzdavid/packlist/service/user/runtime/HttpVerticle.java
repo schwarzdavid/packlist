@@ -36,7 +36,7 @@ public class HttpVerticle extends VerticleBase {
     public Future<?> start() {
         var router = Router.router(vertx);
 
-        var schemaRepository = SchemaRepository.create(new JsonSchemaOptions().setDraft(Draft.DRAFT7));
+        var schemaRepository = SchemaRepository.create(new JsonSchemaOptions().setDraft(Draft.DRAFT7).setBaseUri("https://schemas.packlist.app"));
         var passwordHashingService = new PasswordHashingService(vertx);
 
         var userModule = UserModule.create(vertx, pool, passwordHashingService);
@@ -50,7 +50,7 @@ public class HttpVerticle extends VerticleBase {
 
         return vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(8881)
+                .listen(config.getValues().getInteger("HTTP_PORT", 0))
                 .onSuccess(server -> {
                     port = server.actualPort();
                     logger.info("Server started on port %d".formatted(server.actualPort()));
