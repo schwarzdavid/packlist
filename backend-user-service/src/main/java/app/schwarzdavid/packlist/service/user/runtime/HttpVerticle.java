@@ -11,6 +11,9 @@ import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.json.schema.Draft;
+import io.vertx.json.schema.JsonSchemaOptions;
+import io.vertx.json.schema.SchemaRepository;
 import io.vertx.sqlclient.Pool;
 import lombok.Getter;
 
@@ -33,10 +36,11 @@ public class HttpVerticle extends VerticleBase {
     public Future<?> start() {
         var router = Router.router(vertx);
 
+        var schemaRepository = SchemaRepository.create(new JsonSchemaOptions().setDraft(Draft.DRAFT7));
         var passwordHashingService = new PasswordHashingService(vertx);
 
         var userModule = UserModule.create(vertx, pool, passwordHashingService);
-        var authModule = AuthModule.create(vertx, config, userModule, passwordHashingService);
+        var authModule = AuthModule.create(vertx, config, userModule, passwordHashingService, schemaRepository);
 
         router.route().handler(BodyHandler.create());
         router.route("/api/*").subRouter(authModule.router());
