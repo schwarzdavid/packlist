@@ -20,16 +20,18 @@ public class AuthHandler {
     private final JwtService jwtService;
 
     public Future<AuthDto> login(RoutingContext ctx) {
-        var credentials = ctx.body().asPojo(CredentialsDto.class);
+        var dto = ctx.body().asPojo(CredentialsDto.class);
+        var data = new CredentialsData(dto.identifier().trim(), dto.password());
 
-        return credentialsService.authenticate(new CredentialsData(credentials.identifier(), credentials.password()))
+        return credentialsService.authenticate(data)
                 .map(this::mapAuthDataToDto);
     }
 
     public Future<AuthDto> register(RoutingContext ctx) {
-        var credentials = ctx.body().asPojo(RegistrationDto.class);
+        var dto = ctx.body().asPojo(RegistrationDto.class);
+        var data = new UserCreateData(dto.username().trim(), dto.email().trim(), dto.password());
 
-        return userService.createUser(new UserCreateData(credentials.username(), credentials.email(), credentials.password()))
+        return userService.createUser(data)
                 .map(user -> new AuthData(user.userId(), jwtService.generateTokenForUser(user), user))
                 .map(this::mapAuthDataToDto)
                 .onSuccess(_ -> ctx.response().setStatusCode(201));
