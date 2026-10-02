@@ -1,6 +1,5 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
-import app.schwarzdavid.packlist.service.user.domain.auth.AuthModule;
 import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;

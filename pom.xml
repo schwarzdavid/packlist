@@ -24,8 +24,10 @@
     </properties>
 
     <modules>
-        <module>backend-user-service</module>
+        <module>user-service</module>
         <module>backend-common</module>
+        <module>user-api</module>
+        <module>user-client-java</module>
     </modules>
 
     <dependencyManagement>
