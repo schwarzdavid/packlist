@@ -1,13 +1,11 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
-import app.schwarzdavid.packlist.common.JwtService;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.AuthData;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.AuthDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.CredentialsDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.RegistrationDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.exception.InvalidCredentialsException;
-import app.schwarzdavid.packlist.service.user.domain.user.UserService;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserDto;
 import app.schwarzdavid.packlist.service.user.domain.user.exception.UserAlreadyExistsException;
@@ -29,15 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.assertArg;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith({MockitoExtension.class, VertxExtension.class})
 public class AuthHandlerTest {
     @Mock
-    private UserService userService;
-
-    @Mock
-    private JwtService jwtService;
+    private AuthService authService;
 
     @Mock
     private CredentialsService credentialsService;
@@ -97,12 +93,11 @@ public class AuthHandlerTest {
     public void shouldRegister(VertxTestContext ctx) {
         when(routingContext.response()).thenReturn(routingResponse);
         when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
-        when(userService.createUser(any())).thenReturn(Future.succeededFuture(UserFixtures.userData()));
-        when(jwtService.generateTokenForUser(any())).thenReturn("token");
+        when(authService.registerUser(any())).thenReturn(Future.succeededFuture(new AuthData(UserFixtures.ID, "token", UserFixtures.userData())));
 
         ctx.assertComplete(authHandler.register(routingContext))
                 .onSuccess(auth -> ctx.verify(() -> {
-                    verify(userService).createUser(assertArg(userCreateData -> {
+                    verify(authService).registerUser(assertArg(userCreateData -> {
                         assertInstanceOf(UserCreateData.class, userCreateData);
                         assertEquals(UserFixtures.USERNAME, userCreateData.username());
                         assertEquals(UserFixtures.EMAIL, userCreateData.email());
@@ -126,23 +121,9 @@ public class AuthHandlerTest {
     @Test
     public void shouldFailRegisterOnUserCreationError(VertxTestContext ctx) {
         when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
-        when(userService.createUser(any())).thenReturn(Future.failedFuture(new UserAlreadyExistsException(UserAlreadyExistsException.Field.EMAIL)));
+        when(authService.registerUser(any())).thenReturn(Future.failedFuture(new UserAlreadyExistsException(UserAlreadyExistsException.Field.EMAIL)));
 
         ctx.assertFailure(authHandler.register(routingContext))
-                .onFailure(throwable -> ctx.verify(() -> {
-                    verifyNoInteractions(jwtService);
-
-                    ctx.completeNow();
-                }));
-    }
-
-    @Test
-    public void shouldFailRegisterOnJwtError(VertxTestContext ctx) {
-        when(requestBody.asPojo(any())).thenReturn(new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.PLAIN_PASSWORD));
-        when(userService.createUser(any())).thenReturn(Future.succeededFuture(UserFixtures.userData()));
-        when(jwtService.generateTokenForUser(any())).thenThrow(new RuntimeException());
-
-        ctx.assertFailure(authHandler.register(routingContext))
-                .onFailure(throwable -> ctx.completeNow());
+                .onFailure(throwable -> ctx.verify(ctx::completeNow));
     }
 }

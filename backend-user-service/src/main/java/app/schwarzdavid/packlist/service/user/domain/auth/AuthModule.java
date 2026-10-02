@@ -21,11 +21,12 @@ public record AuthModule(
     ) {
         var jwtService = new JwtService(vertx, config);
         var credentialsService = new CredentialsService(userModule.userService(), passwordHashingService, jwtService);
-        var authenticationHandler = new AuthHandler(credentialsService, userModule.userService(), jwtService);
-        var authenticationRouter = new AuthRouter(authenticationHandler, schemaRepository);
+        var authService = new AuthService(userModule.userService(), jwtService);
+        var authHandler = new AuthHandler(credentialsService, authService);
+        var authRouter = new AuthRouter(authHandler, schemaRepository);
 
         return new AuthModule(
-                authenticationRouter.createRouter(vertx),
+                authRouter.createRouter(vertx),
                 jwtService
         );
     }
