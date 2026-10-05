@@ -2,6 +2,7 @@ packages:
   - frontend-app
   - user-client-ts
 allowBuilds:
+  '@parcel/watcher': set this to true or false
   esbuild: true
 includeWorkspaceRoot: true
 tasks:

@@ -4,23 +4,37 @@
     <p class="text-medium-emphasis mb-6">{{ t('auth.register.description') }}</p>
 
     <form class="d-flex flex-column gr-2" @submit.prevent="onSubmit">
-      <VTextField v-model="username" :error-messages="errors.username" :label="t('field.username')"
-                  autocomplete="username" prepend-inner-icon="mdi-account-outline"/>
-      <VTextField v-model="email" :error-messages="errors.email" :label="t('field.email')"
-                  autocomplete="email" prepend-inner-icon="mdi-at"/>
-      <VTextField v-model="password" :error-messages="errors.password" :label="t('field.password')"
-                  autocomplete="new-password" prepend-inner-icon="mdi-lock-outline"
-                  type="password"/>
-      <VTextField v-model="passwordRepeat" :error-messages="errors.passwordRepeat"
-                  :label="t('field.password-repeat')" autocomplete="new-password"
-                  prepend-inner-icon="mdi-lock-outline" type="password"/>
-      <VBtn :text="t('cta.register')" block color="primary" size="large" type="submit"/>
+      <VDefaultsProvider :defaults="{global: {disabled: isSubmitting}}">
+        <VTextField v-model="username" :error-messages="errors.username"
+                    :label="t('field.username')"
+                    autocomplete="username" prepend-inner-icon="mdi-account-outline"/>
+        <VTextField v-model="email" :error-messages="errors.email" :label="t('field.email')"
+                    autocomplete="email" prepend-inner-icon="mdi-at"/>
+        <VTextField v-model="password" :error-messages="errors.password"
+                    :label="t('field.password')"
+                    :type="passwordType" autocomplete="new-password"
+                    prepend-inner-icon="mdi-lock-outline">
+          <template #append-inner>
+            <VIconBtn :icon="passwordIcon" @click="showPassword = !showPassword"/>
+          </template>
+        </VTextField>
+        <VTextField v-model="passwordRepeat" :error-messages="errors.passwordRepeat"
+                    :label="t('field.password-repeat')" :type="passwordType"
+                    autocomplete="new-password" prepend-inner-icon="mdi-lock-outline">
+          <template #append-inner>
+            <VIconBtn :icon="passwordIcon" @click="showPassword = !showPassword"/>
+          </template>
+        </VTextField>
+      </VDefaultsProvider>
+      <VBtn :loading="isSubmitting" :text="t('cta.register')" block color="primary" size="large"
+            type="submit"/>
     </form>
 
     <VDivider class="my-6"/>
 
-    <I18nT class="text-medium-emphasis text-body-medium text-center" keypath="auth.register.login-hint"
-           tag="p">
+    <I18nT class="text-medium-emphasis text-body-medium text-center"
+           keypath="auth.register.login-hint"
+           scope="global" tag="p">
       <template #login>
         <RouterLink :to="{name: AuthRoutes.LOGIN}" class="font-weight-bold text-primary">
           {{ t('auth.register.login') }}
@@ -37,6 +51,8 @@
   import {zRegistrationDto} from "@packlist/users-api";
   import {z} from "zod";
   import {AuthRoutes} from "@/domain/auth/router/AuthRoutes.ts";
+  import {useRegistrationMutation} from "@/domain/auth/mutations/RegistrationMutation.ts";
+  import {computed, ref} from "vue";
 
   const zRegistrationForm = zRegistrationDto.extend({
     passwordRepeat: z.string()
@@ -46,9 +62,14 @@
   })
 
   const {t} = useI18n()
-  const {defineField, handleSubmit, errors} = useForm({
+  const {mutateAsync: registerUser} = useRegistrationMutation()
+  const {defineField, handleSubmit, errors, isSubmitting} = useForm({
     validationSchema: toTypedSchema(zRegistrationForm)
   })
+
+  const showPassword = ref(false)
+  const passwordType = computed(() => showPassword.value ? 'text' : 'password')
+  const passwordIcon = computed(() => showPassword.value ? 'mdi-eye-outline' : 'mdi-eye-off-outline')
 
   const [username] = defineField('username')
   const [email] = defineField('email')
@@ -56,5 +77,6 @@
   const [passwordRepeat] = defineField('passwordRepeat')
 
   const onSubmit = handleSubmit(async values => {
+    await registerUser(values)
   })
 </script>
