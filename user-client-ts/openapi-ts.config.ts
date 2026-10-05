@@ -13,14 +13,22 @@ export default defineConfig({
             name: '@hey-api/sdk',
             operations: {
                 strategy: 'byTags',
+                methods: 'instance',
                 containerName: '{{name}}Api'
             },
-            transformer: true
+            responseStyle: 'data',
+            transformer: true,
         },
-        '@hey-api/client-axios',
+        {
+            name: '@hey-api/client-fetch',
+            throwOnError: true
+        },
         {
             name: 'zod',
-            definitions: true
+            definitions: true,
+            requests: false,
+            responses: false,
+            includeInEntry: true
         }
     ]
 })

@@ -1,3 +1,13 @@
 packages:
   - frontend-app
+  - user-client-ts
+allowBuilds:
+  esbuild: true
 includeWorkspaceRoot: true
+tasks:
+  dev:
+    dependsOn:
+      - ^generate
+  build:
+    dependsOn:
+      - ^generate

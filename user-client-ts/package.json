@@ -1,18 +1,27 @@
 {
-  "name": "user-client-ts",
+  "name": "@packlist/users-api",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "vite build"
+    "generate": "vite build"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/user-client.d.ts",
+      "import": "./dist/users-api.js"
+    }
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.99.0",
     "@hey-api/vite-plugin": "^0.3.2",
-    "axios": "^1.20.0",
+    "@microsoft/api-extractor": "^7.59.3",
     "jiti": "^2.7.0",
     "typescript": "~6.0.2",
     "vite": "^8.3.2",
+    "vite-plugin-dts": "^5.1.1"
+  },
+  "dependencies": {
     "zod": "^4.6.5"
   }
 }

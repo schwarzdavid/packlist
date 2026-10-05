@@ -1,12 +1,13 @@
 import {defineConfig} from 'vite'
 import {heyApiPlugin} from "@hey-api/vite-plugin";
+import dts from 'vite-plugin-dts'
 
 export default defineConfig({
-    plugins: [heyApiPlugin()],
+    plugins: [heyApiPlugin(), dts({bundleTypes: true})],
     build: {
         lib: {
             entry: 'src/api/index.ts',
-            name: 'users-api.ts',
+            name: 'users-api',
             formats: ['es']
         },
         rolldownOptions: {

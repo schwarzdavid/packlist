@@ -1,0 +1,35 @@
+{
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "description": "Sign in to your account to access your templates and lists.",
+      "registration-hint": "New to Stow? {register}",
+      "register-now": "Create an account"
+    },
+    "register": {
+      "title": "Sign up",
+      "description": "Create a new account to start using Stow.",
+      "login-hint": "Already have an account? {login}",
+      "login": "@:auth.login.title"
+    }
+  },
+  "field": {
+    "identifier": "E-mail or username",
+    "email": "E-Mail",
+    "username": "Username",
+    "password": "Password",
+    "password-repeat": "Password repeat"
+  },
+  "cta": {
+    "login": "Log in",
+    "register": "Sign up"
+  },
+  "validation": {
+    "required": "This field is required",
+    "minLength": "Minimum {min} characters",
+    "maxLength": "Maximum {max} characters",
+    "email": "Invalid email address",
+    "invalid": "Invalid input",
+    "passwordsDoNotMatch": "Passwords do not match"
+  }
+}
