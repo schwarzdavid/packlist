@@ -1,6 +1,7 @@
 package app.schwarzdavid.packlist.service.user.runtime;
 
 import app.schwarzdavid.packlist.common.Config;
+import app.schwarzdavid.packlist.common.JwtService;
 import app.schwarzdavid.packlist.common.exception.RouterExceptionHandler;
 import app.schwarzdavid.packlist.service.user.domain.auth.AuthModule;
 import app.schwarzdavid.packlist.service.user.domain.user.UserModule;
@@ -14,6 +15,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.json.schema.Draft;
 import io.vertx.json.schema.JsonSchemaOptions;
 import io.vertx.json.schema.SchemaRepository;
+import io.vertx.openapi.contract.OpenAPIContract;
 import io.vertx.sqlclient.Pool;
 import lombok.Getter;
 
@@ -39,18 +41,22 @@ public class HttpVerticle extends VerticleBase {
         var schemaRepository = SchemaRepository.create(new JsonSchemaOptions().setDraft(Draft.DRAFT7).setBaseUri("https://schemas.packlist.app"));
         var passwordHashingService = new PasswordHashingService(vertx);
 
-        var userModule = UserModule.create(vertx, pool, passwordHashingService);
-        var authModule = AuthModule.create(vertx, config, userModule, passwordHashingService, schemaRepository);
+        return OpenAPIContract.from(vertx, "users-api.yml")
+                .compose(contract -> {
+                    var jwtService = new JwtService(vertx, config);
+                    var userModule = UserModule.create(vertx, pool, contract, jwtService, passwordHashingService);
+                    var authModule = AuthModule.create(vertx, userModule, jwtService, passwordHashingService, schemaRepository);
 
-        router.route().handler(BodyHandler.create());
-        router.route("/api/*").subRouter(authModule.router());
-        router.route().handler(authModule.jwtService().getHandler());
-        router.route("/api/*").subRouter(userModule.router());
-        router.route().failureHandler(RouterExceptionHandler::handleFailure);
+                    router.route().handler(BodyHandler.create());
+                    router.route("/api/*").subRouter(authModule.router());
+                    router.route("/api/*").subRouter(userModule.router());
+                    router.route().failureHandler(RouterExceptionHandler::handleFailure);
 
-        return vertx.createHttpServer()
-                .requestHandler(router)
-                .listen(config.getValues().getInteger("HTTP_PORT", 0))
+                    return vertx.createHttpServer()
+                            .requestHandler(router)
+                            .listen(config.getValues().getInteger("HTTP_PORT", 8881));
+
+                })
                 .onSuccess(server -> {
                     port = server.actualPort();
                     logger.info("Server started on port %d".formatted(server.actualPort()));

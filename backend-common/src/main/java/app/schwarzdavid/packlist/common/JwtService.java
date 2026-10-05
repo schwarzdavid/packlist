@@ -11,6 +11,7 @@ import io.vertx.ext.web.handler.JWTAuthHandler;
 import lombok.Getter;
 
 public class JwtService {
+    @Getter
     private final JWTAuth provider;
     @Getter private final JWTAuthHandler handler;
 

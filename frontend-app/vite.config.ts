@@ -29,8 +29,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api/auth': 'http://localhost:8081',
-      '/api/users': 'http://localhost:8081'
+      '/api/auth': 'http://localhost:8881',
+      '/api/users': 'http://localhost:8881'
     }
   }
 })

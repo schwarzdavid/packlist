@@ -22,12 +22,6 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -58,6 +52,10 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-auth-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web-openapi-router</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>at.favre.lib</groupId>
@@ -65,11 +63,6 @@
             <version>0.10.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>tools.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>3.2.2</version>
-        </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-junit-jupiter</artifactId>
@@ -84,6 +77,11 @@
         <dependency>
             <groupId>app.schwarzdavid.packlist</groupId>
             <artifactId>backend-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>app.schwarzdavid.packlist</groupId>
+            <artifactId>user-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
