@@ -23,11 +23,11 @@ public class AuthRouter {
     public Router createRouter(Vertx vertx) {
         var router = Router.router(vertx);
 
-        router.post("/login")
+        router.post("/auth/login")
                 .handler(validateLogin())
                 .respond(authHandler::login);
 
-        router.post("/register")
+        router.post("/auth/register")
                 .handler(validateRegister())
                 .respond(authHandler::register);
 

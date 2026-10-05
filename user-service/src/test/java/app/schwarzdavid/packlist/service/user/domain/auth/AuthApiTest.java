@@ -36,8 +36,8 @@ public class AuthApiTest {
             .withUsername("users-test")
             .withPassword("users-test");
 
-    private final static String LOGIN_ROUTE = "/api/login";
-    private final static String REGISTER_ROUTE = "/api/register";
+    private final static String LOGIN_ROUTE = "/api/auth/login";
+    private final static String REGISTER_ROUTE = "/api/auth/register";
 
     private Integer port;
     private Pool pool;
