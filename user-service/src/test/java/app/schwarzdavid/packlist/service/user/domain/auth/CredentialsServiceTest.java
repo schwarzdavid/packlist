@@ -4,7 +4,7 @@ import app.schwarzdavid.packlist.common.JwtService;
 import app.schwarzdavid.packlist.service.user.domain.auth.exception.InvalidCredentialsException;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
-import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
+import app.schwarzdavid.packlist.service.user.infrastructure.security.PasswordHashingService;
 import io.vertx.core.Future;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;

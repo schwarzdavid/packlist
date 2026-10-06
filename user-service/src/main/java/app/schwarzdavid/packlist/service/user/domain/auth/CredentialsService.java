@@ -6,7 +6,7 @@ import app.schwarzdavid.packlist.service.user.domain.auth.data.AuthData;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.service.user.domain.auth.exception.InvalidCredentialsException;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
-import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
+import app.schwarzdavid.packlist.service.user.infrastructure.security.PasswordHashingService;
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 

@@ -7,7 +7,7 @@ import app.schwarzdavid.packlist.service.user.Application;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
-import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
+import app.schwarzdavid.packlist.service.user.infrastructure.security.PasswordHashingService;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;

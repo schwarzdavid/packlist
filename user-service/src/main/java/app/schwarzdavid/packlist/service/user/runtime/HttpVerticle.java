@@ -5,7 +5,7 @@ import app.schwarzdavid.packlist.common.JwtService;
 import app.schwarzdavid.packlist.common.exception.RouterExceptionHandler;
 import app.schwarzdavid.packlist.service.user.domain.auth.AuthModule;
 import app.schwarzdavid.packlist.service.user.domain.user.UserModule;
-import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
+import app.schwarzdavid.packlist.service.user.infrastructure.security.PasswordHashingService;
 import io.vertx.core.Future;
 import io.vertx.core.VerticleBase;
 import io.vertx.core.internal.logging.Logger;
@@ -47,10 +47,11 @@ public class HttpVerticle extends VerticleBase {
                     var userModule = UserModule.create(vertx, pool, contract, jwtService, passwordHashingService);
                     var authModule = AuthModule.create(vertx, userModule, jwtService, passwordHashingService, schemaRepository);
 
-                    router.route().handler(BodyHandler.create());
-                    router.route("/api/*").subRouter(authModule.router());
-                    router.route().subRouter(userModule.router());
-                    router.route().failureHandler(RouterExceptionHandler::handleFailure);
+                    router.route()
+                            .handler(BodyHandler.create())
+                            .subRouter(authModule.router())
+                            .subRouter(userModule.router())
+                            .failureHandler(RouterExceptionHandler::handleFailure);
 
                     return vertx.createHttpServer()
                             .requestHandler(router)

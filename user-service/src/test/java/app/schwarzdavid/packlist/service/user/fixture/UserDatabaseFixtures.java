@@ -2,7 +2,7 @@ package app.schwarzdavid.packlist.service.user.fixture;
 
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
-import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
+import app.schwarzdavid.packlist.service.user.infrastructure.security.PasswordHashingService;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.sqlclient.Pool;

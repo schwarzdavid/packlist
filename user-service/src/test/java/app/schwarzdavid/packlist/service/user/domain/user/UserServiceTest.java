@@ -5,7 +5,7 @@ import app.schwarzdavid.packlist.common.exception.db.UniqueConstraintValidationE
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.service.user.domain.user.exception.UserAlreadyExistsException;
 import app.schwarzdavid.packlist.service.user.fixture.UserFixtures;
-import app.schwarzdavid.packlist.service.user.service.security.PasswordHashingService;
+import app.schwarzdavid.packlist.service.user.infrastructure.security.PasswordHashingService;
 import io.vertx.core.Future;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;

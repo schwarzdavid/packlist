@@ -32,8 +32,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith({VertxExtension.class, MockitoExtension.class})
 public class AuthRouterTest {
-    private static final String LOGIN_PATH = "/auth/login";
-    private static final String REGISTER_PATH = "/auth/register";
+    private static final String LOGIN_PATH = "/api/auth/login";
+    private static final String REGISTER_PATH = "/api/auth/register";
     @Mock
     private AuthHandler authHandler;
     private Integer port;
