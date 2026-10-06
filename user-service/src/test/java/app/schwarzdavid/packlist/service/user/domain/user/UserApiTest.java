@@ -63,7 +63,7 @@ public class UserApiTest {
                                 return pool.query("TRUNCATE TABLE users RESTART IDENTITY CASCADE").execute();
                             })
                             .compose(_ -> new PasswordHashingService(vertx).hashPassword("random-password"))
-                            .compose(hashedPassword -> pool.preparedQuery("INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *")
+                            .compose(hashedPassword -> pool.preparedQuery("INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING \"userId\", username, email")
                                     .execute(Tuple.of("test-user", "test@example.com", hashedPassword)))
                             .onComplete(ctx.succeeding(rows -> {
                                 var user = rows.stream().findFirst().orElseThrow(() -> new RuntimeException("User could not be created.")).toJson().mapTo(UserData.class);
@@ -81,7 +81,7 @@ public class UserApiTest {
         WebClient.create(vertx).post(port, "localhost", CREATE_ROUTE)
                 .bearerTokenAuthentication(jwt)
                 .sendJsonObject(JsonObject.mapFrom(userCreateDto))
-                .onSuccess(response -> {
+                .onComplete(ctx.succeeding(response -> {
                     assertEquals(201, response.statusCode());
 
                     var body = response.bodyAsJsonObject();
@@ -102,8 +102,7 @@ public class UserApiTest {
 
                                 ctx.completeNow();
                             }));
-                })
-                .onFailure(ctx::failNow);
+                }));
     }
 
     @Test

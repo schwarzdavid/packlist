@@ -7,7 +7,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.APIKeyHandler;
 import io.vertx.ext.web.handler.HttpException;
 import io.vertx.ext.web.openapi.router.RequestExtractor;
 import io.vertx.ext.web.openapi.router.RouterBuilder;
@@ -68,7 +67,7 @@ public final class UserRouter {
     public Router createRouter(Vertx vertx) {
         var routerBuilder = RouterBuilder.create(vertx, contract, RequestExtractor.withBodyHandler());
 
-        routerBuilder.security("bearerAuth").apiKeyHandler(APIKeyHandler.create(jwtService.getProvider()));
+        routerBuilder.security("bearerAuth").httpHandler(jwtService.getHandler());
 
         routerBuilder.getRoute("createUser").addHandler(ctx -> respondHandler(ctx, userHandler::createUser));
 

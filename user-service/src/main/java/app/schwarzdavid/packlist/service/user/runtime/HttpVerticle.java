@@ -49,7 +49,7 @@ public class HttpVerticle extends VerticleBase {
 
                     router.route().handler(BodyHandler.create());
                     router.route("/api/*").subRouter(authModule.router());
-                    router.route("/api/*").subRouter(userModule.router());
+                    router.route().subRouter(userModule.router());
                     router.route().failureHandler(RouterExceptionHandler::handleFailure);
 
                     return vertx.createHttpServer()

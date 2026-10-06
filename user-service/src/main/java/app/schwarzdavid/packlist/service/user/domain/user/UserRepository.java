@@ -23,7 +23,7 @@ public class UserRepository {
         Map<String, Object> params = Map.of("username", userCreateDto.username(), "email", userCreateDto.email(), "password", hashedPassword);
 
         return SqlTemplate
-                .forUpdate(pool, "INSERT INTO users (username, email, password) VALUES (#{username}, #{email}, #{password}) RETURNING *")
+                .forUpdate(pool, "INSERT INTO users (username, email, password) VALUES (#{username}, #{email}, #{password}) RETURNING \"userId\", username, email")
                 .mapTo(UserData.class)
                 .execute(params)
                 .map(result -> result.iterator().next())

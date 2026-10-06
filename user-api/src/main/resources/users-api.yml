@@ -66,10 +66,9 @@ paths:
 components:
   securitySchemes:
     bearerAuth:
-      name: Frontend Auth
-      description: Bearer token authentication
-      type: apiKey
-      in: header
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     UserCreateDto:
       type: object
