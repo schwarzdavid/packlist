@@ -49,7 +49,7 @@
   import {useForm} from "vee-validate";
   import {toTypedSchema} from "@vee-validate/zod";
   import {AuthRoutes} from "@/domain/auth/router/AuthRoutes.ts";
-  import {useRegistrationMutation} from "@/domain/auth/mutations/RegistrationMutation.ts";
+  import {useRegistrationMutation} from "@/domain/auth/mutations/useRegistrationMutation.ts";
   import {computed, ref} from "vue";
   import {
     createRegistrationFormValidation

@@ -41,7 +41,9 @@
   import {useForm} from "vee-validate";
   import {toTypedSchema} from "@vee-validate/zod";
   import {zCredentialsDto} from '@packlist/users-api'
-  import {useCredentialsLoginMutation} from "@/domain/auth/mutations/CredentialsLoginMutation.ts";
+  import {
+    useCredentialsLoginMutation
+  } from "@/domain/auth/mutations/useCredentialsLoginMutation.ts";
   import {computed, ref} from "vue";
 
   const {t} = useI18n()

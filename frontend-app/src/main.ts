@@ -8,12 +8,13 @@ import {PiniaColada} from "@pinia/colada";
 import {configureZod} from "@/config/configureZod.ts";
 
 const app = createApp(App)
+const pinia = createPinia();
 
 app.use(router)
 app.use(vuetify)
 app.use(i18n)
-app.use(createPinia())
-app.use(PiniaColada)
+app.use(pinia)
+app.use(PiniaColada, {pinia})
 
 configureZod(i18n.global.t)
 
