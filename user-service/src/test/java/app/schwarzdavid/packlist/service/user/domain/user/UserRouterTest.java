@@ -136,6 +136,7 @@ public class UserRouterTest {
                 .sendJson(user)
                 .onComplete(ctx.succeeding(response -> {
                     assertEquals(400, response.statusCode());
+                    verifyNoInteractions(userHandler);
 
                     ctx.completeNow();
                 }));
