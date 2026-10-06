@@ -1,8 +1,8 @@
 package app.schwarzdavid.packlist.service.user;
 
-import app.schwarzdavid.packlist.common.Config;
-import app.schwarzdavid.packlist.common.Database;
-import app.schwarzdavid.packlist.common.Migrator;
+import app.schwarzdavid.packlist.common.infrastructure.Config;
+import app.schwarzdavid.packlist.common.infrastructure.Database;
+import app.schwarzdavid.packlist.common.infrastructure.Migrator;
 import app.schwarzdavid.packlist.service.user.runtime.HttpVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;

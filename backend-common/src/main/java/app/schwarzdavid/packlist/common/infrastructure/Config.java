@@ -1,4 +1,4 @@
-package app.schwarzdavid.packlist.common;
+package app.schwarzdavid.packlist.common.infrastructure;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;

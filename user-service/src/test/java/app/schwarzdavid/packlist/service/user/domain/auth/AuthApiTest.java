@@ -1,6 +1,6 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
-import app.schwarzdavid.packlist.common.Config;
+import app.schwarzdavid.packlist.common.infrastructure.Config;
 import app.schwarzdavid.packlist.service.user.Application;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.CredentialsDto;
 import app.schwarzdavid.packlist.service.user.domain.auth.dto.RegistrationDto;

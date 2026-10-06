@@ -1,8 +1,8 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
-import app.schwarzdavid.packlist.common.Config;
-import app.schwarzdavid.packlist.common.JwtService;
 import app.schwarzdavid.packlist.common.data.UserData;
+import app.schwarzdavid.packlist.common.infrastructure.Config;
+import app.schwarzdavid.packlist.common.service.JwtService;
 import app.schwarzdavid.packlist.service.user.Application;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserDataWithPassword;
 import app.schwarzdavid.packlist.service.user.domain.user.dto.UserCreateDto;

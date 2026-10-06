@@ -1,6 +1,7 @@
-package app.schwarzdavid.packlist.common;
+package app.schwarzdavid.packlist.common.service;
 
 import app.schwarzdavid.packlist.common.data.UserData;
+import app.schwarzdavid.packlist.common.infrastructure.Config;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.JWTOptions;

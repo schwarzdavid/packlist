@@ -1,7 +1,7 @@
 package app.schwarzdavid.packlist.service.user.domain.user;
 
-import app.schwarzdavid.packlist.common.JwtService;
-import app.schwarzdavid.packlist.service.user.infrastructure.util.OpenApiResponder;
+import app.schwarzdavid.packlist.common.service.JwtService;
+import app.schwarzdavid.packlist.common.util.OpenApiResponder;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.openapi.router.RequestExtractor;
@@ -22,7 +22,7 @@ public final class UserRouter {
 
         routerBuilder.security("bearerAuth").httpHandler(jwtService.getHandler());
 
-        routerBuilder.getRoute("createUser").addHandler(ctx -> OpenApiResponder.respond(ctx, userHandler::createUser));
+        routerBuilder.getRoute("createUser").addHandler(OpenApiResponder.respond(userHandler::createUser));
 
         return routerBuilder.createRouter();
     }

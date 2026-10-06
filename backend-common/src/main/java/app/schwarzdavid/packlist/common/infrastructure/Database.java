@@ -1,4 +1,4 @@
-package app.schwarzdavid.packlist.common;
+package app.schwarzdavid.packlist.common.infrastructure;
 
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgBuilder;

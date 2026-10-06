@@ -1,8 +1,8 @@
 package app.schwarzdavid.packlist.service.user.runtime;
 
-import app.schwarzdavid.packlist.common.Config;
-import app.schwarzdavid.packlist.common.JwtService;
 import app.schwarzdavid.packlist.common.exception.RouterExceptionHandler;
+import app.schwarzdavid.packlist.common.infrastructure.Config;
+import app.schwarzdavid.packlist.common.service.JwtService;
 import app.schwarzdavid.packlist.service.user.domain.auth.AuthModule;
 import app.schwarzdavid.packlist.service.user.domain.user.UserModule;
 import app.schwarzdavid.packlist.service.user.infrastructure.security.PasswordHashingService;

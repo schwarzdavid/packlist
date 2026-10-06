@@ -1,6 +1,6 @@
 package app.schwarzdavid.packlist.service.user.domain.auth;
 
-import app.schwarzdavid.packlist.common.JwtService;
+import app.schwarzdavid.packlist.common.service.JwtService;
 import app.schwarzdavid.packlist.service.user.domain.auth.data.AuthData;
 import app.schwarzdavid.packlist.service.user.domain.user.UserService;
 import app.schwarzdavid.packlist.service.user.domain.user.data.UserCreateData;
