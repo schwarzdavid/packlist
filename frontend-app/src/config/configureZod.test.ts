@@ -1,4 +1,4 @@
-import {beforeAll, describe, expect, it} from "vitest";
+import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 import {configureZod} from "@/config/configureZod.ts";
 import type {ComposerTranslation} from "vue-i18n";
 import {z} from "zod";
@@ -8,6 +8,11 @@ describe(configureZod, () => {
   const t: ComposerTranslation = (key: string, params?: any) => params ? `${key} ${Object.entries(params).map((entry) => entry.join(':')).join(',')}` : key
 
   beforeAll(() => configureZod(t))
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllEnvs()
+  })
 
   it('should map required field errors', () => {
     const nullResult = z.string().safeParse(null)
@@ -51,13 +56,35 @@ describe(configureZod, () => {
 
   it('should map known format errors', () => {
     const result = z.uuidv7().safeParse('test')
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => void 0)
 
     expect(result.error?.issues[0]?.message).toBe('validation.invalid')
+    expect(consoleSpy).toHaveBeenCalledExactlyOnceWith("Unmapped format error", expect.anything())
+  })
+
+  it('should not log format error on prod', () => {
+    vi.stubEnv('DEV', false)
+
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => void 0)
+    z.uuidv7().safeParse('test')
+
+    expect(consoleSpy).not.toHaveBeenCalled()
   })
 
   it('should map unknown error', () => {
-    const result = z.custom(() => false).safeParse('test')
+    const result = z.string().superRefine((_, ctx) => ctx.addIssue({code: 'custom'})).safeParse('test')
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => void 0)
 
     expect(result.error?.issues[0]?.message).toBe('validation.invalid')
+    expect(consoleSpy).toHaveBeenCalledExactlyOnceWith("Unmapped error", expect.anything())
+  })
+
+  it('should not log unknown error on prod', () => {
+    vi.stubEnv('DEV', false)
+
+    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => void 0)
+    z.string().superRefine((_, ctx) => ctx.addIssue({code: 'custom'})).safeParse('test')
+
+    expect(consoleSpy).not.toHaveBeenCalled()
   })
 })
