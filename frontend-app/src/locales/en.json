@@ -30,6 +30,6 @@
     "maxLength": "Maximum {max} characters",
     "email": "Invalid email address",
     "invalid": "Invalid input",
-    "passwordsDoNotMatch": "Passwords do not match"
+    "samePassword": "Passwords do not match"
   }
 }

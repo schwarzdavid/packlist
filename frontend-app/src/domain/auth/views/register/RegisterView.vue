@@ -48,23 +48,17 @@
   import {useI18n} from "vue-i18n";
   import {useForm} from "vee-validate";
   import {toTypedSchema} from "@vee-validate/zod";
-  import {zRegistrationDto} from "@packlist/users-api";
-  import {z} from "zod";
   import {AuthRoutes} from "@/domain/auth/router/AuthRoutes.ts";
   import {useRegistrationMutation} from "@/domain/auth/mutations/RegistrationMutation.ts";
   import {computed, ref} from "vue";
-
-  const zRegistrationForm = zRegistrationDto.extend({
-    passwordRepeat: z.string()
-  }).refine(values => values.password === values.passwordRepeat, {
-    path: ['passwordRepeat'],
-    error: () => t('validation.passwordsDoNotMatch')
-  })
+  import {
+    createRegistrationFormValidation
+  } from "@/domain/auth/views/register/utils/createRegistrationFormValidation.ts";
 
   const {t} = useI18n()
   const {mutateAsync: registerUser} = useRegistrationMutation()
   const {defineField, handleSubmit, errors, isSubmitting} = useForm({
-    validationSchema: toTypedSchema(zRegistrationForm)
+    validationSchema: toTypedSchema(createRegistrationFormValidation(t))
   })
 
   const showPassword = ref(false)
