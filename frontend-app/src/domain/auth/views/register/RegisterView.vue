@@ -9,7 +9,7 @@
       </div>
     </VExpandTransition>
 
-    <form class="d-flex flex-column gr-2" data-testid="form" @submit.prevent="onSubmit">
+    <form class="d-flex flex-column gr-2" @submit.prevent="onSubmit">
       <VDefaultsProvider :defaults="{global: {disabled: isSubmitting}}">
         <VTextField v-model="username" :error-messages="errors.username"
                     :label="t('field.username')"

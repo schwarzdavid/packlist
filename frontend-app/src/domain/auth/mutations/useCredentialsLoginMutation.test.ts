@@ -8,7 +8,7 @@ import {it} from "@test/fixtures/colada.ts";
 describe(useCredentialsLoginMutation, () => {
   afterEach(() => {
     localStorage.clear()
-    vi.clearAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('should set all caches on successful login', async ({app, pinia}) => {

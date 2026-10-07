@@ -17,7 +17,7 @@ describe(configureZod, () => {
   it('should map required field errors', () => {
     const nullResult = z.string().safeParse(null)
     const undefinedResult = z.string().safeParse(undefined)
-    const emptyResult = z.string().safeParse(undefined)
+    const emptyResult = z.string().safeParse('')
 
     expect(nullResult.error?.issues[0]?.message).toBe('validation.required')
     expect(undefinedResult.error?.issues[0]?.message).toBe('validation.required')
@@ -55,8 +55,8 @@ describe(configureZod, () => {
   })
 
   it('should map known format errors', () => {
-    const result = z.uuidv7().safeParse('test')
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => void 0)
+    const result = z.uuidv7().safeParse('test')
 
     expect(result.error?.issues[0]?.message).toBe('validation.invalid')
     expect(consoleSpy).toHaveBeenCalledExactlyOnceWith("Unmapped format error", expect.anything())

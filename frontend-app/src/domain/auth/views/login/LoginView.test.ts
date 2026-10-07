@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import {createI18n} from "vue-i18n";
 import {createVuetify} from "vuetify/framework";
 import {configureZod} from "@/config/configureZod.ts";
@@ -24,6 +24,10 @@ vi.mock('vue-router', () => ({
 }))
 
 describe('LoginView', () => {
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('should login user with correct credentials', async () => {
     const wrapper = mountView()
     const {promise, resolve} = Promise.withResolvers()
@@ -39,7 +43,7 @@ describe('LoginView', () => {
       fireEvent.update(passwordInput, "password")
     ])
 
-    await fireEvent.submit(wrapper.getByTestId("form"))
+    await fireEvent.click(submitButton)
 
     expect(identifierInput).toBeDisabled()
     expect(passwordInput).toBeDisabled()
@@ -65,14 +69,15 @@ describe('LoginView', () => {
 
     const identifierInput = wrapper.getByTestId("identifier").querySelector('input')!
     const passwordInput = wrapper.getByTestId("password").querySelector('input')!
+    const submitButton = wrapper.getByTestId("submit")
 
-    await fireEvent.submit(wrapper.getByTestId("form"))
+    await fireEvent.click(submitButton)
 
     await waitFor(() => expect(identifierInput).toHaveAccessibleDescription("validation.required"))
     expect(passwordInput).toHaveAccessibleDescription("validation.required")
     expect(mutationMock.mutateAsync).not.toHaveBeenCalled()
     expect(routerMock.push).not.toHaveBeenCalled()
-    expect(wrapper.getByTestId("error-banner")).toBeNull()
+    expect(wrapper.queryByTestId("error-banner")).toBeNull()
   })
 
   it('should show error banner on unknown error', async () => {
@@ -88,7 +93,7 @@ describe('LoginView', () => {
       fireEvent.update(passwordInput, "password"),
     ])
 
-    await fireEvent.submit(wrapper.getByTestId("form"))
+    await fireEvent.click(wrapper.getByTestId("submit"))
 
     await waitFor(() => expect(wrapper.getByTestId("error-banner")).toBeInTheDocument())
     expect(wrapper.getByTestId("error-banner").textContent).not.toEqual("")

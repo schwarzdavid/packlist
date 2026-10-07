@@ -5,7 +5,7 @@ import {useQueryCache} from "@pinia/colada";
 
 describe(useAuthStore, () => {
   afterEach(() => {
-    vi.clearAllMocks()
+    vi.restoreAllMocks()
     localStorage.clear()
   })
 

@@ -8,7 +8,7 @@ import {ACCESS_TOKEN_KEY} from "@/domain/auth/stores/AuthStore.ts";
 describe(useRegistrationMutation, () => {
   afterEach(() => {
     localStorage.clear()
-    vi.clearAllMocks()
+    vi.restoreAllMocks()
   })
 
   it('should register user', async ({app, pinia}) => {

@@ -16,6 +16,17 @@ describe(createRegistrationFormValidation, () => {
     validation = createRegistrationFormValidation(t)
   })
 
+  it('should pass valid data', () => {
+    const result = validation.safeParse({
+      username: 'foo',
+      email: 'foo@bar.com',
+      password: '12345678',
+      passwordRepeat: '12345678'
+    })
+
+    expect(result.success).toBe(true)
+  })
+
   it('should require passwordRepeat', () => {
     const result = validation.safeParse({
       username: 'foo',

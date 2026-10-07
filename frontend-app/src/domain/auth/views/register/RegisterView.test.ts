@@ -49,13 +49,13 @@ describe("RegisterView", () => {
     ])
 
 
-    await fireEvent.submit(wrapper.getByTestId('form'))
+    await fireEvent.click(wrapper.getByTestId('form'))
 
+    await waitFor(() => expect(submitButton.getAttribute("aria-busy")).toBe("true"))
     expect(usernameInput.disabled).toBe(true)
     expect(emailInput.disabled).toBe(true)
     expect(passwordInput.disabled).toBe(true)
     expect(passwordRepeatInput.disabled).toBe(true)
-    expect(submitButton.getAttribute("aria-busy")).toBe("true")
 
     await waitFor(() => expect(mutationMock.mutateAsync).toHaveBeenCalledExactlyOnceWith({
       username: "username",
@@ -85,7 +85,7 @@ describe("RegisterView", () => {
     const passwordInput = wrapper.getByTestId('password').querySelector("input")!
     const passwordRepeatInput = wrapper.getByTestId("password-repeat").querySelector("input")!
 
-    await fireEvent.submit(wrapper.getByTestId("form"))
+    await fireEvent.click(wrapper.getByTestId("submit"))
 
     await waitFor(() => expect(usernameInput).toHaveAccessibleDescription("validation.required"))
     expect(emailInput).toHaveAccessibleDescription("validation.required")
@@ -112,7 +112,7 @@ describe("RegisterView", () => {
       fireEvent.update(passwordRepeatInput, "password")
     ])
 
-    await fireEvent.submit(wrapper.getByTestId('form'))
+    await fireEvent.click(wrapper.getByTestId('submit'))
 
     await waitFor(() => expect(wrapper.getByTestId("error-banner")).toBeInTheDocument())
   })
