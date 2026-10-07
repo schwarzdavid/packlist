@@ -55,8 +55,7 @@ describe("RegisterView", () => {
     expect(emailInput.disabled).toBe(true)
     expect(passwordInput.disabled).toBe(true)
     expect(passwordRepeatInput.disabled).toBe(true)
-
-    await waitFor(() => expect(submitButton.getAttribute("aria-busy")).toBe("true"))
+    expect(submitButton.getAttribute("aria-busy")).toBe("true")
 
     await waitFor(() => expect(mutationMock.mutateAsync).toHaveBeenCalledExactlyOnceWith({
       username: "username",

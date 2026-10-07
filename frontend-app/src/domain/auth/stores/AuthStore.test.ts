@@ -1,10 +1,11 @@
-import {afterEach, describe, expect} from "vitest";
+import {afterEach, describe, expect, vi} from "vitest";
 import {ACCESS_TOKEN_KEY, useAuthStore} from "@/domain/auth/stores/AuthStore.ts";
 import {it} from '@test/fixtures/colada.ts'
 import {useQueryCache} from "@pinia/colada";
 
 describe(useAuthStore, () => {
   afterEach(() => {
+    vi.clearAllMocks()
     localStorage.clear()
   })
 
@@ -35,6 +36,19 @@ describe(useAuthStore, () => {
     }))
 
     expect(authStore.token).toEqual("token")
+  })
+
+  it('should return user and token as readonly', ({app}) => {
+    const authStore = app.runWithContext(() => useAuthStore())
+    const consoleSpy = vi.spyOn(console, 'warn')
+
+    authStore.token = "token"
+    // @ts-expect-error it is declared as readonly but needs to be verified on runtime
+    authStore.user = {userId: 1, username: 'foo', email: 'foo@bar.com'}
+
+    expect(authStore.token).toBeNull()
+    expect(authStore.user).toBeUndefined()
+    expect(consoleSpy).toHaveBeenCalledTimes(2)
   })
 
   describe('setAuth', () => {
