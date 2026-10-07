@@ -1,28 +1,17 @@
-import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, describe, expect, vi} from "vitest";
 import {useCredentialsLoginMutation} from "@/domain/auth/mutations/useCredentialsLoginMutation.ts";
-import {type App, createApp} from "vue";
-import {createPinia, disposePinia, type Pinia} from "pinia";
-import {PiniaColada, useQueryCache} from "@pinia/colada";
+import {useQueryCache} from "@pinia/colada";
 import {AuthApi} from "@packlist/users-api";
 import {ACCESS_TOKEN_KEY} from "@/domain/auth/stores/AuthStore.ts";
+import {it} from "@test/fixtures/colada.ts";
 
 describe(useCredentialsLoginMutation, () => {
-  let app: App
-  let pinia: Pinia
-
-  beforeEach(() => {
-    app = createApp({})
-    pinia = createPinia()
-
-    app.use(pinia)
-    app.use(PiniaColada, {pinia})
-  })
-
   afterEach(() => {
-    disposePinia(pinia)
+    localStorage.clear()
+    vi.clearAllMocks()
   })
 
-  it('should set all caches on successful login', async () => {
+  it('should set all caches on successful login', async ({app, pinia}) => {
     vi.spyOn(AuthApi.prototype, 'login').mockResolvedValue({
       userId: 1,
       token: 'token',
@@ -58,7 +47,7 @@ describe(useCredentialsLoginMutation, () => {
     expect(localStorage.getItem(ACCESS_TOKEN_KEY)).toEqual("token")
   })
 
-  it('should not set caches on failed login', async () => {
+  it('should not set caches on failed login', async ({app, pinia}) => {
     vi.spyOn(AuthApi.prototype, 'login').mockRejectedValue(new Error('Invalid credentials'))
 
     const mutation = app.runWithContext(() => useCredentialsLoginMutation())

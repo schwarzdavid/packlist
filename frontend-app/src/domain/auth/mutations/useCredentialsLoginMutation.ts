@@ -1,10 +1,10 @@
 import {AuthApi, type AuthDto, type CredentialsDto} from "@packlist/users-api";
-import {useMutation, type UseMutationReturn, useQueryCache} from "@pinia/colada";
-import {ACCESS_TOKEN_KEY} from "@/domain/auth/stores/AuthStore.ts";
+import {useMutation, type UseMutationReturn} from "@pinia/colada";
+import {useAuthStore} from "@/domain/auth/stores/AuthStore.ts";
 
 export function useCredentialsLoginMutation(): UseMutationReturn<AuthDto, CredentialsDto, Error> {
   const authApi = new AuthApi()
-  const cache = useQueryCache()
+  const authStore = useAuthStore()
 
   return useMutation({
     mutation(credentials: CredentialsDto) {
@@ -13,8 +13,7 @@ export function useCredentialsLoginMutation(): UseMutationReturn<AuthDto, Creden
       })
     },
     onSuccess(authDto) {
-      cache.setQueryData(['auth', 'me'], authDto.user)
-      localStorage.setItem(ACCESS_TOKEN_KEY, authDto.token)
+      authStore.setAuth(authDto)
     }
   })
 }

@@ -1,0 +1,98 @@
+import {afterEach, describe, expect, it, vi} from "vitest";
+import RegisterView from "@/domain/auth/views/register/RegisterView.vue";
+import {RouterLinkStub} from "@vue/test-utils";
+import {createI18n} from "vue-i18n";
+import {configureZod} from "@/config/configureZod.ts";
+import {createVuetify} from "vuetify/framework";
+import {fireEvent, render, waitFor} from "@testing-library/vue";
+import type {AuthDto} from "@packlist/users-api";
+import {ListRoutes} from "@/domain/lists/router/ListRoutes.ts";
+
+const mutationMock = vi.hoisted(() => ({
+  mutateAsync: vi.fn()
+}))
+
+const routerMock = vi.hoisted(() => ({
+  push: vi.fn()
+}))
+
+vi.mock('@/domain/auth/mutations/useRegistrationMutation.ts', () => ({
+  useRegistrationMutation: () => mutationMock
+}))
+
+vi.mock('vue-router', () => ({
+  useRouter: () => routerMock
+}))
+
+vi.stubGlobal('ResizeObserver', class {
+  disconnect = vi.fn()
+  observe = vi.fn()
+})
+
+describe("RegisterView", () => {
+  afterEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should register when form is submitted', async () => {
+    const wrapper = mountView()
+    const {promise, resolve} = Promise.withResolvers<AuthDto>()
+
+    mutationMock.mutateAsync.mockReturnValue(promise)
+
+    const usernameInput = wrapper.getByTestId('username').querySelector("input")!
+    const emailInput = wrapper.getByTestId('email').querySelector("input")!
+    const passwordInput = wrapper.getByTestId('password').querySelector("input")!
+    const passwordRepeatInput = wrapper.getByTestId("password-repeat").querySelector("input")!
+    const submitButton = wrapper.getByTestId("submit")
+
+    await Promise.all([
+      fireEvent.update(usernameInput, "username"),
+      fireEvent.update(emailInput, "foo@bar.com"),
+      fireEvent.update(passwordInput, "password"),
+      fireEvent.update(passwordRepeatInput, "password")
+    ])
+
+
+    await fireEvent.submit(wrapper.getByTestId('form'))
+
+    expect(usernameInput.disabled).toBe(true)
+    expect(emailInput.disabled).toBe(true)
+    expect(passwordInput.disabled).toBe(true)
+    expect(passwordRepeatInput.disabled).toBe(true)
+
+    await waitFor(() => expect(submitButton.getAttribute("aria-busy")).toBe("true"))
+
+    await waitFor(() => expect(mutationMock.mutateAsync).toHaveBeenCalledExactlyOnceWith({
+      username: "username",
+      email: "foo@bar.com",
+      password: "password",
+      passwordRepeat: "password"
+    }))
+
+    resolve({} as unknown as AuthDto)
+
+    await waitFor(() => expect(submitButton.getAttribute("aria-busy")).toBe(null))
+
+    expect(usernameInput.disabled).toBe(false)
+    expect(emailInput.disabled).toBe(false)
+    expect(passwordInput.disabled).toBe(false)
+    expect(passwordRepeatInput.disabled).toBe(false)
+
+    await waitFor(() => expect(routerMock.push).toHaveBeenCalledExactlyOnceWith({name: ListRoutes.LIST}))
+  })
+})
+
+function mountView() {
+  const i18n = createI18n({legacy: false, locale: 'en', missingWarn: false, fallbackWarn: false})
+  const vuetify = createVuetify()
+
+  configureZod(i18n.global.t)
+
+  return render(RegisterView, {
+    global: {
+      plugins: [i18n, vuetify],
+      stubs: {RouterLink: RouterLinkStub}
+    }
+  })
+}
