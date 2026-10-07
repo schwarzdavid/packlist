@@ -9,11 +9,13 @@ export default mergeConfig(
       environment: 'jsdom',
       exclude: [...configDefaults.exclude, 'e2e/**'],
       root: fileURLToPath(new URL('./', import.meta.url)),
+      globals: true,
       server: {
         deps: {
           inline: ['vuetify']
         }
-      }
+      },
+      setupFiles: ['./tests/vitest-setup.ts']
     },
     resolve: {
       alias: {

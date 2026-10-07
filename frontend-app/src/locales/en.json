@@ -31,5 +31,8 @@
     "email": "Invalid email address",
     "invalid": "Invalid input",
     "samePassword": "Passwords do not match"
+  },
+  "error": {
+    "general": "Something went wrong. Please try again later."
   }
 }

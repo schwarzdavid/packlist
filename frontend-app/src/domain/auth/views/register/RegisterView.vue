@@ -3,6 +3,12 @@
     <h1>{{ t('auth.register.title') }}</h1>
     <p class="text-medium-emphasis mb-6">{{ t('auth.register.description') }}</p>
 
+    <VExpandTransition>
+      <div v-if="isGeneralError" data-testid="error-banner">
+        <VAlert :text="t('error.general')" class="mb-6" type="error"/>
+      </div>
+    </VExpandTransition>
+
     <form class="d-flex flex-column gr-2" data-testid="form" @submit.prevent="onSubmit">
       <VDefaultsProvider :defaults="{global: {disabled: isSubmitting}}">
         <VTextField v-model="username" :error-messages="errors.username"
@@ -66,6 +72,7 @@
   })
   const router = useRouter()
 
+  const isGeneralError = ref(false)
   const showPassword = ref(false)
   const passwordType = computed(() => showPassword.value ? 'text' : 'password')
   const passwordIcon = computed(() => showPassword.value ? 'mdi-eye-outline' : 'mdi-eye-off-outline')
@@ -76,7 +83,13 @@
   const [passwordRepeat] = defineField('passwordRepeat')
 
   const onSubmit = handleSubmit(async values => {
-    await registerUser(values)
-    void router.push({name: ListRoutes.LIST})
+    try {
+      await registerUser(values)
+      void router.push({name: ListRoutes.LIST})
+    } catch (err) {
+      // TODO: Handle 409 differently
+      console.error(err)
+      isGeneralError.value = true
+    }
   })
 </script>
