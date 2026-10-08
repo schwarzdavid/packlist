@@ -47,11 +47,10 @@ public class HttpVerticle extends VerticleBase {
                     var userModule = UserModule.create(vertx, pool, contract, jwtService, passwordHashingService);
                     var authModule = AuthModule.create(vertx, userModule, jwtService, passwordHashingService, schemaRepository);
 
-                    router.route()
-                            .handler(BodyHandler.create())
-                            .subRouter(authModule.router())
-                            .subRouter(userModule.router())
-                            .failureHandler(RouterExceptionHandler::handleFailure);
+                    router.route().handler(BodyHandler.create());
+                    router.route().subRouter(authModule.router());
+                    router.route().subRouter(userModule.router());
+                    router.route().failureHandler(RouterExceptionHandler::handleFailure);
 
                     return vertx.createHttpServer()
                             .requestHandler(router)
