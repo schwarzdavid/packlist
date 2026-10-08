@@ -49,7 +49,7 @@ describe("RegisterView", () => {
     ])
 
 
-    await fireEvent.click(wrapper.getByTestId('form'))
+    await fireEvent.click(submitButton)
 
     await waitFor(() => expect(submitButton.getAttribute("aria-busy")).toBe("true"))
     expect(usernameInput.disabled).toBe(true)

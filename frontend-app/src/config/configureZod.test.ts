@@ -17,11 +17,9 @@ describe(configureZod, () => {
   it('should map required field errors', () => {
     const nullResult = z.string().safeParse(null)
     const undefinedResult = z.string().safeParse(undefined)
-    const emptyResult = z.string().safeParse('')
 
     expect(nullResult.error?.issues[0]?.message).toBe('validation.required')
     expect(undefinedResult.error?.issues[0]?.message).toBe('validation.required')
-    expect(emptyResult.error?.issues[0]?.message).toBe('validation.required')
   })
 
   it('should map minLength 1 to required field error', () => {

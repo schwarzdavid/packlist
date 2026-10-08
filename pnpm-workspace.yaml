@@ -1,9 +1,13 @@
 packages:
   - frontend-app
   - user-client-ts
+  - e2e
 allowBuilds:
   '@parcel/watcher': set this to true or false
+  cpu-features: set this to true or false
   esbuild: true
+  protobufjs: set this to true or false
+  ssh2: set this to true or false
 includeWorkspaceRoot: true
 tasks:
   dev:
