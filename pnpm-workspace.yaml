@@ -4,10 +4,10 @@ packages:
   - e2e
 allowBuilds:
   '@parcel/watcher': true
-  cpu-features: true
+  cpu-features: false
   esbuild: true
-  protobufjs: true
-  ssh2: true
+  protobufjs: false
+  ssh2: false
 includeWorkspaceRoot: true
 tasks:
   dev:
