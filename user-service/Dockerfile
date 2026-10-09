@@ -22,7 +22,9 @@ WORKDIR /app
 
 ENV HTTP_PORT=8881
 
-COPY --from=builder /build/user-service/target/user-service-1.0-SNAPSHOT-fat.jar app.jar
+COPY --from=builder /build/user-service/target/lib lib/
+COPY --from=builder /build/user-service/target/lib-internal lib/
+COPY --from=builder /build/user-service/target/user-service-1.0-SNAPSHOT.jar app.jar
 
 EXPOSE 8881
 ENTRYPOINT ["java", "-jar", "app.jar"]

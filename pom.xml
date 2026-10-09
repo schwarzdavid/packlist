@@ -108,11 +108,10 @@
     <build>
         <pluginManagement>
             <plugins>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.6.2</version>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.11.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -1,0 +1,41 @@
+name: packlist-e2e
+
+services:
+  postgres-user:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: users_db
+      POSTGRES_USER: users
+      POSTGRES_PASSWORD: users_pw
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U users -d users_db" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  user-service:
+    build:
+      context: ./
+      dockerfile: user-service/Dockerfile
+    environment:
+      USER_POSTGRES_DB: users_db
+      USER_POSTGRES_USER: users
+      USER_POSTGRES_PASSWORD: users_pw
+      USER_POSTGRES_HOST: postgres-user
+      USER_POSTGRES_PORT: 5432
+      JWT_SECRET: secret
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+    expose:
+      - 8881
+  frontend:
+    container_name: frontend
+    build:
+      context: ./
+      dockerfile: frontend-app/Dockerfile
+    depends_on:
+      - user-service
+    ports:
+      - 80

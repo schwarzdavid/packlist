@@ -1,0 +1,16 @@
+:80, :443 {
+    @user-service {
+        path /api/users /api/users/* /api/auth/*
+    }
+
+    handle @user-service {
+        reverse_proxy user-service:8881
+    }
+
+    handle {
+        root /srv/frontend
+        encode
+        try_files {path} /index.html
+        file_server
+    }
+}
