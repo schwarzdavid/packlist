@@ -15,8 +15,8 @@ COPY user-api/ ./user-api/
 COPY user-client-ts/ ./user-client-ts/
 COPY frontend-app/ ./frontend-app/
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --offline --filter frontend-app
-RUN pnpm build --filter frontend-app...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --offline --filter "frontend-app..."
+RUN pnpm --filter "frontend-app..." build
 
 FROM caddy:2-alpine
 

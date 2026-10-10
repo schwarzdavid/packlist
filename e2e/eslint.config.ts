@@ -10,7 +10,12 @@ export default defineConfig(
             jseslint.configs.recommended,
             tseslint.configs.recommendedTypeChecked,
             tseslint.configs.stylisticTypeChecked,
-        ]
+        ],
+        languageOptions: {
+            parserOptions: {
+                projectService: true
+            }
+        }
     },
     {
         ...pluginPlaywright.configs["flat/recommended"],

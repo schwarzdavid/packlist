@@ -8,7 +8,7 @@ export default async () => {
         .withWaitStrategy('user-service-1', Wait.forListeningPorts())
         .up()
 
-    process.env.FRONTEND_PORT = compose.getContainer('frontend').getMappedPort(80).toString()
+    process.env.FRONTEND_PORT = compose.getContainer('frontend-1').getMappedPort(80).toString()
 
     return () => compose.down()
 }
