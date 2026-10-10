@@ -18,10 +18,15 @@ export class RegisterPage {
         return this.page.getByTestId("password").getByRole("textbox")
     }
 
-    async register(username: string, email: string, password: string) {
+    get passwordRepeatInput(): Locator {
+        return this.page.getByTestId("password-repeat").getByRole("textbox")
+    }
+
+    async register(username: string, email: string, password: string, passwordRepeat?: string) {
         await this.usernameInput.fill(username)
         await this.emailInput.fill(email)
         await this.passwordInput.fill(password)
+        await this.passwordRepeatInput.fill(passwordRepeat ?? password)
         await this.passwordInput.press("Enter")
     }
 }
