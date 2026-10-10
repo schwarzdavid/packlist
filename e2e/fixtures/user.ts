@@ -1,24 +1,37 @@
 import {test as baseTest} from "@fixtures/baseUrl.ts";
-import {type UserDto} from "@packlist/users-api";
+import {AuthDto, type UserDto} from "@packlist/users-api";
+import {faker} from "@faker-js/faker";
 
-export type CreateUserFn = (username: string, email: string, password: string) => Promise<UserDto>
+export type CreateUserFn = (password: string) => Promise<UserDto>
 
-export interface CreateUserFixture {
-    user: CreateUserFn
+export interface UserUtils {
+    create: CreateUserFn
 }
 
-export const test = baseTest.extend<CreateUserFixture>({
+export interface UserFixture {
+    user: UserUtils
+}
+
+export const test = baseTest.extend<UserFixture>({
     user: async ({request}, use) => {
-        function createUser(username: string, email: string, password: string) {
-            return request.post<UserDto>("/api/auth/register", {
+        function createUser(password: string) {
+            return request.post<AuthDto>("/api/auth/register", {
                 data: {
-                    username,
-                    email,
+                    username: faker.internet.username(),
+                    email: faker.internet.email(),
                     password
                 }
-            }).then(response => response.json())
+            }).then(async response => {
+                if (response.ok()) {
+                    return response.json().then(auth => auth.user)
+                }
+                const body = await response.body().then(value => value.toString())
+                throw new Error(body)
+            })
         }
 
-        await use(createUser)
+        await use({
+            create: createUser
+        })
     }
 })
