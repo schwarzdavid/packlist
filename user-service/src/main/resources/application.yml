@@ -1,0 +1,4 @@
+user-service:
+  auth:
+    password:
+      strength: 10

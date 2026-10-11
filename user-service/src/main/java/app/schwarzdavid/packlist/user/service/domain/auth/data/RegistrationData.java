@@ -1,4 +1,4 @@
-package app.schwarzdavid.packlist.user.service.user.domain.auth.data;
+package app.schwarzdavid.packlist.user.service.domain.auth.data;
 
 public record RegistrationData(
         String username,

@@ -1,9 +1,9 @@
-package app.schwarzdavid.packlist.user.service.user.domain.auth.mapper;
+package app.schwarzdavid.packlist.user.service.domain.auth.mapper;
 
 import app.schwarzdavid.packlist.user.api.model.AuthDto;
 import app.schwarzdavid.packlist.user.api.model.RegistrationDto;
-import app.schwarzdavid.packlist.user.service.user.domain.auth.data.AuthData;
-import app.schwarzdavid.packlist.user.service.user.domain.auth.data.RegistrationData;
+import app.schwarzdavid.packlist.user.service.domain.auth.data.AuthData;
+import app.schwarzdavid.packlist.user.service.domain.auth.data.RegistrationData;
 import org.mapstruct.Mapper;
 
 @Mapper

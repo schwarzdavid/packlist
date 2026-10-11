@@ -1,10 +1,10 @@
-package app.schwarzdavid.packlist.user.service.user.domain.auth;
+package app.schwarzdavid.packlist.user.service.domain.auth;
 
 import app.schwarzdavid.packlist.user.api.AuthApi;
 import app.schwarzdavid.packlist.user.api.model.AuthDto;
 import app.schwarzdavid.packlist.user.api.model.CredentialsDto;
 import app.schwarzdavid.packlist.user.api.model.RegistrationDto;
-import app.schwarzdavid.packlist.user.service.user.domain.auth.mapper.AuthMapper;
+import app.schwarzdavid.packlist.user.service.domain.auth.mapper.AuthMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
