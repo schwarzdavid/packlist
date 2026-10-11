@@ -81,16 +81,6 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jspecify</groupId>
-            <artifactId>jspecify</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>app.schwarzdavid.packlist</groupId>
-            <artifactId>backend-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>app.schwarzdavid.packlist</groupId>
             <artifactId>user-api</artifactId>
             <version>${project.version}</version>

@@ -16,4 +16,3 @@ target/generated-sources/openapi/README.md
 target/generated-sources/openapi/settings.gradle
 target/generated-sources/openapi/src/main/AndroidManifest.xml
 target/generated-sources/openapi/src/test/
-target/generated-sources/openapi/src/gen/java/main/**/rxjava/
