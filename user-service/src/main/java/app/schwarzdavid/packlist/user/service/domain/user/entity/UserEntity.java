@@ -4,26 +4,21 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(name = "uq_users_username", columnNames = "username"), @UniqueConstraint(name = "uq_users_email", columnNames = "email")})
+@Table(name = "users")
 @Builder
+@Getter
+@Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false)
     private Long userId;
 
-    @Getter
-    @Setter
     private String username;
 
-    @Getter
-    @Setter
     private String email;
 
-    @Getter
-    @Setter
     private String password;
 }
