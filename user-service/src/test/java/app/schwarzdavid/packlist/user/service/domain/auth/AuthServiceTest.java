@@ -56,6 +56,7 @@ public class AuthServiceTest {
         @Test
         void shouldAbortRegistrationIfUserAlreadyExists() {
             when(passwordEncoder.encode(anyString())).thenReturn(UserFixtures.HASHED_PASSWORD);
+            // TODO: Should throw UserAlreadyExistsException
             when(userService.createUser(any(UserCreateData.class))).thenThrow(new RuntimeException());
 
             assertThrows(RuntimeException.class, () -> authService.registerUser(AuthFixtures.registrationData()));
