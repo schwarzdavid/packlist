@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Builder
 @AllArgsConstructor
-public class UserPrincipal implements UserDetails {
+public class UserPrincipal implements UserDetails, CredentialsContainer {
     @Getter
     @NonNull
     private final Long userId;
@@ -26,7 +27,9 @@ public class UserPrincipal implements UserDetails {
     @Getter
     @NonNull
     private final String email;
-    private final String passwordHash;
+
+    @Nullable
+    private String passwordHash;
 
     @Override
     public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
@@ -40,5 +43,10 @@ public class UserPrincipal implements UserDetails {
 
     public UserData getUserData() {
         return new UserData(userId, username, email);
+    }
+
+    @Override
+    public void eraseCredentials() {
+        passwordHash = null;
     }
 }

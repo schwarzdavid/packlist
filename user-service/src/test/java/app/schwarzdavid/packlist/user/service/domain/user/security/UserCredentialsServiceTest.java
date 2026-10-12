@@ -27,7 +27,7 @@ public class UserCredentialsServiceTest {
     @Test
     void shouldCreateUserPrincipalByUsername() {
         var entity = UserEntity.builder()
-                .userId(1L)
+                .userId(UserFixtures.USER_ID)
                 .username(UserFixtures.USERNAME)
                 .email(UserFixtures.EMAIL)
                 .password(UserFixtures.HASHED_PASSWORD)
@@ -50,7 +50,7 @@ public class UserCredentialsServiceTest {
     @Test
     void shouldCreateUserPrincipalByEmail() {
         var entity = UserEntity.builder()
-                .userId(1L)
+                .userId(UserFixtures.USER_ID)
                 .username(UserFixtures.USERNAME)
                 .email(UserFixtures.EMAIL)
                 .password(UserFixtures.HASHED_PASSWORD)
