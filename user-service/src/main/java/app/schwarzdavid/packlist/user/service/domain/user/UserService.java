@@ -22,6 +22,6 @@ public class UserService {
 
     public UserDataWithPassword getUserByIdentifier(String identifier) {
         return userRepository.findByUsernameOrEmail(identifier, identifier).map(userMapper::toUserDataWithPassword)
-                .orElseThrow(() -> new UserNotFoundException(identifier));
+                .orElseThrow(UserNotFoundException::new);
     }
 }
