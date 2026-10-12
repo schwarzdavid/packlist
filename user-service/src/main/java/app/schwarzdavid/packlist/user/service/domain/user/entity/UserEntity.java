@@ -10,8 +10,9 @@ import lombok.*;
 @AllArgsConstructor
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
+    @Column(name = "user_id")
     private Long userId;
 
     @Getter

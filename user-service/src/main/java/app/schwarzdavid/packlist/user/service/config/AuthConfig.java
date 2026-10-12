@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PasswordConfig {
+public class AuthConfig {
     @Value("${user-service.auth.password.strength}")
     private Integer passwordStrength;
 

@@ -17,14 +17,18 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseEntity<AuthDto> login(CredentialsDto credentialsDto) {
-        return null;
+        var credentialsData = authMapper.toData(credentialsDto);
+        var authData = authService.loginUser(credentialsData);
+        var authDto = authMapper.toDto(authData);
+
+        return ResponseEntity.ok(authDto);
     }
 
     @Override
     public ResponseEntity<AuthDto> register(RegistrationDto registrationDto) {
-        var registrationData = authMapper.toRegistrationData(registrationDto);
+        var registrationData = authMapper.toData(registrationDto);
         var authData = authService.registerUser(registrationData);
-        var authDto = authMapper.toRegistrationDto(authData);
+        var authDto = authMapper.toDto(authData);
 
         return ResponseEntity.ok(authDto);
     }
