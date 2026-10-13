@@ -5,10 +5,14 @@ export default defineConfig({
     output: 'src/api',
     parser: {
         transforms: {
-            readWrite: false
+            readWrite: false,
         }
     },
     plugins: [
+        {
+            name: '@hey-api/transformers',
+            bigInt: false
+        },
         {
             name: '@hey-api/sdk',
             operations: {

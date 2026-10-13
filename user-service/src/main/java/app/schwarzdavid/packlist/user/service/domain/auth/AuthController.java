@@ -6,6 +6,7 @@ import app.schwarzdavid.packlist.user.api.model.CredentialsDto;
 import app.schwarzdavid.packlist.user.api.model.RegistrationDto;
 import app.schwarzdavid.packlist.user.service.domain.auth.mapper.AuthMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,6 @@ public class AuthController implements AuthApi {
         var authData = authService.registerUser(registrationData);
         var authDto = authMapper.toDto(authData);
 
-        return ResponseEntity.ok(authDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authDto);
     }
 }

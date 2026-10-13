@@ -33,7 +33,7 @@ public class UserCredentialsServiceTest {
                 .password(UserFixtures.HASHED_PASSWORD)
                 .build();
 
-        when(userRepository.findByUsernameOrEmailIgnoreCase(UserFixtures.USERNAME, UserFixtures.USERNAME)).thenReturn(Optional.of(entity));
+        when(userRepository.findByIdentifier(UserFixtures.USERNAME)).thenReturn(Optional.of(entity));
 
         var principal = userCredentialsService.loadUserByUsername(UserFixtures.USERNAME);
 
@@ -56,7 +56,7 @@ public class UserCredentialsServiceTest {
                 .password(UserFixtures.HASHED_PASSWORD)
                 .build();
 
-        when(userRepository.findByUsernameOrEmailIgnoreCase(UserFixtures.EMAIL, UserFixtures.EMAIL)).thenReturn(Optional.of(entity));
+        when(userRepository.findByIdentifier(UserFixtures.EMAIL)).thenReturn(Optional.of(entity));
 
         var principal = userCredentialsService.loadUserByUsername(UserFixtures.EMAIL);
 
@@ -72,7 +72,7 @@ public class UserCredentialsServiceTest {
 
     @Test
     void shouldThrowWhenUserDoesNotExist() {
-        when(userRepository.findByUsernameOrEmailIgnoreCase(anyString(), anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByIdentifier(anyString())).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> userCredentialsService.loadUserByUsername(UserFixtures.EMAIL));
     }

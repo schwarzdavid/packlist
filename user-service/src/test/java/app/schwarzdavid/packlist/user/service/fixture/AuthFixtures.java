@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.user.service.fixture;
 
+import app.schwarzdavid.packlist.user.api.model.RegistrationDto;
 import app.schwarzdavid.packlist.user.service.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.user.service.domain.auth.data.RegistrationData;
 import app.schwarzdavid.packlist.user.service.domain.user.security.UserPrincipal;
@@ -27,5 +28,9 @@ public class AuthFixtures {
 
     public static Authentication authentication() {
         return UsernamePasswordAuthenticationToken.authenticated(userPrincipal(), null, List.of());
+    }
+
+    public static RegistrationDto registrationDto() {
+        return new RegistrationDto(UserFixtures.USERNAME, UserFixtures.EMAIL, PLAIN_PASSWORD);
     }
 }

@@ -15,7 +15,7 @@ public class UserCredentialsService implements UserDetailsService {
 
     @Override
     public @NonNull UserDetails loadUserByUsername(@NonNull String identifier) throws UsernameNotFoundException {
-        var user = userRepository.findByUsernameOrEmailIgnoreCase(identifier, identifier)
+        var user = userRepository.findByIdentifier(identifier)
                 .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 
         return UserPrincipal.builder()

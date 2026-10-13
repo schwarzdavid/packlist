@@ -17,5 +17,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+logging:
+  level:
+    org.springframework.boot.test.context.cache: DEBUG
+    org.springframework.security: DEBUG
+
 server:
   port: 8881

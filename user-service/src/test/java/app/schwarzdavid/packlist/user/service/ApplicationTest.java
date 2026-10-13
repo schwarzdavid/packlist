@@ -1,12 +1,9 @@
 package app.schwarzdavid.packlist.user.service;
 
-import app.schwarzdavid.packlist.user.service.fixture.ServiceTestcontainers;
+import app.schwarzdavid.packlist.user.service.fixture.IntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 
-@ImportTestcontainers(ServiceTestcontainers.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@IntegrationTest
 public class ApplicationTest {
 
     @Test
