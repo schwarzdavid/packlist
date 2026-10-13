@@ -153,4 +153,127 @@ public class AuthControllerIT extends ApiTest {
                     .expectBody(Object.class);
         }
     }
+
+    @Nested
+    public class Login {
+        private static final String URI = "/api/auth/login";
+
+        @Test
+        void shouldLoginWithValidUsernameCredentials() {
+            var existingUser = UserEntity.builder()
+                    .username(UserFixtures.USERNAME)
+                    .email(UserFixtures.EMAIL)
+                    .password(passwordEncoder.encode(AuthFixtures.PLAIN_PASSWORD))
+                    .build();
+            userRepository.save(existingUser);
+
+            var result = client.post().uri(URI)
+                    .body(new CredentialsDto(UserFixtures.USERNAME, AuthFixtures.PLAIN_PASSWORD))
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(AuthDto.class)
+                    .returnResult()
+                    .getResponseBody();
+
+            var expectedAuth = new AuthDto(existingUser.getUserId(), "token", new UserDto(existingUser.getUserId(), UserFixtures.USERNAME, UserFixtures.EMAIL));
+
+            assertThat(result).isNotNull();
+            assertThat(result).usingRecursiveComparison().ignoringFields("token").isEqualTo(expectedAuth);
+            assertThat(result.getToken()).isNotEmpty();
+        }
+
+        @Test
+        void shouldLoginWithValidEmailCredentials() {
+            var existingUser = UserEntity.builder()
+                    .username(UserFixtures.USERNAME)
+                    .email(UserFixtures.EMAIL)
+                    .password(passwordEncoder.encode(AuthFixtures.PLAIN_PASSWORD))
+                    .build();
+            userRepository.save(existingUser);
+
+            var result = client.post().uri(URI)
+                    .body(new CredentialsDto(UserFixtures.EMAIL, AuthFixtures.PLAIN_PASSWORD))
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(AuthDto.class)
+                    .returnResult()
+                    .getResponseBody();
+
+            var expectedAuth = new AuthDto(existingUser.getUserId(), "token", new UserDto(existingUser.getUserId(), UserFixtures.USERNAME, UserFixtures.EMAIL));
+
+            assertThat(result).isNotNull();
+            assertThat(result).usingRecursiveComparison().ignoringFields("token").isEqualTo(expectedAuth);
+            assertThat(result.getToken()).isNotEmpty();
+        }
+
+        @Test
+        void shouldRejectLoginWithWrongIdentifier() {
+            var existingUser = UserEntity.builder()
+                    .username(UserFixtures.USERNAME)
+                    .email(UserFixtures.EMAIL)
+                    .password(passwordEncoder.encode(AuthFixtures.PLAIN_PASSWORD))
+                    .build();
+            userRepository.save(existingUser);
+
+            var result = client.post().uri(URI)
+                    .body(new CredentialsDto("unknown", AuthFixtures.PLAIN_PASSWORD))
+                    .exchange()
+                    .expectStatus().isUnauthorized()
+                    .expectBody(ProblemDetails.class)
+                    .returnResult()
+                    .getResponseBody();
+
+            assertThat(result).isNotNull();
+            assertThat(result.getDetail()).isEqualTo("Invalid credentials");
+        }
+
+        @Test
+        void shouldRejectLoginWithWrongPassword() {
+            var existingUser = UserEntity.builder()
+                    .username(UserFixtures.USERNAME)
+                    .email(UserFixtures.EMAIL)
+                    .password(passwordEncoder.encode(AuthFixtures.PLAIN_PASSWORD))
+                    .build();
+            userRepository.save(existingUser);
+
+            var result = client.post().uri(URI)
+                    .body(new CredentialsDto(UserFixtures.USERNAME, "wrong-password"))
+                    .exchange()
+                    .expectStatus().isUnauthorized()
+                    .expectBody(ProblemDetails.class)
+                    .returnResult()
+                    .getResponseBody();
+
+            assertThat(result).isNotNull();
+            assertThat(result.getDetail()).isEqualTo("Invalid credentials");
+        }
+
+        @Test
+        void shouldRejectLoginWithSameReasonWhenIdentifierOrPasswordIsWrong() {
+            var existingUser = UserEntity.builder()
+                    .username(UserFixtures.USERNAME)
+                    .email(UserFixtures.EMAIL)
+                    .password(passwordEncoder.encode(AuthFixtures.PLAIN_PASSWORD))
+                    .build();
+            userRepository.save(existingUser);
+
+            var wrongIdentifierResult = client.post().uri(URI)
+                    .body(new CredentialsDto("unknown", AuthFixtures.PLAIN_PASSWORD))
+                    .exchange()
+                    .expectBody(ProblemDetails.class)
+                    .returnResult()
+                    .getResponseBody();
+
+            var wrongPasswordResult = client.post().uri(URI)
+                    .body(new CredentialsDto(UserFixtures.USERNAME, "wrong-password"))
+                    .exchange()
+                    .expectBody(ProblemDetails.class)
+                    .returnResult()
+                    .getResponseBody();
+
+            assertThat(wrongIdentifierResult).isNotNull();
+            assertThat(wrongPasswordResult).isNotNull();
+            assertThat(wrongIdentifierResult).isEqualTo(wrongPasswordResult);
+        }
+    }
 }
