@@ -206,15 +206,9 @@ components:
         required:
           - path
         properties:
-          path:
+          error:
             type: string
             readOnly: true
-          errors:
-            type: array
-            readOnly: true
-            items:
-              type: string
-              readOnly: true
           params:
             type: object
             additionalProperties: true

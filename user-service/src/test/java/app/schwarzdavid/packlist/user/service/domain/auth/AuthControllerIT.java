@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -35,15 +34,15 @@ public class AuthControllerIT extends ApiTest {
 
         public static Stream<Arguments> invalidRegistrationDtos() {
             return Stream.of(
-                    Arguments.of(new RegistrationDto("username", "noemail", "12345678")),
-                    Arguments.of(new RegistrationDto("email@example.com", "email@example.com", "12345678")),
-                    Arguments.of(new RegistrationDto("username", "email@example.com", "short")),
-                    Arguments.of(new RegistrationDto(null, "email@example.com", "12345678")),
-                    Arguments.of(new RegistrationDto("username", null, "12345678")),
-                    Arguments.of(new RegistrationDto("username", "email@example.com", null)),
-                    Arguments.of(new RegistrationDto("", "email@example.com", "12345678")),
-                    Arguments.of(new RegistrationDto("username", "", "12345678")),
-                    Arguments.of(new RegistrationDto("username", "email@example.com", ""))
+                    Arguments.of(new RegistrationDto("username", "noemail", "12345678"), "email"),
+                    Arguments.of(new RegistrationDto("email@example.com", "email@example.com", "12345678"), "username"),
+                    Arguments.of(new RegistrationDto("username", "email@example.com", "short"), "password"),
+                    Arguments.of(new RegistrationDto(null, "email@example.com", "12345678"), "username"),
+                    Arguments.of(new RegistrationDto("username", null, "12345678"), "email"),
+                    Arguments.of(new RegistrationDto("username", "email@example.com", null), "password"),
+                    Arguments.of(new RegistrationDto("", "email@example.com", "12345678"), "username"),
+                    Arguments.of(new RegistrationDto("username", "", "12345678"), "email"),
+                    Arguments.of(new RegistrationDto("username", "email@example.com", ""), "password")
             );
         }
 
@@ -53,6 +52,20 @@ public class AuthControllerIT extends ApiTest {
                     Arguments.of(new RegistrationDto("USERNAME", "email@example.com", "12345678")),
                     Arguments.of(new RegistrationDto("username", "EMAIL@EXAMPLE.COM", "12345678")),
                     Arguments.of(new RegistrationDto("§$%&/(", "email+foo@example.com", "12345678"))
+            );
+        }
+
+        public static Stream<Arguments> existingUsernameRegistrationDtos() {
+            return Stream.of(
+                    Arguments.of(new RegistrationDto(UserFixtures.USERNAME, "other@email.com", "12345678")),
+                    Arguments.of(new RegistrationDto(UserFixtures.USERNAME.toUpperCase(), "other@email.com", "12345678"))
+            );
+        }
+
+        public static Stream<Arguments> existingEmailRegistrationDtos() {
+            return Stream.of(
+                    Arguments.of(new RegistrationDto("otherusername", UserFixtures.EMAIL, "12345678")),
+                    Arguments.of(new RegistrationDto("otherusername", UserFixtures.EMAIL.toUpperCase(), "12345678"))
             );
         }
 
@@ -77,44 +90,16 @@ public class AuthControllerIT extends ApiTest {
             var existingUsers = userRepository.findAll();
 
             assertThat(existingUsers).hasSize(1);
-            assertThat(existingUsers.getFirst().getUserId()).isSameAs(Objects.requireNonNull(response.returnResult().getResponseBody()).getUserId());
+            var user = existingUsers.getFirst();
+            assertThat(user.getUserId()).isSameAs(Objects.requireNonNull(response.returnResult().getResponseBody()).getUserId());
+            assertThat(user.getPassword()).isNotEqualTo(registrationDto.getPassword());
         }
 
-        @Test
-        void shouldNotRegisterWhenUsernameIsTaken() {
+        @ParameterizedTest
+        @MethodSource("existingUsernameRegistrationDtos")
+        void shouldNotRegisterWhenUsernameIsTaken(RegistrationDto registrationDto) {
             var user = UserEntity.builder()
                     .username(UserFixtures.USERNAME)
-                    .email("different@email.com")
-                    .password(UserFixtures.HASHED_PASSWORD)
-                    .build();
-            userRepository.save(user);
-
-            var result = client.post()
-                    .uri(URI)
-                    .body(AuthFixtures.registrationDto())
-                    .exchange()
-                    .expectStatus().isEqualTo(HttpStatus.CONFLICT)
-                    .expectBody(ProblemDetails.class);
-
-            var response = result.returnResult().getResponseBody();
-            var existingUsers = userRepository.findAll();
-
-            var expectedProblem = ProblemDetails.builder()
-                    .title("Conflict")
-                    .detail("User already exists")
-                    .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("username", ProblemDetailsField.builder().path("username").errors(List.of("validation.usernameAlreadyExists")).build()))
-                    .build();
-
-            assertThat(response).isNotNull();
-            assertThat(response).isEqualTo(expectedProblem);
-            assertThat(existingUsers).hasSize(1);
-        }
-
-        @Test
-        void shouldNotRegisterWhenEmailIsTaken() {
-            var user = UserEntity.builder()
-                    .username("otherusername")
                     .email(UserFixtures.EMAIL)
                     .password(UserFixtures.HASHED_PASSWORD)
                     .build();
@@ -122,7 +107,7 @@ public class AuthControllerIT extends ApiTest {
 
             var result = client.post()
                     .uri(URI)
-                    .body(AuthFixtures.registrationDto())
+                    .body(registrationDto)
                     .exchange()
                     .expectStatus().isEqualTo(HttpStatus.CONFLICT)
                     .expectBody(ProblemDetails.class);
@@ -134,7 +119,39 @@ public class AuthControllerIT extends ApiTest {
                     .title("Conflict")
                     .detail("User already exists")
                     .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("email", ProblemDetailsField.builder().path("email").errors(List.of("validation.emailAlreadyExists")).build()))
+                    .fields(Map.of("username", ProblemDetailsField.builder().error("validation.usernameAlreadyExists").build()))
+                    .build();
+
+            assertThat(response).isNotNull();
+            assertThat(response).isEqualTo(expectedProblem);
+            assertThat(existingUsers).hasSize(1);
+        }
+
+        @ParameterizedTest
+        @MethodSource("existingEmailRegistrationDtos")
+        void shouldNotRegisterWhenEmailIsTaken(RegistrationDto registrationDto) {
+            var user = UserEntity.builder()
+                    .username(UserFixtures.USERNAME)
+                    .email(UserFixtures.EMAIL)
+                    .password(UserFixtures.HASHED_PASSWORD)
+                    .build();
+            userRepository.save(user);
+
+            var result = client.post()
+                    .uri(URI)
+                    .body(registrationDto)
+                    .exchange()
+                    .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+                    .expectBody(ProblemDetails.class);
+
+            var response = result.returnResult().getResponseBody();
+            var existingUsers = userRepository.findAll();
+
+            var expectedProblem = ProblemDetails.builder()
+                    .title("Conflict")
+                    .detail("User already exists")
+                    .status(HttpStatus.CONFLICT.value())
+                    .fields(Map.of("email", ProblemDetailsField.builder().error("validation.emailAlreadyExists").build()))
                     .build();
 
             assertThat(response).isNotNull();
@@ -144,13 +161,23 @@ public class AuthControllerIT extends ApiTest {
 
         @ParameterizedTest
         @MethodSource("invalidRegistrationDtos")
-        void shouldNotRegisterWhenInvalidRegistrationDtoIsGiven(RegistrationDto registrationDto) {
+        void shouldNotRegisterWhenInvalidRegistrationDtoIsGiven(RegistrationDto registrationDto, String invalidFieldName) {
             var result = client.post()
                     .uri(URI)
                     .body(registrationDto)
                     .exchange()
                     .expectStatus().isEqualTo(HttpStatus.BAD_REQUEST)
-                    .expectBody(Object.class);
+                    .expectBody(ProblemDetails.class)
+                    .returnResult()
+                    .getResponseBody();
+
+            assertThat(result).isNotNull();
+            assertThat(result.getTitle()).isEqualTo("Bad Request");
+            assertThat(result.getFields()).containsKey(invalidFieldName);
+
+            var invalidField = result.getFields().get(invalidFieldName);
+            assertThat(invalidField).isNotNull();
+            assertThat(invalidField.getError()).isNotEmpty();
         }
     }
 
@@ -158,8 +185,43 @@ public class AuthControllerIT extends ApiTest {
     public class Login {
         private static final String URI = "/api/auth/login";
 
-        @Test
-        void shouldLoginWithValidUsernameCredentials() {
+        public static Stream<Arguments> validUsernameCredentials() {
+            return Stream.of(
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, AuthFixtures.PLAIN_PASSWORD)),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME.toUpperCase(), AuthFixtures.PLAIN_PASSWORD))
+            );
+        }
+
+        public static Stream<Arguments> validEmailCredentials() {
+            return Stream.of(
+                    Arguments.of(new CredentialsDto(UserFixtures.EMAIL, AuthFixtures.PLAIN_PASSWORD)),
+                    Arguments.of(new CredentialsDto(UserFixtures.EMAIL.toUpperCase(), AuthFixtures.PLAIN_PASSWORD))
+            );
+        }
+
+        public static Stream<Arguments> invalidPasswordCredentials() {
+            return Stream.of(
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, "wrong-password")),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, " " + AuthFixtures.PLAIN_PASSWORD)),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, AuthFixtures.PLAIN_PASSWORD + " ")),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, AuthFixtures.PLAIN_PASSWORD.toUpperCase())),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, AuthFixtures.PLAIN_PASSWORD.repeat(100)), "password")
+            );
+        }
+
+        public static Stream<Arguments> malformedCredentials() {
+            return Stream.of(
+                    Arguments.of(new CredentialsDto("", AuthFixtures.PLAIN_PASSWORD), "identifier"),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, ""), "password"),
+                    Arguments.of(new CredentialsDto(null, AuthFixtures.PLAIN_PASSWORD), "identifier"),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME, null), "password"),
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME.repeat(100), AuthFixtures.PLAIN_PASSWORD), "identifier")
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("validEmailCredentials")
+        void shouldLoginWithValidUsernameCredentials(CredentialsDto credentialsDto) {
             var existingUser = UserEntity.builder()
                     .username(UserFixtures.USERNAME)
                     .email(UserFixtures.EMAIL)
@@ -168,7 +230,7 @@ public class AuthControllerIT extends ApiTest {
             userRepository.save(existingUser);
 
             var result = client.post().uri(URI)
-                    .body(new CredentialsDto(UserFixtures.USERNAME, AuthFixtures.PLAIN_PASSWORD))
+                    .body(credentialsDto)
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody(AuthDto.class)
@@ -182,8 +244,9 @@ public class AuthControllerIT extends ApiTest {
             assertThat(result.getToken()).isNotEmpty();
         }
 
-        @Test
-        void shouldLoginWithValidEmailCredentials() {
+        @ParameterizedTest
+        @MethodSource("validEmailCredentials")
+        void shouldLoginWithValidEmailCredentials(CredentialsDto credentialsDto) {
             var existingUser = UserEntity.builder()
                     .username(UserFixtures.USERNAME)
                     .email(UserFixtures.EMAIL)
@@ -192,7 +255,7 @@ public class AuthControllerIT extends ApiTest {
             userRepository.save(existingUser);
 
             var result = client.post().uri(URI)
-                    .body(new CredentialsDto(UserFixtures.EMAIL, AuthFixtures.PLAIN_PASSWORD))
+                    .body(credentialsDto)
                     .exchange()
                     .expectStatus().isOk()
                     .expectBody(AuthDto.class)
@@ -227,8 +290,9 @@ public class AuthControllerIT extends ApiTest {
             assertThat(result.getDetail()).isEqualTo("Invalid credentials");
         }
 
-        @Test
-        void shouldRejectLoginWithWrongPassword() {
+        @ParameterizedTest
+        @MethodSource("invalidPasswordCredentials")
+        void shouldRejectLoginWithWrongPassword(CredentialsDto credentialsDto) {
             var existingUser = UserEntity.builder()
                     .username(UserFixtures.USERNAME)
                     .email(UserFixtures.EMAIL)
@@ -237,7 +301,7 @@ public class AuthControllerIT extends ApiTest {
             userRepository.save(existingUser);
 
             var result = client.post().uri(URI)
-                    .body(new CredentialsDto(UserFixtures.USERNAME, "wrong-password"))
+                    .body(credentialsDto)
                     .exchange()
                     .expectStatus().isUnauthorized()
                     .expectBody(ProblemDetails.class)
@@ -274,6 +338,20 @@ public class AuthControllerIT extends ApiTest {
             assertThat(wrongIdentifierResult).isNotNull();
             assertThat(wrongPasswordResult).isNotNull();
             assertThat(wrongIdentifierResult).isEqualTo(wrongPasswordResult);
+        }
+
+        @ParameterizedTest
+        @MethodSource("malformedCredentials")
+        void shouldRejectLoginWithMalformedCredentials(CredentialsDto credentialsDto, String invalidFieldName) {
+            var result = client.post().uri(URI).body(credentialsDto).exchange().expectStatus().isBadRequest().expectBody(ProblemDetails.class).returnResult().getResponseBody();
+
+            assertThat(result).isNotNull();
+            assertThat(result.getTitle()).isEqualTo("Bad Request");
+            assertThat(result.getFields()).containsKey(invalidFieldName);
+
+            var invalidField = result.getFields().get(invalidFieldName);
+            assertThat(invalidField).isNotNull();
+            assertThat(invalidField.getError()).isNotEmpty();
         }
     }
 }
