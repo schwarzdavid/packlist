@@ -20,11 +20,10 @@ export default defineConfig({
                 methods: 'instance',
                 containerName: '{{name}}Api'
             },
-            responseStyle: 'data',
             transformer: true,
         },
         {
-            name: '@hey-api/client-fetch',
+            name: '@hey-api/client-axios',
             throwOnError: true
         },
         {

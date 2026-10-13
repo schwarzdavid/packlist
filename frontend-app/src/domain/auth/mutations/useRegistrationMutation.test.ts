@@ -1,9 +1,10 @@
 import {afterEach, describe, expect, vi} from "vitest";
 import {useRegistrationMutation} from "@/domain/auth/mutations/useRegistrationMutation.ts";
 import {it} from "@test/fixtures/colada.ts";
-import {AuthApi} from "@packlist/users-api";
+import {AuthApi, type AuthDto} from "@packlist/users-api";
 import {useQueryCache} from "@pinia/colada";
 import {ACCESS_TOKEN_KEY} from "@/domain/auth/stores/AuthStore.ts";
+import type {AxiosResponse} from "axios";
 
 describe(useRegistrationMutation, () => {
   afterEach(() => {
@@ -13,14 +14,16 @@ describe(useRegistrationMutation, () => {
 
   it('should register user', async ({app, pinia}) => {
     vi.spyOn(AuthApi.prototype, 'register').mockResolvedValue({
-      userId: 1,
-      token: 'token',
-      user: {
+      data: {
         userId: 1,
-        username: 'username',
-        email: 'email@example.com'
+        token: 'token',
+        user: {
+          userId: 1,
+          username: 'username',
+          email: 'email@example.com'
+        }
       }
-    })
+    } as AxiosResponse<AuthDto>)
 
     const mutation = app.runWithContext(() => useRegistrationMutation())
     const cache = useQueryCache(pinia)

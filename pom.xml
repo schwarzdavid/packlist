@@ -18,6 +18,7 @@
         <lombok.version>1.18.48</lombok.version>
         <junit.version>5.14.0</junit.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <spring.version>4.1.1</spring.version>
 
         <!-- Empty by default so surefire's @{argLine} placeholder resolves -->
         <argLine/>
@@ -34,7 +35,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>4.1.1</version>
+                <version>${spring.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

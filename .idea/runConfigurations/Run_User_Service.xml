@@ -1,12 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="User Service Tests" type="JUnit" factoryName="JUnit">
-    <module name="user-service" />
-    <extension name="coverage">
-      <pattern>
-        <option name="PATTERN" value="app.schwarzdavid.packlist.service.user.domain.auth.*" />
-        <option name="ENABLED" value="true" />
-      </pattern>
-    </extension>
+  <configuration default="false" name="Run User Service" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="user-service.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="app.schwarzdavid.packlist.user.service.Application" />
     <extension name="net.ashald.envfile">
       <option name="IS_ENABLED" value="false" />
       <option name="IS_SUBST" value="false" />
@@ -17,10 +12,6 @@
         <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
       </ENTRIES>
     </extension>
-    <option name="PACKAGE_NAME" value="app.schwarzdavid.packlist.service.user" />
-    <option name="MAIN_CLASS_NAME" value="" />
-    <option name="METHOD_NAME" value="" />
-    <option name="TEST_OBJECT" value="package" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

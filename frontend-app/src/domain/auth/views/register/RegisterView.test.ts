@@ -5,8 +5,9 @@ import {createI18n} from "vue-i18n";
 import {configureZod} from "@/config/configureZod.ts";
 import {createVuetify} from "vuetify/framework";
 import {fireEvent, render, waitFor} from "@testing-library/vue";
-import type {AuthDto} from "@packlist/users-api";
+import type {AuthDto, ProblemDetails} from "@packlist/users-api";
 import {ListRoutes} from "@/domain/lists/router/ListRoutes.ts";
+import {AxiosError, AxiosHeaders, HttpStatusCode} from "axios";
 
 const mutationMock = vi.hoisted(() => ({
   mutateAsync: vi.fn()
@@ -117,8 +118,49 @@ describe("RegisterView", () => {
     await waitFor(() => expect(wrapper.getByTestId("error-banner")).toBeInTheDocument())
   })
 
-  it.todo('should show error message if username is already taken')
-  it.todo('should show error message if e-mail is already taken')
+  it('should show error message if username is already taken', async () => {
+    mutationMock.mutateAsync.mockRejectedValue(createConflictResponse('username'))
+
+    const wrapper = mountView()
+
+    const usernameInput = wrapper.getByTestId('username').querySelector("input")!
+    const emailInput = wrapper.getByTestId('email').querySelector("input")!
+    const passwordInput = wrapper.getByTestId('password').querySelector("input")!
+    const passwordRepeatInput = wrapper.getByTestId("password-repeat").querySelector("input")!
+
+    await Promise.all([
+      fireEvent.update(usernameInput, "username"),
+      fireEvent.update(emailInput, "foo@bar.com"),
+      fireEvent.update(passwordInput, "password"),
+      fireEvent.update(passwordRepeatInput, "password")
+    ])
+
+    await fireEvent.click(wrapper.getByTestId('submit'))
+
+    await waitFor(() => expect(usernameInput).toHaveAccessibleDescription('validation.usernameTaken'))
+  })
+
+  it('should show error message if e-mail is already taken', async () => {
+    mutationMock.mutateAsync.mockRejectedValue(createConflictResponse('email'))
+
+    const wrapper = mountView()
+
+    const usernameInput = wrapper.getByTestId('username').querySelector("input")!
+    const emailInput = wrapper.getByTestId('email').querySelector("input")!
+    const passwordInput = wrapper.getByTestId('password').querySelector("input")!
+    const passwordRepeatInput = wrapper.getByTestId("password-repeat").querySelector("input")!
+
+    await Promise.all([
+      fireEvent.update(usernameInput, "username"),
+      fireEvent.update(emailInput, "foo@bar.com"),
+      fireEvent.update(passwordInput, "password"),
+      fireEvent.update(passwordRepeatInput, "password")
+    ])
+
+    await fireEvent.click(wrapper.getByTestId('submit'))
+
+    await waitFor(() => expect(emailInput).toHaveAccessibleDescription('validation.emailTaken'))
+  })
 })
 
 function mountView() {
@@ -132,5 +174,23 @@ function mountView() {
       plugins: [i18n, vuetify],
       stubs: {RouterLink: RouterLinkStub}
     }
+  })
+}
+
+function createConflictResponse(field: string): AxiosError<ProblemDetails> {
+  return new AxiosError("Request failed with status code 409", AxiosError.ERR_BAD_REQUEST, undefined, undefined, {
+    status: HttpStatusCode.Conflict,
+    statusText: "Conflict",
+    data: {
+      title: 'Conflict',
+      status: HttpStatusCode.Conflict,
+      fields: {
+        [field]: {
+          error: `validation.${field}Taken`
+        }
+      }
+    } satisfies ProblemDetails,
+    headers: {},
+    config: {headers: new AxiosHeaders()}
   })
 }

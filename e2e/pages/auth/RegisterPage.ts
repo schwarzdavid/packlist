@@ -22,6 +22,10 @@ export class RegisterPage {
         return this.page.getByTestId("password-repeat").getByRole("textbox")
     }
 
+    get errorBanner(): Locator {
+        return this.page.getByTestId("error-banner")
+    }
+
     async register(username: string, email: string, password: string, passwordRepeat?: string) {
         await this.usernameInput.fill(username)
         await this.emailInput.fill(email)

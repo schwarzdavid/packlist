@@ -17,14 +17,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user/UserCreateDto'
+              $ref: '#/components/schemas/UserCreateDto'
       responses:
         201:
           description: User created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user/UserDto'
+                $ref: '#/components/schemas/UserDto'
   /api/auth/login:
     post:
       operationId: login
@@ -36,14 +36,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/auth/CredentialsDto'
+              $ref: '#/components/schemas/CredentialsDto'
       responses:
         200:
           description: User logged in successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/auth/AuthDto'
+                $ref: '#/components/schemas/AuthDto'
   /api/auth/register:
     post:
       operationId: register
@@ -55,14 +55,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/auth/RegistrationDto'
+              $ref: '#/components/schemas/RegistrationDto'
       responses:
         201:
           description: User registered successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/auth/AuthDto'
+                $ref: '#/components/schemas/AuthDto'
         409:
           $ref: '#/components/responses/Problem'
           description: User with the same username or email already exists
@@ -80,136 +80,133 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/error/ProblemDetails'
+            $ref: '#/components/schemas/ProblemDetails'
   schemas:
-    user:
-      UserCreateDto:
-        type: object
-        additionalProperties: false
-        required:
-          - username
-          - email
-          - password
-        properties:
-          username:
-            type: string
-            minLength: 1
-            maxLength: 255
-          email:
-            type: string
-            format: email
-            maxLength: 255
-          password:
-            type: string
-            minLength: 8
-      UserDto:
-        type: object
-        additionalProperties: false
-        required:
-          - userId
-          - username
-          - email
-        properties:
-          userId:
-            type: integer
-            format: int64
-            minimum: 1
-            readOnly: true
-          username:
-            type: string
-            minLength: 1
-            maxLength: 255
-            pattern: '^[^@]*$'
-          email:
-            type: string
-            format: email
-            maxLength: 255
-    auth:
-      CredentialsDto:
-        type: object
-        additionalProperties: false
-        required:
-          - identifier
-          - password
-        properties:
-          identifier:
-            type: string
-            minLength: 1
-            maxLength: 255
-          password:
-            type: string
-            minLength: 1
-      RegistrationDto:
-        type: object
-        additionalProperties: false
-        required:
-          - username
-          - email
-          - password
-        properties:
-          username:
-            type: string
-            minLength: 1
-            maxLength: 255
-            pattern: '^[^@]*$'
-          email:
-            type: string
-            format: email
-            maxLength: 255
-            minLength: 1
-          password:
-            type: string
-            minLength: 8
-      AuthDto:
-        type: object
-        additionalProperties: false
-        required:
-          - userId
-          - token
-          - user
-        properties:
-          userId:
-            type: integer
-            format: int64
-            minimum: 1
-            readOnly: true
-          token:
-            type: string
-            readOnly: true
-          user:
-            $ref: '#/components/schemas/user/UserDto'
-    error:
-      ProblemDetails:
-        type: object
-        required:
-          - status
-          - title
-        properties:
-          type:
-            type: string
-            readOnly: true
-          title:
-            type: string
-            readOnly: true
-          status:
-            type: integer
-            readOnly: true
-          detail:
-            type: string
-            readOnly: true
-          fields:
-            type: object
-            additionalProperties:
-              $ref: '#/components/schemas/error/ProblemDetailsField'
-      ProblemDetailsField:
-        type: object
-        required:
-          - path
-        properties:
-          error:
-            type: string
-            readOnly: true
-          params:
-            type: object
-            additionalProperties: true
-            readOnly: true
+    UserCreateDto:
+      type: object
+      additionalProperties: false
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 8
+    UserDto:
+      type: object
+      additionalProperties: false
+      required:
+        - userId
+        - username
+        - email
+      properties:
+        userId:
+          type: integer
+          format: int64
+          minimum: 1
+          readOnly: true
+        username:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: '^[^@]*$'
+        email:
+          type: string
+          format: email
+          maxLength: 255
+    CredentialsDto:
+      type: object
+      additionalProperties: false
+      required:
+        - identifier
+        - password
+      properties:
+        identifier:
+          type: string
+          minLength: 1
+          maxLength: 255
+        password:
+          type: string
+          minLength: 1
+    RegistrationDto:
+      type: object
+      additionalProperties: false
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 1
+          maxLength: 255
+          pattern: '^[^@]*$'
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          minLength: 1
+        password:
+          type: string
+          minLength: 8
+    AuthDto:
+      type: object
+      additionalProperties: false
+      required:
+        - userId
+        - token
+        - user
+      properties:
+        userId:
+          type: integer
+          format: int64
+          minimum: 1
+          readOnly: true
+        token:
+          type: string
+          readOnly: true
+        user:
+          $ref: '#/components/schemas/UserDto'
+    ProblemDetails:
+      type: object
+      required:
+        - status
+        - title
+      properties:
+        type:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        status:
+          type: integer
+          readOnly: true
+        detail:
+          type: string
+          readOnly: true
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProblemDetailsField'
+    ProblemDetailsField:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          readOnly: true
+        params:
+          type: object
+          additionalProperties: true
+          readOnly: true

@@ -1,9 +1,10 @@
 import {afterEach, describe, expect, vi} from "vitest";
 import {useCredentialsLoginMutation} from "@/domain/auth/mutations/useCredentialsLoginMutation.ts";
 import {useQueryCache} from "@pinia/colada";
-import {AuthApi} from "@packlist/users-api";
+import {AuthApi, type AuthDto} from "@packlist/users-api";
 import {ACCESS_TOKEN_KEY} from "@/domain/auth/stores/AuthStore.ts";
 import {it} from "@test/fixtures/colada.ts";
+import type {AxiosResponse} from "axios";
 
 describe(useCredentialsLoginMutation, () => {
   afterEach(() => {
@@ -13,14 +14,16 @@ describe(useCredentialsLoginMutation, () => {
 
   it('should set all caches on successful login', async ({app, pinia}) => {
     vi.spyOn(AuthApi.prototype, 'login').mockResolvedValue({
-      userId: 1,
-      token: 'token',
-      user: {
+      data: {
         userId: 1,
-        username: 'foo',
-        email: 'foo@bar.com'
+        token: 'token',
+        user: {
+          userId: 1,
+          username: 'foo',
+          email: 'foo@bar.com'
+        }
       }
-    })
+    } as AxiosResponse<AuthDto>)
 
     const mutation = app.runWithContext(() => useCredentialsLoginMutation())
 

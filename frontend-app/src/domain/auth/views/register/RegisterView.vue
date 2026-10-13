@@ -4,8 +4,8 @@
     <p class="text-medium-emphasis mb-6">{{ t('auth.register.description') }}</p>
 
     <VExpandTransition>
-      <div v-if="isGeneralError" data-testid="error-banner">
-        <VAlert :text="t('error.general')" class="mb-6" type="error"/>
+      <div v-if="showGenericError" data-testid="error-banner">
+        <VAlert :text="t('error.generic')" class="mb-6" type="error"/>
       </div>
     </VExpandTransition>
 
@@ -64,15 +64,18 @@
   } from "@/domain/auth/views/register/utils/createRegistrationFormValidation.ts";
   import {useRouter} from "vue-router";
   import {ListRoutes} from "@/domain/lists/router/ListRoutes.ts";
+  import {isProblemDetailsError} from "@/utils/isProblemDetailsError.ts";
+  import {HttpStatusCode} from "axios";
+  import {setProblemDetailsFieldErrors} from "@/utils/setProblemDetailsFieldErrors.ts";
 
   const {t} = useI18n()
   const {mutateAsync: registerUser} = useRegistrationMutation()
-  const {defineField, handleSubmit, errors, isSubmitting} = useForm({
+  const {defineField, handleSubmit, errors, isSubmitting, setFieldError} = useForm({
     validationSchema: toTypedSchema(createRegistrationFormValidation(t))
   })
   const router = useRouter()
 
-  const isGeneralError = ref(false)
+  const showGenericError = ref(false)
   const showPassword = ref(false)
   const passwordType = computed(() => showPassword.value ? 'text' : 'password')
   const passwordIcon = computed(() => showPassword.value ? 'mdi-eye-outline' : 'mdi-eye-off-outline')
@@ -87,9 +90,11 @@
       await registerUser(values)
       void router.push({name: ListRoutes.LIST})
     } catch (err) {
-      // TODO: Handle 409 differently
+      if (isProblemDetailsError(err) && err.status === HttpStatusCode.Conflict) {
+        return setProblemDetailsFieldErrors(err, setFieldError, t)
+      }
       console.error(err)
-      isGeneralError.value = true
+      showGenericError.value = true
     }
   })
 </script>

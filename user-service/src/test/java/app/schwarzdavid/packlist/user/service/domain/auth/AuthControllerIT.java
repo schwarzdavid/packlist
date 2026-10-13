@@ -119,7 +119,7 @@ public class AuthControllerIT extends ApiTest {
                     .title("Conflict")
                     .detail("User already exists")
                     .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("username", ProblemDetailsField.builder().error("validation.usernameAlreadyExists").build()))
+                    .fields(Map.of("username", ProblemDetailsField.builder().error("validation.usernameTaken").build()))
                     .build();
 
             assertThat(response).isNotNull();
@@ -151,7 +151,7 @@ public class AuthControllerIT extends ApiTest {
                     .title("Conflict")
                     .detail("User already exists")
                     .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("email", ProblemDetailsField.builder().error("validation.emailAlreadyExists").build()))
+                    .fields(Map.of("email", ProblemDetailsField.builder().error("validation.emailTaken").build()))
                     .build();
 
             assertThat(response).isNotNull();

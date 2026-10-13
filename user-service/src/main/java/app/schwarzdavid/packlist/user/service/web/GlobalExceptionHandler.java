@@ -27,7 +27,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
         var field = ProblemDetailsField.builder()
-                .error("validation.%sAlreadyExists".formatted(ex.getField().getPropertyName()))
+                .error("validation.%sTaken".formatted(ex.getField().getPropertyName()))
                 .build();
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);

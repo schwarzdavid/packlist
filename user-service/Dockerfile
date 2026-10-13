@@ -10,13 +10,11 @@ COPY pom.xml ./
 COPY user-service/pom.xml ./user-service/
 COPY user-api/pom.xml ./user-api/
 COPY user-client-java/pom.xml ./user-client-java/
-COPY backend-common/pom.xml ./backend-common/
 
 RUN ./mvnw -B -pl user-service -am dependency:go-offline -DexcludeGroupIds=app.schwarzdavid.packlist
 
 COPY user-service/src/ ./user-service/src/
 COPY user-api/src/ ./user-api/src/
-COPY backend-common/src/ ./backend-common/src/
 
 RUN ./mvnw -B -pl user-service -am package -Dmaven.test.skip=true
 

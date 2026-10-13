@@ -30,9 +30,12 @@
     "maxLength": "Maximum {max} characters",
     "email": "Invalid email address",
     "invalid": "Invalid input",
-    "samePassword": "Passwords do not match"
+    "samePassword": "Passwords do not match",
+    "usernameTaken": "Username is already taken",
+    "emailTaken": "E-Mail is already taken"
   },
   "error": {
-    "general": "Something went wrong. Please try again later."
+    "invalidCredentials": "Invalid credentials",
+    "generic": "Something went wrong. Please try again later."
   }
 }

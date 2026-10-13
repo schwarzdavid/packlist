@@ -6,6 +6,7 @@ import {fireEvent, render, waitFor} from "@testing-library/vue";
 import {RouterLinkStub} from "@vue/test-utils";
 import LoginView from "@/domain/auth/views/login/LoginView.vue";
 import {ListRoutes} from "@/domain/lists/router/ListRoutes.ts";
+import {AxiosError, AxiosHeaders, HttpStatusCode} from "axios";
 
 const mutationMock = vi.hoisted(() => ({
   mutateAsync: vi.fn()
@@ -96,10 +97,33 @@ describe('LoginView', () => {
     await fireEvent.click(wrapper.getByTestId("submit"))
 
     await waitFor(() => expect(wrapper.getByTestId("error-banner")).toBeInTheDocument())
-    expect(wrapper.getByTestId("error-banner").textContent).not.toEqual("")
+    expect(wrapper.getByTestId("error-banner").textContent).toEqual("error.generic")
   })
 
-  it.todo("should show error message on invalid credentials")
+  it("should show error message on invalid credentials", async () => {
+    const wrapper = mountView()
+
+    mutationMock.mutateAsync.mockRejectedValue(new AxiosError("Request failed with status code 401", AxiosError.ERR_BAD_REQUEST, undefined, undefined, {
+      status: HttpStatusCode.Unauthorized,
+      statusText: "Unauthorized",
+      data: {status: HttpStatusCode.Unauthorized},
+      headers: {},
+      config: {headers: new AxiosHeaders()}
+    }))
+
+    const identifierInput = wrapper.getByTestId("identifier").querySelector('input')!
+    const passwordInput = wrapper.getByTestId("password").querySelector('input')!
+
+    await Promise.all([
+      fireEvent.update(identifierInput, "username"),
+      fireEvent.update(passwordInput, "password"),
+    ])
+
+    await fireEvent.click(wrapper.getByTestId("submit"))
+
+    await waitFor(() => expect(wrapper.getByTestId("error-banner")).toBeInTheDocument())
+    expect(wrapper.getByTestId("error-banner").textContent).toEqual("error.invalidCredentials")
+  })
 })
 
 function mountView() {

@@ -4,8 +4,8 @@
     <p class="text-medium-emphasis mb-6">{{ t('auth.login.description') }}</p>
 
     <VExpandTransition>
-      <div v-if="isGeneralError" data-testid="error-banner">
-        <VAlert :text="t('error.general')" class="mb-6" type="error"/>
+      <div v-if="formError" data-testid="error-banner">
+        <VAlert :text="t(formError)" class="mb-6" type="error"/>
       </div>
     </VExpandTransition>
 
@@ -53,6 +53,7 @@
   import {computed, ref} from "vue";
   import {useRouter} from "vue-router";
   import {ListRoutes} from "@/domain/lists/router/ListRoutes.ts";
+  import {isAxiosError} from "axios";
 
   const {t} = useI18n()
   const {mutateAsync: loginWithCredentials} = useCredentialsLoginMutation()
@@ -61,7 +62,7 @@
   })
   const router = useRouter()
 
-  const isGeneralError = ref(false)
+  const formError = ref<string | null>(null)
   const showPassword = ref(false)
   const passwordType = computed(() => showPassword.value ? 'text' : 'password')
   const passwordIcon = computed(() => showPassword.value ? 'mdi-eye-outline' : 'mdi-eye-off-outline')
@@ -70,13 +71,17 @@
   const [password] = defineField('password')
 
   const onSubmit = handleSubmit(async credentialsDto => {
+    formError.value = null
     try {
       await loginWithCredentials(credentialsDto)
       void router.push({name: ListRoutes.LIST})
     } catch (err) {
-      // TODO: handle invalid credentials
+      if (isAxiosError(err) && err.status === 401) {
+        formError.value = 'error.invalidCredentials'
+        return
+      }
       console.error(err)
-      isGeneralError.value = true
+      formError.value = 'error.generic'
     }
   })
 </script>
