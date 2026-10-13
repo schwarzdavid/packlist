@@ -25,7 +25,7 @@ test.describe("Register", () => {
         await page.route("**/api/auth/register", route => route.abort("internetdisconnected"))
 
         const registerPage = new RegisterPage(page)
-        await registerPage.register("user", "password", "12345678");
+        await registerPage.register("user", "test@example.com", "12345678");
 
         await expect(registerPage.errorBanner).toBeVisible()
         await expect(registerPage.errorBanner).toContainText("Something went wrong");

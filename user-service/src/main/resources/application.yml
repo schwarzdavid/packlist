@@ -3,7 +3,7 @@ user-service:
     password:
       strength: 10
     jwt:
-      secret: random-secret
+      secret: ${JWT_SECRET:random-secret}
       ttl_sec: 2678400 # 1 month
 
 spring:
@@ -11,9 +11,9 @@ spring:
     enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/users
-    username: users
-    password: users
+    url: jdbc:postgresql://${USER_POSTGRES_HOST:localhost}:${USER_POSTGRES_PORT:5432}/${USER_POSTGRES_DB}
+    username: ${USER_POSTGRES_USER:users}
+    password: ${USER_POSTGRES_PASSWORD:users}
   jpa:
     hibernate:
       ddl-auto: validate

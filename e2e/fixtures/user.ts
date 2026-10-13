@@ -22,11 +22,11 @@ export const test = baseTest.extend<UserFixture>({
                     password
                 }
             }).then(async response => {
-                if (response.ok()) {
+                if (response.status() === 201) {
                     return response.json().then(auth => auth.user)
                 }
                 const body = await response.body().then(value => value.toString())
-                throw new Error(body)
+                throw new Error(`Error ${response.status()}: ${body}`)
             })
         }
 
