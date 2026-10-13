@@ -2,6 +2,7 @@ package app.schwarzdavid.packlist.user.service.web;
 
 import app.schwarzdavid.packlist.user.api.model.ProblemDetails;
 import app.schwarzdavid.packlist.user.service.fixture.IntegrationTest;
+import app.schwarzdavid.packlist.user.service.web.security.SecurityExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -53,7 +54,7 @@ public class GlobalExceptionHandlerIT {
     static class TestConfig {
         @Bean
         @Order(Ordered.HIGHEST_PRECEDENCE)
-        SecurityFilterChain testEndpoints(HttpSecurity http) {
+        SecurityFilterChain testEndpoints(HttpSecurity http, SecurityExceptionHandler exceptionHandler) {
             return http.securityMatcher("/test/**")
                     .csrf(AbstractHttpConfigurer::disable)
                     .logout(AbstractHttpConfigurer::disable)
@@ -63,6 +64,9 @@ public class GlobalExceptionHandlerIT {
                         auth.requestMatchers(HttpMethod.GET, "/test/exception").permitAll();
                         auth.anyRequest().authenticated();
                     })
+                    .exceptionHandling(exception -> exception
+                            .authenticationEntryPoint(exceptionHandler)
+                            .accessDeniedHandler(exceptionHandler))
                     .build();
         }
     }
