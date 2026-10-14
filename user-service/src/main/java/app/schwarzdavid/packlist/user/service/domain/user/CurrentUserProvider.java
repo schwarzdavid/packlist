@@ -1,31 +1,35 @@
 package app.schwarzdavid.packlist.user.service.domain.user;
 
 import app.schwarzdavid.packlist.user.service.domain.user.security.UserPrincipal;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CurrentUserProvider {
     public Long getCurrentUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof UsernamePasswordAuthenticationToken token) {
-            var principal = (UserPrincipal) token.getPrincipal();
-            if (principal == null) {
-                throw new IllegalStateException("No authentication found");
-            }
-            return principal.getUserId();
+        if (authentication == null) {
+            throw new AuthenticationCredentialsNotFoundException("User not authenticated");
         }
-        if (authentication instanceof JwtAuthenticationToken token) {
-            var jwt = (Jwt) token.getPrincipal();
-            var subject = jwt.getSubject();
-            if (subject == null) {
-                throw new IllegalStateException("JWT has no subject");
-            }
-            return Long.parseLong(subject);
+        var principal = authentication.getPrincipal();
+        return switch (principal) {
+            case UserPrincipal user -> getUserIdFromPrincipal(user);
+            case Jwt jwt -> getUserIdFromPrincipal(jwt);
+            case null, default -> throw new IllegalStateException("Unknown principal type");
+        };
+    }
+
+    private Long getUserIdFromPrincipal(UserPrincipal principal) {
+        return principal.getUserId();
+    }
+
+    private Long getUserIdFromPrincipal(Jwt jwt) {
+        var subject = jwt.getSubject();
+        if (subject == null) {
+            throw new IllegalStateException("JWT has no subject");
         }
-        throw new IllegalStateException("No authentication found");
+        return Long.parseLong(subject);
     }
 }
