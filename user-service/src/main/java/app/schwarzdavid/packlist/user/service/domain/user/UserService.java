@@ -3,6 +3,7 @@ package app.schwarzdavid.packlist.user.service.domain.user;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserData;
 import app.schwarzdavid.packlist.user.service.domain.user.exception.UserAlreadyExistsException;
+import app.schwarzdavid.packlist.user.service.domain.user.exception.UserNotFoundException;
 import app.schwarzdavid.packlist.user.service.domain.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
@@ -23,13 +24,19 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserData createUser(UserCreateData userCreateData) {
-        var entity = userMapper.toNewUserEntity(userCreateData);
+        var entity = userMapper.toEntity(userCreateData);
         try {
             entity = userRepository.save(entity);
         } catch (DataIntegrityViolationException exception) {
             throw getMappedDataIntegrityViolationException(exception);
         }
-        return userMapper.toUserData(entity);
+        return userMapper.toData(entity);
+    }
+
+    public UserData getUserById(Long userId) {
+        var entity = userRepository.findByUserId(userId)
+                .orElseThrow(UserNotFoundException::new);
+        return userMapper.toData(entity);
     }
 
     private RuntimeException getMappedDataIntegrityViolationException(DataIntegrityViolationException exception) {

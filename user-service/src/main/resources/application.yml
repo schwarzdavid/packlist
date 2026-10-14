@@ -3,15 +3,15 @@ user-service:
     password:
       strength: 10
     jwt:
-      secret: ${JWT_SECRET:random-secret}
-      ttl_sec: 2678400 # 1 month
+      secret: ${JWT_SECRET:random-secret-with-atleast-256-bytes} # TODO: remove default value
+      ttl: 31d
 
 spring:
   flyway:
     enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${USER_POSTGRES_HOST:localhost}:${USER_POSTGRES_PORT:5432}/${USER_POSTGRES_DB}
+    url: jdbc:postgresql://${USER_POSTGRES_HOST:localhost}:${USER_POSTGRES_PORT:5432}/${USER_POSTGRES_DB:users}
     username: ${USER_POSTGRES_USER:users}
     password: ${USER_POSTGRES_PASSWORD:users}
   jpa:
@@ -25,3 +25,8 @@ logging:
 
 server:
   port: 8881
+
+management:
+  server:
+    port: 8882
+    address: 127.0.0.1

@@ -47,11 +47,11 @@ public class AuthServiceTest {
         void shouldRegisterUser() {
             when(passwordEncoder.encode(AuthFixtures.PLAIN_PASSWORD)).thenReturn(UserFixtures.HASHED_PASSWORD);
             when(userService.createUser(UserFixtures.userCreateData())).thenReturn(UserFixtures.userData());
-            when(jwtService.generateToken(any(UserData.class))).thenReturn(AuthFixtures.JWT);
+            when(jwtService.createJwtForUser(any(UserData.class))).thenReturn(AuthFixtures.JWT);
 
             var result = authService.registerUser(AuthFixtures.registrationData());
 
-            verify(jwtService).generateToken(assertArg(arg -> {
+            verify(jwtService).createJwtForUser(assertArg(arg -> {
                 assertEquals(UserFixtures.userData(), arg);
             }));
 
@@ -75,7 +75,7 @@ public class AuthServiceTest {
         @Test
         void shouldLoginUserWithValidCredentials() {
             when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(AuthFixtures.authentication());
-            when(jwtService.generateToken(UserFixtures.userData())).thenReturn(AuthFixtures.JWT);
+            when(jwtService.createJwtForUser(UserFixtures.userData())).thenReturn(AuthFixtures.JWT);
 
             var credentials = AuthFixtures.credentialsData();
             var result = authService.loginUser(credentials);
@@ -88,7 +88,7 @@ public class AuthServiceTest {
             assertEquals(credentials.identifier(), unauthenticatedAuthentication.getPrincipal());
             assertEquals(credentials.password(), unauthenticatedAuthentication.getCredentials());
 
-            verify(jwtService).generateToken(UserFixtures.userData());
+            verify(jwtService).createJwtForUser(UserFixtures.userData());
 
             assertEquals(UserFixtures.USER_ID, result.userId());
             assertEquals(AuthFixtures.JWT, result.token());

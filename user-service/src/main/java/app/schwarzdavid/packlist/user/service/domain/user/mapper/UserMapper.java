@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.user.service.domain.user.mapper;
 
+import app.schwarzdavid.packlist.user.api.model.UserDto;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserData;
 import app.schwarzdavid.packlist.user.service.domain.user.entity.UserEntity;
@@ -10,7 +11,9 @@ import org.mapstruct.Mapping;
 public interface UserMapper {
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "password", source = "hashedPassword")
-    UserEntity toNewUserEntity(UserCreateData userCreateData);
+    UserEntity toEntity(UserCreateData userCreateData);
 
-    UserData toUserData(UserEntity userEntity);
+    UserData toData(UserEntity userEntity);
+
+    UserDto toDto(UserData userData);
 }

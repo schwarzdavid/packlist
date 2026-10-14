@@ -4,27 +4,23 @@ info:
   description: API for managing users and authentication
   version: 1.0.0
 paths:
-  /api/users:
-    post:
-      operationId: createUser
+  /api/users/me:
+    get:
+      operationId: getCurrentUser
       security:
         - bearerAuth: [ ]
-      description: Create a new user
+      description: Get current user
       tags:
         - user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserCreateDto'
       responses:
-        201:
-          description: User created successfully
+        200:
+          description: User retrieved successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserDto'
+        default:
+          $ref: '#/components/responses/Problem'
   /api/auth/login:
     post:
       operationId: login

@@ -45,8 +45,10 @@ public class AuthService {
     }
 
     private AuthData createAuthDataForUser(UserData userData) {
-        String token = jwtService.generateToken(userData);
-
-        return new AuthData(userData.userId(), token, userData);
+        return new AuthData(
+                userData.userId(),
+                jwtService.createJwtForUser(userData),
+                userData
+        );
     }
 }
