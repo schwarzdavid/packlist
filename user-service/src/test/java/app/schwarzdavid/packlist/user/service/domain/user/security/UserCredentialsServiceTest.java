@@ -25,7 +25,7 @@ public class UserCredentialsServiceTest {
     private UserCredentialsService userCredentialsService;
 
     @Test
-    void shouldCreateUserPrincipalByUsername() {
+    void shouldCreateUserPrincipal() {
         var entity = UserEntity.builder()
                 .userId(UserFixtures.USER_ID)
                 .username(UserFixtures.USERNAME)
@@ -36,29 +36,6 @@ public class UserCredentialsServiceTest {
         when(userRepository.findByIdentifier(UserFixtures.USERNAME)).thenReturn(Optional.of(entity));
 
         var principal = userCredentialsService.loadUserByUsername(UserFixtures.USERNAME);
-
-        assertInstanceOf(UserPrincipal.class, principal);
-
-        var user = (UserPrincipal) principal;
-
-        assertEquals(UserFixtures.USER_ID, user.getUserId());
-        assertEquals(UserFixtures.USERNAME, user.getUsername());
-        assertEquals(UserFixtures.EMAIL, user.getEmail());
-        assertEquals(UserFixtures.HASHED_PASSWORD, user.getPassword());
-    }
-
-    @Test
-    void shouldCreateUserPrincipalByEmail() {
-        var entity = UserEntity.builder()
-                .userId(UserFixtures.USER_ID)
-                .username(UserFixtures.USERNAME)
-                .email(UserFixtures.EMAIL)
-                .password(UserFixtures.HASHED_PASSWORD)
-                .build();
-
-        when(userRepository.findByIdentifier(UserFixtures.EMAIL)).thenReturn(Optional.of(entity));
-
-        var principal = userCredentialsService.loadUserByUsername(UserFixtures.EMAIL);
 
         assertInstanceOf(UserPrincipal.class, principal);
 

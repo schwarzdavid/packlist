@@ -2,6 +2,7 @@ package app.schwarzdavid.packlist.user.service.domain.user;
 
 import app.schwarzdavid.packlist.user.service.domain.user.entity.UserEntity;
 import app.schwarzdavid.packlist.user.service.domain.user.exception.UserAlreadyExistsException;
+import app.schwarzdavid.packlist.user.service.domain.user.exception.UserNotFoundException;
 import app.schwarzdavid.packlist.user.service.domain.user.mapper.UserMapper;
 import app.schwarzdavid.packlist.user.service.fixture.UserFixtures;
 import org.hibernate.exception.ConstraintViolationException;
@@ -15,10 +16,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,6 +86,24 @@ public class UserServiceTest {
     }
 
     @Nested
-    class GetUserByIdentifier {
+    class GetUserById {
+        @Test
+        void shouldReturnUser() {
+            when(userRepository.findById(anyLong())).thenReturn(Optional.of(UserFixtures.userEntity()));
+
+            var result = userService.getUserById(UserFixtures.USER_ID);
+
+            assertThat(result).isNotNull();
+            assertThat(result.userId()).isEqualTo(UserFixtures.USER_ID);
+            assertThat(result.username()).isEqualTo(UserFixtures.USERNAME);
+            assertThat(result.email()).isEqualTo(UserFixtures.EMAIL);
+        }
+
+        @Test
+        void shouldThrowWhenUserNotFound() {
+            when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> userService.getUserById(UserFixtures.USER_ID)).isInstanceOf(UserNotFoundException.class);
+        }
     }
 }

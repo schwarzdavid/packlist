@@ -34,7 +34,7 @@ public class UserService {
     }
 
     public UserData getUserById(Long userId) {
-        var entity = userRepository.findByUserId(userId)
+        var entity = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
         return userMapper.toData(entity);
     }

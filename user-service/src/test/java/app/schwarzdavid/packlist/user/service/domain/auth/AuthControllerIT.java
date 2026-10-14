@@ -14,9 +14,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +27,9 @@ public class AuthControllerIT extends ApiTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtDecoder jwtDecoder;
 
     @Nested
     public class Register {
@@ -72,27 +75,30 @@ public class AuthControllerIT extends ApiTest {
         @ParameterizedTest
         @MethodSource("validRegistrationDtos")
         void shouldRegisterNewUser(RegistrationDto registrationDto) {
-            var response = client.post()
+            var auth = client.post()
                     .uri(URI)
                     .body(registrationDto)
                     .exchange()
                     .expectStatus().isCreated()
                     .expectBody(AuthDto.class)
-                    .value(auth -> {
-                        assertThat(auth).isNotNull();
-                        assertThat(auth.getUserId()).isPositive();
-                        assertThat(auth.getUser().getUserId()).isPositive();
+                    .returnResult()
+                    .getResponseBody();
 
-                        var expectedAuth = new AuthDto(1L, "token", new UserDto(1L, registrationDto.getUsername(), registrationDto.getEmail()));
-                        assertThat(auth).usingRecursiveComparison().ignoringFields("token", "userId", "user.id").isEqualTo(expectedAuth);
-                    });
+            assertThat(auth).isNotNull();
+            assertThat(auth.getUserId()).isPositive();
+            assertThat(auth.getUser().getUserId()).isPositive();
+
+            var expectedAuth = new AuthDto(1L, "token", new UserDto(1L, registrationDto.getUsername(), registrationDto.getEmail()));
+            assertThat(auth).usingRecursiveComparison().ignoringFields("token", "userId", "user.id").isEqualTo(expectedAuth);
 
             var existingUsers = userRepository.findAll();
-
             assertThat(existingUsers).hasSize(1);
-            var user = existingUsers.getFirst();
-            assertThat(user.getUserId()).isSameAs(Objects.requireNonNull(response.returnResult().getResponseBody()).getUserId());
-            assertThat(user.getPassword()).isNotEqualTo(registrationDto.getPassword());
+            var existingUser = existingUsers.getFirst();
+            assertThat(existingUser.getUserId()).isSameAs(auth.getUserId());
+            assertThat(existingUser.getPassword()).isNotEqualTo(registrationDto.getPassword());
+
+            var jwt = jwtDecoder.decode(auth.getToken());
+            assertThat(jwt.getSubject()).isEqualTo(auth.getUserId().toString());
         }
 
         @ParameterizedTest
@@ -185,15 +191,10 @@ public class AuthControllerIT extends ApiTest {
     public class Login {
         private static final String URI = "/api/auth/login";
 
-        public static Stream<Arguments> validUsernameCredentials() {
+        public static Stream<Arguments> validCredentials() {
             return Stream.of(
                     Arguments.of(new CredentialsDto(UserFixtures.USERNAME, AuthFixtures.PLAIN_PASSWORD)),
-                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME.toUpperCase(), AuthFixtures.PLAIN_PASSWORD))
-            );
-        }
-
-        public static Stream<Arguments> validEmailCredentials() {
-            return Stream.of(
+                    Arguments.of(new CredentialsDto(UserFixtures.USERNAME.toUpperCase(), AuthFixtures.PLAIN_PASSWORD)),
                     Arguments.of(new CredentialsDto(UserFixtures.EMAIL, AuthFixtures.PLAIN_PASSWORD)),
                     Arguments.of(new CredentialsDto(UserFixtures.EMAIL.toUpperCase(), AuthFixtures.PLAIN_PASSWORD))
             );
@@ -220,7 +221,7 @@ public class AuthControllerIT extends ApiTest {
         }
 
         @ParameterizedTest
-        @MethodSource("validEmailCredentials")
+        @MethodSource("validCredentials")
         void shouldLoginWithValidUsernameCredentials(CredentialsDto credentialsDto) {
             var existingUser = UserEntity.builder()
                     .username(UserFixtures.USERNAME)
@@ -242,10 +243,13 @@ public class AuthControllerIT extends ApiTest {
             assertThat(result).isNotNull();
             assertThat(result).usingRecursiveComparison().ignoringFields("token").isEqualTo(expectedAuth);
             assertThat(result.getToken()).isNotEmpty();
+
+            var jwt = jwtDecoder.decode(result.getToken());
+            assertThat(jwt.getSubject()).isEqualTo(result.getUserId().toString());
         }
 
         @ParameterizedTest
-        @MethodSource("validEmailCredentials")
+        @MethodSource("validCredentials")
         void shouldLoginWithValidEmailCredentials(CredentialsDto credentialsDto) {
             var existingUser = UserEntity.builder()
                     .username(UserFixtures.USERNAME)
