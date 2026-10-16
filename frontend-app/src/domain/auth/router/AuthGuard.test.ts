@@ -16,13 +16,15 @@ import {
   createAxiosInternalServerError,
   createAxiosUnauthorizedError
 } from "@test/fixtures/axiosErrorUtils.ts";
+import {ListRoutes} from "@/domain/lists/router/ListRoutes.ts";
 
 describe(authGuard, () => {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [
       {path: '/public', component: {}, meta: {}, name: 'public'},
-      {path: '/secured', component: {}, meta: {requiresAuth: true}, name: 'secured'}
+      {path: '/secured', component: {}, meta: {requiresAuth: true}, name: 'secured'},
+      {path: '/default', component: {}, meta: {requiresAuth: true}, name: ListRoutes.LIST}
     ]
   })
 
@@ -138,5 +140,28 @@ describe(authGuard, () => {
 
     expect(result).toBeUndefined()
     expect(apiSpy).not.toHaveBeenCalled()
+  })
+
+  it('should not add redirect param when target route is list route without query', async ({app}) => {
+    const to = router.resolve({name: ListRoutes.LIST}) as RouteLocationNormalized
+    const result = await app.runWithContext(() => authGuard(to, START_LOCATION, vi.fn()))
+
+    expect(result).toEqual({
+      name: AuthRoutes.LOGIN,
+      query: {}
+    })
+  })
+
+  it('should add redirect param when target route is list route with query', async ({app}) => {
+    const to = router.resolve({
+      name: ListRoutes.LIST,
+      query: {foo: 'bar'}
+    }) as RouteLocationNormalized
+    const result = await app.runWithContext(() => authGuard(to, START_LOCATION, vi.fn()))
+
+    expect(result).toEqual({
+      name: AuthRoutes.LOGIN,
+      query: {redirect: '/default?foo=bar'}
+    })
   })
 })

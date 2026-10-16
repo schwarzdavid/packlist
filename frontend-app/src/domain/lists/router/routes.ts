@@ -6,6 +6,9 @@ export const listRoutes: RouteRecordRaw[] = [
   {
     path: "/lists",
     name: ListRoutes.LIST,
-    component: ListView
+    component: ListView,
+    meta: {
+      requiresAuth: true
+    }
   }
 ]

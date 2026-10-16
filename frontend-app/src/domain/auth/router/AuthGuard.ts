@@ -1,9 +1,16 @@
-import type {NavigationGuard, RouteLocationNormalizedGeneric, RouteLocationRaw} from "vue-router";
+import type {
+  LocationQuery,
+  NavigationGuard,
+  RouteLocationNormalizedGeneric,
+  RouteLocationRaw
+} from "vue-router";
 import {useQueryCache} from "@pinia/colada";
 import {useCurrentUserQuery} from "@/domain/auth/queries/useCurrentUserQuery.ts";
 import {HttpStatusCode, isAxiosError} from "axios";
 import {AuthRoutes} from "@/domain/auth/router/AuthRoutes.ts";
 import {useAuthStore} from "@/domain/auth/stores/AuthStore.ts";
+import {ListRoutes} from "@/domain/lists/router/ListRoutes.ts";
+import {isEmpty} from "lodash-es";
 
 export const authGuard: NavigationGuard = async (to) => {
   if (!to.meta.requiresAuth) {
@@ -30,10 +37,12 @@ export const authGuard: NavigationGuard = async (to) => {
 }
 
 function getLoginLocation(to: RouteLocationNormalizedGeneric): RouteLocationRaw {
+  const query: LocationQuery = {}
+  if (to.name !== ListRoutes.LIST || !isEmpty(to.query)) {
+    query.redirect = to.fullPath
+  }
   return {
     name: AuthRoutes.LOGIN,
-    query: {
-      redirect: to.fullPath
-    }
+    query
   }
 }
