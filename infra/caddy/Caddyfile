@@ -3,8 +3,16 @@
         path /api/users /api/users/* /api/auth/*
     }
 
+    @list-service {
+        path /api/lists /api/lists/* /api/templates /api/templates/*
+    }
+
     handle @user-service {
         reverse_proxy user-service:8881
+    }
+
+    handle @list-service {
+        reverse_proxy list-service:8871
     }
 
     handle {

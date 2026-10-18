@@ -23,7 +23,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TemplatePreviewDto'
+                $ref: '#/components/schemas/TemplateDto'
         default:
           $ref: '#/components/responses/Problem'
   /api/lists/:
@@ -60,11 +60,28 @@ components:
           schema:
             $ref: '#/components/schemas/ProblemDetailsDto'
   schemas:
-    TemplatePreviewDto:
+    TemplateDto:
+      additionalProperties: false
       allOf:
         - $ref: '#/components/schemas/TemplateTagDto'
         - type: object
-          additionalProperties: false
+          required:
+            - inherits
+            - items
+          properties:
+            inherits:
+              type: array
+              items:
+                $ref: '#/components/schemas/TemplateTagDto'
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/TemplateItemDto'
+    TemplatePreviewDto:
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/TemplateTagDto'
+        - type: object
           properties:
             ownItemsCount:
               type: integer
@@ -91,15 +108,12 @@ components:
           items:
             type: integer
             format: int64
-          nullable: true
         icon:
           type: string
           minLength: 1
           maxLength: 255
-          nullable: true
         items:
           type: array
-          nullable: true
           items:
             type: string
             minLength: 1
@@ -124,7 +138,18 @@ components:
           type: string
           minLength: 1
           maxLength: 255
-          nullable: true
+    TemplateItemDto:
+      type: object
+      additionalProperties: false
+      properties:
+        templateItemId:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
     ListDto:
       type: object
     ListCreateDto:

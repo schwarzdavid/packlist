@@ -30,7 +30,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/auth': 'http://localhost:8881',
-      '/api/users': 'http://localhost:8881'
+      '/api/users': 'http://localhost:8881',
+      '/api/lists': 'http://localhost:8871',
+      '/api/templates': 'http://localhost:8871',
     }
   }
 })

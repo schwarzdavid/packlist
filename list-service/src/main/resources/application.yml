@@ -14,3 +14,8 @@ spring:
 
 server:
   port: 8871
+
+management:
+  server:
+    port: 8872
+    address: 127.0.0.1

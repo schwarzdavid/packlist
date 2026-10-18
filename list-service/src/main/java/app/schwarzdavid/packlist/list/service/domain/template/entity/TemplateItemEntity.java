@@ -1,7 +1,13 @@
 package app.schwarzdavid.packlist.list.service.domain.template.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
+@Builder
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity(name = "template_items")
 public class TemplateItemEntity {
 

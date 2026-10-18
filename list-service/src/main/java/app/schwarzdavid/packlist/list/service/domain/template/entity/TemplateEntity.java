@@ -1,9 +1,15 @@
 package app.schwarzdavid.packlist.list.service.domain.template.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Set;
 
+@Builder
+@Getter
+@Setter
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Entity(name = "templates")
 public class TemplateEntity {
     @Id

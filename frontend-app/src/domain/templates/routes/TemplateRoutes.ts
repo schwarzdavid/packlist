@@ -1,3 +1,4 @@
 export const enum TemplateRoutes {
-  LIST = 'templates::list'
+  LIST = 'templates::list',
+  CREATE = 'templates::create',
 }
