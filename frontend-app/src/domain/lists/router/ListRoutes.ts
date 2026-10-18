@@ -1,3 +1,4 @@
 export const enum ListRoutes {
-  LIST = "lists::list"
+  LIST = "lists::list",
+  CREATE = "lists::create",
 }

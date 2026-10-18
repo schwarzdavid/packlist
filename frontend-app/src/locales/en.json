@@ -13,6 +13,15 @@
       "login": "@:auth.login.title"
     }
   },
+  "lists": {
+    "list": {
+      "empty": {
+        "title": "No lists created yet",
+        "description": "Create your first list to get started."
+      },
+      "create": "Create list"
+    }
+  },
   "navigation": {
     "lists": "Lists",
     "templates": "Templates",

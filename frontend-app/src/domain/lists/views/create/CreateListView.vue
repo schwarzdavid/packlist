@@ -1,3 +1,3 @@
 <template>
-  <h1>List View</h1>
+  <h1>Create list</h1>
 </template>
