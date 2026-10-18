@@ -13,6 +13,11 @@
       "login": "@:auth.login.title"
     }
   },
+  "navigation": {
+    "lists": "Lists",
+    "templates": "Templates",
+    "account": "Account"
+  },
   "field": {
     "identifier": "E-mail or username",
     "email": "E-Mail",
@@ -22,7 +27,9 @@
   },
   "cta": {
     "login": "Log in",
-    "register": "Sign up"
+    "register": "Sign up",
+    "go-back": "Go back",
+    "go-home": "Go to Stow"
   },
   "validation": {
     "required": "This field is required",
@@ -36,6 +43,13 @@
   },
   "error": {
     "invalidCredentials": "Invalid credentials",
-    "generic": "Something went wrong. Please try again later."
+    "generic": "Something went wrong. Please try again later.",
+    "page": {
+      "headline": "Error {status}",
+      "404": {
+        "title": "This page does not exist",
+        "description": "The page you are looking for does not exist. The link maybe out of date or the checklist or template was deleted. Your other lists are where you left them."
+      }
+    }
   }
 }

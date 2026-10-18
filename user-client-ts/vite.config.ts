@@ -6,7 +6,7 @@ export default defineConfig({
     plugins: [heyApiPlugin(), dts({bundleTypes: true})],
     build: {
         lib: {
-            entry: 'src/api/index.ts',
+            entry: 'src/index.ts',
             name: 'users-api',
             formats: ['es']
         },
