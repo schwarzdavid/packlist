@@ -1,0 +1,28 @@
+{
+  "name": "@packlist/lists-api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "generate": "vite build"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/lists-client.d.ts",
+      "import": "./dist/lists-api.js"
+    }
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.99.0",
+    "@hey-api/vite-plugin": "^0.3.2",
+    "@microsoft/api-extractor": "^7.59.3",
+    "jiti": "^2.7.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.2",
+    "vite-plugin-dts": "^5.1.1"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "zod": "^4.6.5"
+  }
+}

@@ -8,17 +8,32 @@ services:
       POSTGRES_USER: ${USER_POSTGRES_USER:-users}
       POSTGRES_PASSWORD: ${USER_POSTGRES_PASSWORD:-users}
     ports:
-      # Bound to localhost only; override the host port with POSTGRES_PORT if 5432 is taken.
-      - "127.0.0.1:${USER_POSTGRES_PORT:-5432}:5432"
+      # Bound to localhost only; override the host port with POSTGRES_PORT if 8889 is taken.
+      - "127.0.0.1:${USER_POSTGRES_PORT:-8889}:5432"
     volumes:
-      # PostgreSQL 18+ images keep data under /var/lib/postgresql/<major>/docker,
-      # so the volume is mounted at the parent directory (not .../data as in 17 and older).
       - postgres-user-data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${USER_POSTGRES_USER:-users} -d ${USER_POSTGRES_DB:-users}"]
       interval: 5s
       timeout: 3s
       retries: 10
+  postgres-list:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${LIST_POSTGRES_DB:-lists}
+      POSTGRES_USER: ${LIST_POSTGRES_USER:-lists}
+      POSTGRES_PASSWORD: ${LIST_POSTGRES_PASSWORD:-lists}
+    ports:
+      # Bound to localhost only; override the host port with POSTGRES_PORT if 8879 is taken.
+      - "127.0.0.1:${LIST_POSTGRES_PORT:-8879}:5432"
+    volumes:
+      - postgres-list-data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${LIST_POSTGRES_USER:-lists} -d ${LIST_POSTGRES_DB:-lists}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 volumes:
   postgres-user-data:
+  postgres-list-data:

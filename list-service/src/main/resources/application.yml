@@ -1,3 +1,16 @@
 spring:
   application:
     name: list-service
+  flyway:
+    enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${LIST_POSTGRES_HOST:localhost}:${LIST_POSTGRES_PORT:8879}/${LIST_POSTGRES_DB:lists}
+    username: ${LIST_POSTGRES_USER:lists}
+    password: ${LIST_POSTGRES_PASSWORD:lists}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+server:
+  port: 8871

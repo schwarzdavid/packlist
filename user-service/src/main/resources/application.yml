@@ -7,11 +7,13 @@ user-service:
       ttl: 31d
 
 spring:
+  application:
+    name: user-service
   flyway:
     enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${USER_POSTGRES_HOST:localhost}:${USER_POSTGRES_PORT:5432}/${USER_POSTGRES_DB:users}
+    url: jdbc:postgresql://${USER_POSTGRES_HOST:localhost}:${USER_POSTGRES_PORT:8889}/${USER_POSTGRES_DB:users}
     username: ${USER_POSTGRES_USER:users}
     password: ${USER_POSTGRES_PASSWORD:users}
   jpa:

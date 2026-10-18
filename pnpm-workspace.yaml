@@ -1,6 +1,7 @@
 packages:
   - frontend-app
   - user-client-ts
+  - list-client-ts
   - e2e
 allowBuilds:
   '@parcel/watcher': true
