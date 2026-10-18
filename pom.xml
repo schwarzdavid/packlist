@@ -28,6 +28,7 @@
         <module>user-service</module>
         <module>user-api</module>
         <module>user-client-java</module>
+        <module>list-api</module>
     </modules>
 
     <dependencyManagement>

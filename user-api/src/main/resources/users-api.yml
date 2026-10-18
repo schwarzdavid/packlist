@@ -76,7 +76,7 @@ components:
       content:
         application/problem+json:
           schema:
-            $ref: '#/components/schemas/ProblemDetails'
+            $ref: '#/components/schemas/ProblemDetailsDto'
   schemas:
     UserCreateDto:
       type: object
@@ -172,7 +172,7 @@ components:
           readOnly: true
         user:
           $ref: '#/components/schemas/UserDto'
-    ProblemDetails:
+    ProblemDetailsDto:
       type: object
       required:
         - status
@@ -193,8 +193,8 @@ components:
         fields:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/ProblemDetailsField'
-    ProblemDetailsField:
+            $ref: '#/components/schemas/ProblemDetailsFieldDto'
+    ProblemDetailsFieldDto:
       type: object
       required:
         - error

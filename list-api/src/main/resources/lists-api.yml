@@ -1,0 +1,165 @@
+openapi: 3.1.2
+info:
+  title: Packlist Lists API
+  description: API for managing lists and templates
+  version: 1.0.0
+security:
+  - bearerAuth: [ ]
+paths:
+  /api/templates/:
+    post:
+      operationId: createTemplate
+      tags:
+        - template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateCreateDto'
+      responses:
+        201:
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplatePreviewDto'
+        default:
+          $ref: '#/components/responses/Problem'
+  /api/lists/:
+    post:
+      operationId: createList
+      tags:
+        - list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ListCreateDto'
+      responses:
+        201:
+          description: List created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDto'
+        default:
+          $ref: '#/components/responses/Problem'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Problem:
+      description: Problem details
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetailsDto'
+  schemas:
+    TemplatePreviewDto:
+      allOf:
+        - $ref: '#/components/schemas/TemplateTagDto'
+        - type: object
+          additionalProperties: false
+          properties:
+            ownItemsCount:
+              type: integer
+              readOnly: true
+            inheritedItemsCount:
+              type: integer
+              readOnly: true
+            inherits:
+              type: array
+              items:
+                $ref: '#/components/schemas/TemplateTagDto'
+    TemplateCreateDto:
+      type: object
+      required:
+        - name
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        inherits:
+          type: array
+          items:
+            type: integer
+            format: int64
+          nullable: true
+        icon:
+          type: string
+          minLength: 1
+          maxLength: 255
+          nullable: true
+        items:
+          type: array
+          nullable: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+    TemplateTagDto:
+      type: object
+      additionalProperties: false
+      required:
+        - templateId
+        - name
+      properties:
+        templateId:
+          type: integer
+          format: int64
+          readOnly: true
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          readOnly: true
+        icon:
+          type: string
+          minLength: 1
+          maxLength: 255
+          nullable: true
+    ListDto:
+      type: object
+    ListCreateDto:
+      type: object
+    ProblemDetailsDto:
+      type: object
+      required:
+        - status
+        - title
+      properties:
+        type:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        status:
+          type: integer
+          readOnly: true
+        detail:
+          type: string
+          readOnly: true
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProblemDetailsFieldDto'
+    ProblemDetailsFieldDto:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          readOnly: true
+        params:
+          type: object
+          additionalProperties: true
+          readOnly: true
