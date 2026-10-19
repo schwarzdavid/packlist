@@ -13,6 +13,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm fetch
 
 COPY user-api/ ./user-api/
 COPY user-client-ts/ ./user-client-ts/
+COPY list-api/ ./list-api/
+COPY list-client-ts/ ./list-client-ts/
 COPY frontend-app/ ./frontend-app/
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --offline --filter "frontend-app..."

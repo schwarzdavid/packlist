@@ -31,13 +31,13 @@ services:
         condition: service_healthy
     secrets:
       - source: private_key
-        uid: 10001
-        gid: 10001
+        uid: "10001"
+        gid: "10001"
         mode: 0640
         target: private.pem
       - source: public_key
-        uid: 10001
-        gid: 10001
+        uid: "10001"
+        gid: "10001"
         mode: 0644
         target: public.pem
     expose:
