@@ -1,6 +1,5 @@
-package app.schwarzdavid.packlist.user.service.domain.user.security;
+package app.schwarzdavid.packlist.common.security;
 
-import app.schwarzdavid.packlist.user.service.domain.user.data.UserData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,10 +38,6 @@ public class UserPrincipal implements UserDetails, CredentialsContainer {
     @Override
     public @Nullable String getPassword() {
         return passwordHash;
-    }
-
-    public UserData getUserData() {
-        return new UserData(userId, username, email);
     }
 
     @Override

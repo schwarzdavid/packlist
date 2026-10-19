@@ -116,16 +116,16 @@ public class AuthControllerIT extends ApiTest {
                     .body(registrationDto)
                     .exchange()
                     .expectStatus().isEqualTo(HttpStatus.CONFLICT)
-                    .expectBody(ProblemDetails.class);
+                    .expectBody(ProblemDetailsDto.class);
 
             var response = result.returnResult().getResponseBody();
             var existingUsers = userRepository.findAll();
 
-            var expectedProblem = ProblemDetails.builder()
+            var expectedProblem = ProblemDetailsDto.builder()
                     .title("Conflict")
                     .detail("User already exists")
                     .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("username", ProblemDetailsField.builder().error("validation.usernameTaken").build()))
+                    .fields(Map.of("username", ProblemDetailsFieldDto.builder().error("validation.usernameTaken").build()))
                     .build();
 
             assertThat(response).isNotNull();
@@ -148,16 +148,16 @@ public class AuthControllerIT extends ApiTest {
                     .body(registrationDto)
                     .exchange()
                     .expectStatus().isEqualTo(HttpStatus.CONFLICT)
-                    .expectBody(ProblemDetails.class);
+                    .expectBody(ProblemDetailsDto.class);
 
             var response = result.returnResult().getResponseBody();
             var existingUsers = userRepository.findAll();
 
-            var expectedProblem = ProblemDetails.builder()
+            var expectedProblem = ProblemDetailsDto.builder()
                     .title("Conflict")
                     .detail("User already exists")
                     .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("email", ProblemDetailsField.builder().error("validation.emailTaken").build()))
+                    .fields(Map.of("email", ProblemDetailsFieldDto.builder().error("validation.emailTaken").build()))
                     .build();
 
             assertThat(response).isNotNull();
@@ -173,7 +173,7 @@ public class AuthControllerIT extends ApiTest {
                     .body(registrationDto)
                     .exchange()
                     .expectStatus().isEqualTo(HttpStatus.BAD_REQUEST)
-                    .expectBody(ProblemDetails.class)
+                    .expectBody(ProblemDetailsDto.class)
                     .returnResult()
                     .getResponseBody();
 
@@ -286,7 +286,7 @@ public class AuthControllerIT extends ApiTest {
                     .body(new CredentialsDto("unknown", AuthFixtures.PLAIN_PASSWORD))
                     .exchange()
                     .expectStatus().isUnauthorized()
-                    .expectBody(ProblemDetails.class)
+                    .expectBody(ProblemDetailsDto.class)
                     .returnResult()
                     .getResponseBody();
 
@@ -308,7 +308,7 @@ public class AuthControllerIT extends ApiTest {
                     .body(credentialsDto)
                     .exchange()
                     .expectStatus().isUnauthorized()
-                    .expectBody(ProblemDetails.class)
+                    .expectBody(ProblemDetailsDto.class)
                     .returnResult()
                     .getResponseBody();
 
@@ -328,14 +328,14 @@ public class AuthControllerIT extends ApiTest {
             var wrongIdentifierResult = client.post().uri(URI)
                     .body(new CredentialsDto("unknown", AuthFixtures.PLAIN_PASSWORD))
                     .exchange()
-                    .expectBody(ProblemDetails.class)
+                    .expectBody(ProblemDetailsDto.class)
                     .returnResult()
                     .getResponseBody();
 
             var wrongPasswordResult = client.post().uri(URI)
                     .body(new CredentialsDto(UserFixtures.USERNAME, "wrong-password"))
                     .exchange()
-                    .expectBody(ProblemDetails.class)
+                    .expectBody(ProblemDetailsDto.class)
                     .returnResult()
                     .getResponseBody();
 
@@ -347,7 +347,7 @@ public class AuthControllerIT extends ApiTest {
         @ParameterizedTest
         @MethodSource("malformedCredentials")
         void shouldRejectLoginWithMalformedCredentials(CredentialsDto credentialsDto, String invalidFieldName) {
-            var result = client.post().uri(URI).body(credentialsDto).exchange().expectStatus().isBadRequest().expectBody(ProblemDetails.class).returnResult().getResponseBody();
+            var result = client.post().uri(URI).body(credentialsDto).exchange().expectStatus().isBadRequest().expectBody(ProblemDetailsDto.class).returnResult().getResponseBody();
 
             assertThat(result).isNotNull();
             assertThat(result.getTitle()).isEqualTo("Bad Request");

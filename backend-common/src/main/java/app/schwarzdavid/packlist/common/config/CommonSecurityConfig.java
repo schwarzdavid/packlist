@@ -10,7 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 @Configuration
-public class SecurityConfig {
+public class CommonSecurityConfig {
     @Bean
     public Customizer<HttpSecurity> createHttpSecurityCustomizer(JwtDecoder jwtDecoder, SecurityExceptionHandler exceptionHandler) {
         return http -> http

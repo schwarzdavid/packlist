@@ -1,9 +1,11 @@
 package app.schwarzdavid.packlist.user.service.domain.auth;
 
+import app.schwarzdavid.packlist.common.security.UserPrincipal;
 import app.schwarzdavid.packlist.user.service.domain.user.UserService;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserData;
 import app.schwarzdavid.packlist.user.service.domain.user.exception.UserAlreadyExistsException;
+import app.schwarzdavid.packlist.user.service.domain.user.mapper.UserMapper;
 import app.schwarzdavid.packlist.user.service.fixture.AuthFixtures;
 import app.schwarzdavid.packlist.user.service.fixture.UserFixtures;
 import org.junit.jupiter.api.Nested;
@@ -37,6 +39,9 @@ public class AuthServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    private UserMapper userMapper;
 
     @InjectMocks
     private AuthService authService;
@@ -76,6 +81,7 @@ public class AuthServiceTest {
         void shouldLoginUserWithValidCredentials() {
             when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(AuthFixtures.authentication());
             when(jwtService.createJwtForUser(UserFixtures.userData())).thenReturn(AuthFixtures.JWT);
+            when(userMapper.toData(any(UserPrincipal.class))).thenReturn(UserFixtures.userData());
 
             var credentials = AuthFixtures.credentialsData();
             var result = authService.loginUser(credentials);

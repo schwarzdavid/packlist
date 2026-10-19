@@ -1,9 +1,9 @@
 package app.schwarzdavid.packlist.user.service.fixture;
 
+import app.schwarzdavid.packlist.common.security.UserPrincipal;
 import app.schwarzdavid.packlist.user.api.model.RegistrationDto;
 import app.schwarzdavid.packlist.user.service.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.user.service.domain.auth.data.RegistrationData;
-import app.schwarzdavid.packlist.user.service.domain.user.security.UserPrincipal;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 

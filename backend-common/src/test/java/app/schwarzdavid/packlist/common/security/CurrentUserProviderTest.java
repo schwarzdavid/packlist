@@ -1,7 +1,6 @@
-package app.schwarzdavid.packlist.user.service.domain.user;
+package app.schwarzdavid.packlist.common.security;
 
-import app.schwarzdavid.packlist.user.service.domain.user.security.UserPrincipal;
-import app.schwarzdavid.packlist.user.service.fixture.UserFixtures;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CurrentUserProviderTest {
     private CurrentUserProvider currentUserProvider;
@@ -32,27 +28,27 @@ public class CurrentUserProviderTest {
 
     @Test
     void shouldGetUserIdFromUserPrincipal() {
-        var authentication = UsernamePasswordAuthenticationToken.authenticated(new UserPrincipal(UserFixtures.USER_ID, UserFixtures.USERNAME, UserFixtures.EMAIL, UserFixtures.HASHED_PASSWORD), null, List.of());
+        var authentication = UsernamePasswordAuthenticationToken.authenticated(new UserPrincipal(1L, "username", "test@example.com", "hashed-password"), null, List.of());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         var userId = currentUserProvider.getCurrentUserId();
 
-        assertThat(userId).isEqualTo(UserFixtures.USER_ID);
+        Assertions.assertThat(userId).isEqualTo(1L);
     }
 
     @Test
     void shouldGetUserIdFromJwt() {
-        var authentication = new JwtAuthenticationToken(Jwt.withTokenValue("token").header("alg", "none").subject(UserFixtures.USER_ID.toString()).build());
+        var authentication = new JwtAuthenticationToken(Jwt.withTokenValue("token").header("alg", "none").subject("1").build());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         var userId = currentUserProvider.getCurrentUserId();
 
-        assertThat(userId).isEqualTo(UserFixtures.USER_ID);
+        Assertions.assertThat(userId).isEqualTo(1L);
     }
 
     @Test
     void shouldThrowExceptionWhenNoAuthenticationExists() {
-        assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class)
                 .hasMessage("User not authenticated");
     }
@@ -62,7 +58,7 @@ public class CurrentUserProviderTest {
         var authentication = new TestingAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Unknown principal type");
     }
@@ -72,7 +68,7 @@ public class CurrentUserProviderTest {
         var authentication = new TestingAuthenticationToken(new Object(), null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Unknown principal type");
     }
@@ -82,7 +78,7 @@ public class CurrentUserProviderTest {
         var authentication = new JwtAuthenticationToken(Jwt.withTokenValue("token").header("alg", "none").claim("foo", "bar").build());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("JWT has no subject");
     }
@@ -92,7 +88,7 @@ public class CurrentUserProviderTest {
         var authentication = new JwtAuthenticationToken(Jwt.withTokenValue("token").header("alg", "none").subject("abc").build());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
                 .isInstanceOf(NumberFormatException.class);
     }
 }

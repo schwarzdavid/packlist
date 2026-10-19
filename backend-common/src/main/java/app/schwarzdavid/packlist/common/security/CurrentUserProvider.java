@@ -1,6 +1,5 @@
-package app.schwarzdavid.packlist.user.service.domain.user;
+package app.schwarzdavid.packlist.common.security;
 
-import app.schwarzdavid.packlist.user.service.domain.user.security.UserPrincipal;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;

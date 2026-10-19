@@ -1,13 +1,12 @@
 package app.schwarzdavid.packlist.user.service.web;
 
-import app.schwarzdavid.packlist.user.api.model.ProblemDetailsField;
+import app.schwarzdavid.packlist.user.api.model.ProblemDetailsFieldDto;
 import app.schwarzdavid.packlist.user.service.domain.user.exception.UserAlreadyExistsException;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,20 +23,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        var field = ProblemDetailsField.builder()
+        var field = ProblemDetailsFieldDto.builder()
                 .error("validation.%sTaken".formatted(ex.getField().getPropertyName()))
                 .build();
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problemDetail.setDetail(ex.getMessage());
         problemDetail.setProperty("fields", Map.of(ex.getField().getPropertyName(), field));
-        return problemDetail;
-    }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public ProblemDetail handleBadCredentialsException(BadCredentialsException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
-        problemDetail.setDetail("Invalid credentials");
         return problemDetail;
     }
 
@@ -52,7 +44,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
-        var problemDetailsFields = new HashMap<String, ProblemDetailsField>();
+        var problemDetailsFields = new HashMap<String, ProblemDetailsFieldDto>();
         for (FieldError fieldError : ex.getFieldErrors()) {
             var problemDetailsField = ValidationErrorMapper.mapFieldError(fieldError);
             problemDetailsFields.put(fieldError.getField(), problemDetailsField);

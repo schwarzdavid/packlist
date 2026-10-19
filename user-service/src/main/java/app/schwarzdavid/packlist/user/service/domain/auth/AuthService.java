@@ -1,12 +1,13 @@
 package app.schwarzdavid.packlist.user.service.domain.auth;
 
+import app.schwarzdavid.packlist.common.security.UserPrincipal;
 import app.schwarzdavid.packlist.user.service.domain.auth.data.AuthData;
 import app.schwarzdavid.packlist.user.service.domain.auth.data.CredentialsData;
 import app.schwarzdavid.packlist.user.service.domain.auth.data.RegistrationData;
 import app.schwarzdavid.packlist.user.service.domain.user.UserService;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserData;
-import app.schwarzdavid.packlist.user.service.domain.user.security.UserPrincipal;
+import app.schwarzdavid.packlist.user.service.domain.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
     public AuthData registerUser(RegistrationData registrationData) {
         var hashedPassword = passwordEncoder.encode(registrationData.password());
@@ -41,7 +43,9 @@ public class AuthService {
             throw new BadCredentialsException("Invalid credentials");
         }
 
-        return createAuthDataForUser(principal.getUserData());
+        var userData = userMapper.toData(principal);
+
+        return createAuthDataForUser(userData);
     }
 
     private AuthData createAuthDataForUser(UserData userData) {

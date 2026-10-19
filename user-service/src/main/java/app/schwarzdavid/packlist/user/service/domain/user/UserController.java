@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.user.service.domain.user;
 
+import app.schwarzdavid.packlist.common.security.CurrentUserProvider;
 import app.schwarzdavid.packlist.user.api.UserApi;
 import app.schwarzdavid.packlist.user.api.model.UserDto;
 import app.schwarzdavid.packlist.user.service.domain.user.exception.UserNotFoundException;

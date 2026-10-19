@@ -1,7 +1,7 @@
 package app.schwarzdavid.packlist.user.service.config;
 
+import app.schwarzdavid.packlist.common.security.UserPrincipal;
 import app.schwarzdavid.packlist.user.service.domain.user.security.UserCredentialsService;
-import app.schwarzdavid.packlist.user.service.domain.user.security.UserPrincipal;
 import app.schwarzdavid.packlist.user.service.fixture.AuthFixtures;
 import app.schwarzdavid.packlist.user.service.fixture.UserFixtures;
 import org.junit.jupiter.api.Nested;

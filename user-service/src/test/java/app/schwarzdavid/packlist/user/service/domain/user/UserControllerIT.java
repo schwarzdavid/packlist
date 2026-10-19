@@ -1,6 +1,6 @@
 package app.schwarzdavid.packlist.user.service.domain.user;
 
-import app.schwarzdavid.packlist.user.api.model.ProblemDetails;
+import app.schwarzdavid.packlist.user.api.model.ProblemDetailsDto;
 import app.schwarzdavid.packlist.user.api.model.UserDto;
 import app.schwarzdavid.packlist.user.service.fixture.ApiTest;
 import org.junit.jupiter.api.Nested;
@@ -28,7 +28,7 @@ public class UserControllerIT extends ApiTest {
 
         @Test
         void shouldGetUnauthorizedWhenNotLoggedIn() {
-            var result = client.get().uri(URI).exchange().expectStatus().isUnauthorized().expectBody(ProblemDetails.class).returnResult().getResponseBody();
+            var result = client.get().uri(URI).exchange().expectStatus().isUnauthorized().expectBody(ProblemDetailsDto.class).returnResult().getResponseBody();
 
             assertThat(result).isNotNull();
             assertThat(result.getTitle()).isEqualTo("Unauthorized");

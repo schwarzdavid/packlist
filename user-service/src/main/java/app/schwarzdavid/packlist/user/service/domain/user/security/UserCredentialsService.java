@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.user.service.domain.user.security;
 
+import app.schwarzdavid.packlist.common.security.UserPrincipal;
 import app.schwarzdavid.packlist.user.service.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;

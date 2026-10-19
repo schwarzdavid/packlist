@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.user.service.domain.user.mapper;
 
+import app.schwarzdavid.packlist.common.security.UserPrincipal;
 import app.schwarzdavid.packlist.user.api.model.UserDto;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserCreateData;
 import app.schwarzdavid.packlist.user.service.domain.user.data.UserData;
@@ -14,6 +15,8 @@ public interface UserMapper {
     UserEntity toEntity(UserCreateData userCreateData);
 
     UserData toData(UserEntity userEntity);
+
+    UserData toData(UserPrincipal userPrincipal);
 
     UserDto toDto(UserData userData);
 }
