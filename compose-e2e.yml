@@ -19,7 +19,7 @@ services:
       context: ./
       dockerfile: user-service/Dockerfile
     healthcheck:
-      test: [ "CMD", "wget",  "-q", "--spider", "http://localhost:8882/actuator/health" ]
+      test: [ "CMD", "wget",  "-q", "--spider", "http://127.0.0.1:8882/actuator/health" ]
     environment:
       USER_POSTGRES_DB: users_db
       USER_POSTGRES_USER: users
