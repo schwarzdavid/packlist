@@ -3,8 +3,10 @@ user-service:
     password:
       strength: 10
     jwt:
-      secret: ${JWT_SECRET:random-secret-with-atleast-256-bytes} # TODO: remove default value
+      private-key: ${JWT_PRIVATE_KEY_PATH:classpath:keys/private.pem}
+      public-key: ${JWT_PUBLIC_KEY_PATH:classpath:keys/public.pem}
       ttl: 31d
+      issuer: ${JWT_ISSUER_URL:http://localhost:8881}
 
 spring:
   application:

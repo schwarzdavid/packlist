@@ -17,6 +17,7 @@ public class SecurityConfig {
                     // TODO: replace with @PublicEndpoint annotation
                     matcher.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();
                     matcher.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+                    matcher.requestMatchers(HttpMethod.GET, "/.well-known/**").permitAll();
                     matcher.requestMatchers(HttpMethod.GET, "/actuator/**").permitAll();
                     matcher.anyRequest().authenticated();
                 })

@@ -26,10 +26,20 @@ services:
       USER_POSTGRES_PASSWORD: users_pw
       USER_POSTGRES_HOST: postgres-user
       USER_POSTGRES_PORT: 5432
-      JWT_SECRET: secret
     depends_on:
       postgres-user:
         condition: service_healthy
+    secrets:
+      - source: private_key
+        uid: 10001
+        gid: 10001
+        mode: 0640
+        target: private.pem
+      - source: public_key
+        uid: 10001
+        gid: 10001
+        mode: 0644
+        target: public.pem
     expose:
       - 8881
   frontend:
@@ -40,3 +50,8 @@ services:
       - user-service
     ports:
       - 80
+secrets:
+  private_key:
+    file: ./user-service/src/test/resources/keys/private.pem
+  public_key:
+    file: ./user-service/src/test/resources/keys/public.pem

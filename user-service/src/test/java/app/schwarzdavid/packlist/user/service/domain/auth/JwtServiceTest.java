@@ -1,17 +1,16 @@
 package app.schwarzdavid.packlist.user.service.domain.auth;
 
+import app.schwarzdavid.packlist.user.service.config.properties.JwtProperties;
 import app.schwarzdavid.packlist.user.service.fixture.UserFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Duration;
 
@@ -22,18 +21,19 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
+    private static final JwtProperties jwtProperties = new JwtProperties(null, null, Duration.ofDays(10), "http://issuer.com");
+
     @Mock
     private JwtEncoder jwtEncoder;
 
     @Mock
     private Jwt jwt;
 
-    @InjectMocks
     private JwtService jwtService;
 
     @BeforeEach
     void setup() {
-        ReflectionTestUtils.setField(jwtService, "secretTTL", Duration.ofDays(10));
+        jwtService = new JwtService(jwtEncoder, jwtProperties);
     }
 
     @Test
@@ -54,5 +54,7 @@ public class JwtServiceTest {
         assertThat(claims.getIssuedAt()).isNotNull();
         assertThat(claims.getExpiresAt()).isNotNull();
         assertThat(Duration.between(claims.getIssuedAt(), claims.getExpiresAt())).isEqualTo(Duration.ofDays(10));
+        assertThat(claims.getIssuer()).isNotNull();
+        assertThat(claims.getIssuer().toString()).isEqualTo(jwtProperties.issuer());
     }
 }
