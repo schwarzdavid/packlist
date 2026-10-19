@@ -1,8 +1,8 @@
 import {AxiosError, AxiosHeaders, HttpStatusCode} from "axios";
-import type {ProblemDetails} from "@packlist/users-api";
+import type {ProblemDetailsDto} from "@packlist/users-api";
 
-export function createAxiosUnauthorizedError(): AxiosError<ProblemDetails> {
-  return new AxiosError<ProblemDetails>("Request failed with status code 401", AxiosError.ERR_BAD_REQUEST, undefined, undefined, {
+export function createAxiosUnauthorizedError(): AxiosError<ProblemDetailsDto> {
+  return new AxiosError<ProblemDetailsDto>("Request failed with status code 401", AxiosError.ERR_BAD_REQUEST, undefined, undefined, {
     status: HttpStatusCode.Unauthorized,
     statusText: "Unauthorized",
     data: {status: HttpStatusCode.Unauthorized, title: 'Unauthorized'},
@@ -11,8 +11,8 @@ export function createAxiosUnauthorizedError(): AxiosError<ProblemDetails> {
   })
 }
 
-export function createAxiosInternalServerError(): AxiosError<ProblemDetails> {
-  return new AxiosError<ProblemDetails>("Request failed with status code 500", AxiosError.ERR_BAD_RESPONSE, undefined, undefined, {
+export function createAxiosInternalServerError(): AxiosError<ProblemDetailsDto> {
+  return new AxiosError<ProblemDetailsDto>("Request failed with status code 500", AxiosError.ERR_BAD_RESPONSE, undefined, undefined, {
     status: HttpStatusCode.InternalServerError,
     statusText: "Unauthorized",
     data: {status: HttpStatusCode.InternalServerError, title: 'Internal Server Error'},
@@ -21,7 +21,7 @@ export function createAxiosInternalServerError(): AxiosError<ProblemDetails> {
   })
 }
 
-export function createAxiosConflictError(field: string): AxiosError<ProblemDetails> {
+export function createAxiosConflictError(field: string): AxiosError<ProblemDetailsDto> {
   return new AxiosError("Request failed with status code 409", AxiosError.ERR_BAD_REQUEST, undefined, undefined, {
     status: HttpStatusCode.Conflict,
     statusText: "Conflict",
@@ -33,7 +33,7 @@ export function createAxiosConflictError(field: string): AxiosError<ProblemDetai
           error: `validation.${field}Taken`
         }
       }
-    } satisfies ProblemDetails,
+    } satisfies ProblemDetailsDto,
     headers: {},
     config: {headers: new AxiosHeaders()}
   })
