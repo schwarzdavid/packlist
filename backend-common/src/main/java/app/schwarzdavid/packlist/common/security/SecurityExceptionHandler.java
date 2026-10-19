@@ -1,4 +1,4 @@
-package app.schwarzdavid.packlist.user.service.web.security;
+package app.schwarzdavid.packlist.common.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
