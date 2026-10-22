@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/test-user"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{{{jwt alg='RS265' sub='1' maxAge='1 hours'}}}",
+    "transformers": [
+      "response-template"
+    ]
+  }
+}
