@@ -17,7 +17,7 @@ public class JwtDecoderConfig {
         if (!issuerHost.startsWith("http")) {
             throw new IllegalArgumentException("USER_SERVICE_HOSTNAME must be a valid URL");
         }
-        var issuerUri = UriComponentsBuilder.fromUriString(issuerHost).path("/.well-known/jwks.json").toString();
+        var issuerUri = UriComponentsBuilder.fromUriString(issuerHost).path("/.well-known/jwks.json").build().toString();
 
         return NimbusJwtDecoder.withJwkSetUri(issuerUri).build();
     }

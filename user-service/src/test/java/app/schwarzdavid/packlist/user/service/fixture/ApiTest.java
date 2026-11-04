@@ -45,11 +45,11 @@ public abstract class ApiTest {
         var tableNames = new HashSet<String>();
         var mappingMetamodel = entityManagerFactory.unwrap(SessionFactoryImplementor.class).getMappingMetamodel();
 
-        mappingMetamodel.forEachEntityDescriptor(entity -> {
-            tableNames.add(entity.getTableName());
-        });
+        mappingMetamodel.forEachEntityDescriptor(entity -> tableNames.add(entity.getTableName()));
 
+        logger.info("Truncating tables {}", String.join(", ", tableNames));
         jdbcTemplate.execute("TRUNCATE TABLE %s RESTART IDENTITY CASCADE".formatted(String.join(", ", tableNames)));
+        logger.info("Tables truncated");
     }
 
     protected UserData createUser() {

@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.list.service.fixture;
 
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.test.context.TestPropertySource;
@@ -22,6 +23,7 @@ import java.lang.annotation.Target;
         )
 )
 @TestPropertySource(properties = "management.server.port=-1")
-@ImportTestcontainers(ServiceTestcontainers.class)
+@ImportTestcontainers(ListServiceTestcontainers.class)
+@AutoConfigureRestTestClient
 public @interface IntegrationTest {
 }

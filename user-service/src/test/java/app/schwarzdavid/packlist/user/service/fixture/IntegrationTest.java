@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ImportTestcontainers(ServiceTestcontainers.class)
+@ImportTestcontainers(UserServiceTestcontainers.class)
 @TestPropertySource(properties = "management.server.port=-1")
 @AutoConfigureRestTestClient
 public @interface IntegrationTest {

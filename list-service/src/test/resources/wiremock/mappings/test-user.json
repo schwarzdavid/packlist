@@ -6,9 +6,9 @@
   "response": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json"
+      "Content-Type": "plain/text"
     },
-    "body": "{{{jwt alg='RS265' sub='1' maxAge='1 hours'}}}",
+    "body": "{{{jwt alg='RS256' sub='1' maxAge='1 hours'}}}",
     "transformers": [
       "response-template"
     ]

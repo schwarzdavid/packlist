@@ -6,7 +6,7 @@ info:
 security:
   - bearerAuth: [ ]
 paths:
-  /api/templates/:
+  /api/templates:
     post:
       operationId: createTemplate
       tags:
@@ -26,7 +26,7 @@ paths:
                 $ref: '#/components/schemas/TemplateDto'
         default:
           $ref: '#/components/responses/Problem'
-  /api/lists/:
+  /api/lists:
     post:
       operationId: createList
       tags:
