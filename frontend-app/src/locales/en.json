@@ -22,6 +22,17 @@
       "create": "Create list"
     }
   },
+  "templates": {
+    "list": {
+      "empty": {
+        "title": "No templates created yet",
+        "description": "Create your first template to get started."
+      }
+    },
+    "cta": {
+      "create": "Create template"
+    }
+  },
   "navigation": {
     "lists": "Lists",
     "templates": "Templates",
@@ -38,7 +49,9 @@
     "login": "Log in",
     "register": "Sign up",
     "go-back": "Go back",
-    "go-home": "Go to Stow"
+    "go-home": "Go to Stow",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "validation": {
     "required": "This field is required",
