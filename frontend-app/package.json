@@ -21,7 +21,7 @@
     "@packlist/lists-api": "workspace:*",
     "@packlist/users-api": "workspace:*",
     "@pinia/colada": "^1.4.6",
-    "@schwarzdavid/ui-kit": "0.0.1-alpha.20",
+    "@schwarzdavid/ui-kit": "0.0.1-alpha.21",
     "@vee-validate/zod": "^4.15.1",
     "@vueuse/core": "^15.0.0",
     "@vueuse/router": "^15.0.0",

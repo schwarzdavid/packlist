@@ -1,9 +1,9 @@
 package app.schwarzdavid.packlist.user.service;
 
-import app.schwarzdavid.packlist.user.service.fixture.IntegrationTest;
+import app.schwarzdavid.packlist.user.service.fixture.UserServiceIntegrationTest;
 import org.junit.jupiter.api.Test;
 
-@IntegrationTest
+@UserServiceIntegrationTest
 public class ApplicationTest {
 
     @Test

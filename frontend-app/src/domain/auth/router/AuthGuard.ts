@@ -34,6 +34,10 @@ export const authGuard: NavigationGuard = async (to) => {
     // TODO: redirect to error page. Until then proceed to next route
     throw err
   }
+
+  if (!authStore.user) {
+    return getLoginLocation(to)
+  }
 }
 
 function getLoginLocation(to: RouteLocationNormalizedGeneric): RouteLocationRaw {

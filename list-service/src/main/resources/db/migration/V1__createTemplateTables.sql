@@ -2,7 +2,8 @@ CREATE TABLE templates
 (
     template_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name        VARCHAR(255) NOT NULL,
-    icon        VARCHAR(255)
+    icon       VARCHAR(255),
+    created_by BIGINT NOT NULL
 );
 
 CREATE TABLE template_items

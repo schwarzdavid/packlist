@@ -19,7 +19,7 @@ public class UserController implements UserApi {
 
     @Override
     public ResponseEntity<UserDto> getCurrentUser() {
-        var currentUserId = currentUserProvider.getCurrentUserId();
+        var currentUserId = currentUserProvider.getUserId();
         try {
             var userData = userService.getUserById(currentUserId);
             var userDto = userMapper.toDto(userData);

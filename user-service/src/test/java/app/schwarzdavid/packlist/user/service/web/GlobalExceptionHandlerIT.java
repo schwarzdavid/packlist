@@ -1,7 +1,7 @@
 package app.schwarzdavid.packlist.user.service.web;
 
 import app.schwarzdavid.packlist.user.api.model.ProblemDetailsDto;
-import app.schwarzdavid.packlist.user.service.fixture.IntegrationTest;
+import app.schwarzdavid.packlist.user.service.fixture.UserServiceIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@IntegrationTest
+@UserServiceIntegrationTest
 public class GlobalExceptionHandlerIT {
     @Autowired
     private RestTestClient client;

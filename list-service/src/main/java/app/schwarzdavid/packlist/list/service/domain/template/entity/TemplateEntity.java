@@ -3,7 +3,7 @@ package app.schwarzdavid.packlist.list.service.domain.template.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Set;
+import java.util.List;
 
 @Builder
 @Getter
@@ -21,6 +21,9 @@ public class TemplateEntity {
 
     private String icon;
 
-    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY)
-    private Set<TemplateItemEntity> items;
+    @Column(name = "created_by")
+    private Long createdBy;
+
+    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private List<TemplateItemEntity> items;
 }

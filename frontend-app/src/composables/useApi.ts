@@ -18,7 +18,6 @@ function ensureClient(): Client {
     const authStore = useAuthStore()
     client = createClient({
       auth(auth) {
-        console.log(auth)
         if (auth.scheme !== 'bearer') {
           return
         }

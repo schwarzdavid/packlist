@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class TemplateController implements TemplateApi {
@@ -22,5 +24,10 @@ public class TemplateController implements TemplateApi {
         var templateDto = templateMapper.toDto(template);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(templateDto);
+    }
+
+    @Override
+    public ResponseEntity<List<TemplateDto>> getTemplates() {
+        return null;
     }
 }

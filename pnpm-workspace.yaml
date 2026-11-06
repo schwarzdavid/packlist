@@ -9,10 +9,10 @@ allowBuilds:
   esbuild: true
   protobufjs: false
   ssh2: false
-  vue-demi: set this to true or false
+  vue-demi: false
 includeWorkspaceRoot: true
 minimumReleaseAgeExclude:
-  - '@schwarzdavid/ui-kit@0.0.1-alpha.19 || 0.0.1-alpha.20'
+  - '@schwarzdavid/ui-kit@0.0.1-alpha.19 || 0.0.1-alpha.20 || 0.0.1-alpha.21'
 tasks:
   dev:
     dependsOn:

@@ -1,9 +1,8 @@
 <template>
   <VCardText>
-    <form @submit.prevent>
+    <form @submit.prevent="onSubmit">
       <VTextField v-model="name" :error-messages="errors.name" label="Name"/>
       <StowIconSelect v-model="icon" label="Icon"/>
-      {{ icon }}
     </form>
   </VCardText>
 </template>
@@ -16,10 +15,15 @@
 
   const model = defineModel<TemplateCreateDto>({required: true})
 
-  const {defineField, errors} = useForm({
-    validationSchema: toTypedSchema(zTemplateCreateDto)
+  const {defineField, errors, handleSubmit} = useForm({
+    validationSchema: toTypedSchema(zTemplateCreateDto),
+    initialValues: model.value,
   })
 
   const [name] = defineField('name')
   const [icon] = defineField('icon')
+
+  const onSubmit = handleSubmit(async (values) => {
+    model.value = values as TemplateCreateDto
+  })
 </script>

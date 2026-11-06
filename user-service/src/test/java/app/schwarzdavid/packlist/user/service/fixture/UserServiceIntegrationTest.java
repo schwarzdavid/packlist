@@ -1,5 +1,7 @@
 package app.schwarzdavid.packlist.user.service.fixture;
 
+import app.schwarzdavid.packlist.common.test.extension.DatabaseTruncateExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
@@ -16,5 +18,6 @@ import java.lang.annotation.Target;
 @ImportTestcontainers(UserServiceTestcontainers.class)
 @TestPropertySource(properties = "management.server.port=-1")
 @AutoConfigureRestTestClient
-public @interface IntegrationTest {
+@ExtendWith(DatabaseTruncateExtension.class)
+public @interface UserServiceIntegrationTest {
 }

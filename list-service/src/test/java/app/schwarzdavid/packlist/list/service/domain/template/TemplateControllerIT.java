@@ -25,7 +25,7 @@ public class TemplateControllerIT extends ApiTest {
         @Test
         void shouldCreateTemplate() {
             // TODO: make it parametrized
-            var newTemplate = new TemplateCreateData("foo", null, List.of(), List.of());
+            var newTemplate = new TemplateCreateData("foo", null, List.of());
 
             var result = client.post().uri(URI).body(newTemplate)
                     .header("Authorization", "Bearer %s".formatted(getJwt()))
@@ -45,7 +45,7 @@ public class TemplateControllerIT extends ApiTest {
 
         @Test
         void shouldCreateTemplateIfTemplateWithSameNameAlreadyExists() {
-            var existingTemplate = templateRepository.save(new TemplateEntity(null, "foo", "icon", null));
+            var existingTemplate = templateRepository.save(new TemplateEntity(null, "foo", "icon", 1L, null));
             var templateCreateDto = TemplateCreateDto.builder().name("foo").build();
 
             var result = client.post().uri(URI).body(templateCreateDto)
@@ -59,7 +59,6 @@ public class TemplateControllerIT extends ApiTest {
             assertThat(result.getTemplateId()).isNotEqualTo(existingTemplate.getTemplateId());
             assertThat(result.getName()).isEqualTo("foo");
             assertThat(result.getIcon()).isEqualTo(null);
-            assertThat(result.getInherits()).isEmpty();
         }
     }
 }

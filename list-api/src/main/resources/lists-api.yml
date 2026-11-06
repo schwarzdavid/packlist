@@ -7,6 +7,21 @@ security:
   - bearerAuth: [ ]
 paths:
   /api/templates:
+    get:
+      operationId: getTemplates
+      tags:
+        - template
+      responses:
+        200:
+          description: List of all created templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TemplateDto'
+        default:
+          $ref: '#/components/responses/Problem'
     post:
       operationId: createTemplate
       tags:
@@ -66,13 +81,8 @@ components:
         - $ref: '#/components/schemas/TemplateTagDto'
         - type: object
           required:
-            - inherits
             - items
           properties:
-            inherits:
-              type: array
-              items:
-                $ref: '#/components/schemas/TemplateTagDto'
             items:
               type: array
               items:
@@ -103,11 +113,6 @@ components:
           type: string
           minLength: 1
           maxLength: 255
-        inherits:
-          type: array
-          items:
-            type: integer
-            format: int64
         icon:
           type: string
           minLength: 1

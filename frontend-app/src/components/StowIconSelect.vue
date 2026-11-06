@@ -5,11 +5,11 @@
         <div class="stow-icon-select__icon-grid">
           <VItem v-if="!required" v-slot="{toggle, isSelected}" :value="null">
             <VBtn :active="isSelected" class="stow-icon-select__icon" color="warning"
-                  icon="mdi-selection-off" variant="text" @click="toggle"/>
+                  icon="mdi-selection-off" rounded="pill" variant="text" @click="toggle"/>
           </VItem>
           <VItem v-for="icon in AVAILABLE_ICONS" :key="icon" v-slot="{toggle, isSelected}"
                  :value="icon">
-            <VBtn :active="isSelected" :icon="icon" active-color="primary"
+            <VBtn :active="isSelected" :icon="icon" active-color="primary" rounded="pill"
                   class="stow-icon-select__icon" variant="text" @click="toggle"/>
           </VItem>
         </div>

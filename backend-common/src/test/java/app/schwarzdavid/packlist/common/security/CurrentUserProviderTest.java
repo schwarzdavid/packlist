@@ -31,7 +31,7 @@ public class CurrentUserProviderTest {
         var authentication = UsernamePasswordAuthenticationToken.authenticated(new UserPrincipal(1L, "username", "test@example.com", "hashed-password"), null, List.of());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        var userId = currentUserProvider.getCurrentUserId();
+        var userId = currentUserProvider.getUserId();
 
         Assertions.assertThat(userId).isEqualTo(1L);
     }
@@ -41,14 +41,14 @@ public class CurrentUserProviderTest {
         var authentication = new JwtAuthenticationToken(Jwt.withTokenValue("token").header("alg", "none").subject("1").build());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        var userId = currentUserProvider.getCurrentUserId();
+        var userId = currentUserProvider.getUserId();
 
         Assertions.assertThat(userId).isEqualTo(1L);
     }
 
     @Test
     void shouldThrowExceptionWhenNoAuthenticationExists() {
-        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getUserId())
                 .isInstanceOf(AuthenticationCredentialsNotFoundException.class)
                 .hasMessage("User not authenticated");
     }
@@ -58,7 +58,7 @@ public class CurrentUserProviderTest {
         var authentication = new TestingAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Unknown principal type");
     }
@@ -68,7 +68,7 @@ public class CurrentUserProviderTest {
         var authentication = new TestingAuthenticationToken(new Object(), null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Unknown principal type");
     }
@@ -78,7 +78,7 @@ public class CurrentUserProviderTest {
         var authentication = new JwtAuthenticationToken(Jwt.withTokenValue("token").header("alg", "none").claim("foo", "bar").build());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("JWT has no subject");
     }
@@ -88,7 +88,7 @@ public class CurrentUserProviderTest {
         var authentication = new JwtAuthenticationToken(Jwt.withTokenValue("token").header("alg", "none").subject("abc").build());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        Assertions.assertThatThrownBy(() -> currentUserProvider.getCurrentUserId())
+        Assertions.assertThatThrownBy(() -> currentUserProvider.getUserId())
                 .isInstanceOf(NumberFormatException.class);
     }
 }

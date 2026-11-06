@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CurrentUserProvider {
-    public Long getCurrentUserId() {
+    public Long getUserId() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new AuthenticationCredentialsNotFoundException("User not authenticated");

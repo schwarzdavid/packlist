@@ -2,6 +2,8 @@ package app.schwarzdavid.packlist.list.service.domain.template.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -20,5 +22,6 @@ public class TemplateItemEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "template_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private TemplateEntity template;
 }
