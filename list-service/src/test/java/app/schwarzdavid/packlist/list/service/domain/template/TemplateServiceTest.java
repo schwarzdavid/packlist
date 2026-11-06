@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -90,7 +90,6 @@ public class TemplateServiceTest {
             entity.setTemplateId(1L);
             var itemIndex = 0L;
             for (var item : entity.getItems()) {
-                item.setTemplate(entity);
                 item.setTemplateItemId(++itemIndex);
             }
             return entity;
@@ -99,8 +98,15 @@ public class TemplateServiceTest {
         var result = templateService.createTemplate(createData);
 
         assertThat(result).isInstanceOf(TemplateData.class);
-        assertThat(result.items().size()).isEqualTo(2);
-        assertThat(result.items().get(0).name()).isEqualTo("item1");
-        assertThat(result.items().get(1).name()).isEqualTo("item2");
+        assertThat(result.items()).elements().satisfiesExactly(
+                item -> {
+                    assertThat(item.templateItemId()).isEqualTo(1L);
+                    assertThat(item.name()).isEqualTo("item1");
+                },
+                item -> {
+                    assertThat(item.templateItemId()).isEqualTo(2L);
+                    assertThat(item.name()).isEqualTo("item2");
+                }
+        );
     }
 }

@@ -28,6 +28,10 @@ public class TemplateService {
                         .build()).collect(Collectors.toList()))
                 .build();
 
+        for (var item : entity.getItems()) {
+            item.setTemplate(entity);
+        }
+
         entity = templateRepository.save(entity);
 
         return templateMapper.toData(entity);
