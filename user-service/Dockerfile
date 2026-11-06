@@ -8,6 +8,7 @@ RUN ./mvnw --version
 
 COPY pom.xml ./
 COPY backend-common/pom.xml ./backend-common/pom.xml
+COPY backend-common-test/pom.xml ./backend-common-test/pom.xml
 COPY user-service/pom.xml ./user-service/
 COPY user-api/pom.xml ./user-api/
 COPY user-client-java/pom.xml ./user-client-java/

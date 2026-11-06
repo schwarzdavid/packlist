@@ -4,7 +4,7 @@ import app.schwarzdavid.packlist.user.service.fixture.UserServiceIntegrationTest
 import org.junit.jupiter.api.Test;
 
 @UserServiceIntegrationTest
-public class ApplicationTest {
+public class ApplicationIT {
 
     @Test
     void contextLoads() {
