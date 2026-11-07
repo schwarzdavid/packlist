@@ -9,4 +9,7 @@ public record TemplateCreateData(
         @Nullable String icon,
         List<String> items
 ) {
+    public TemplateCreateData {
+        items = items == null ? List.of() : items;
+    }
 }

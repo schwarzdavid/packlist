@@ -2,14 +2,17 @@ package app.schwarzdavid.packlist.list.service.domain.template;
 
 import app.schwarzdavid.packlist.list.api.model.TemplateCreateDto;
 import app.schwarzdavid.packlist.list.api.model.TemplateDto;
-import app.schwarzdavid.packlist.list.service.domain.template.data.TemplateCreateData;
 import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateEntity;
 import app.schwarzdavid.packlist.list.service.fixture.ApiTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,18 +25,41 @@ public class TemplateControllerIT extends ApiTest {
     public class CreateTemplate {
         private static final String URI = "/api/templates";
 
-        @Test
-        void shouldCreateTemplate() {
-            // TODO: make it parametrized
-            var newTemplate = new TemplateCreateData("foo", null, List.of());
+        private static Stream<Arguments> validCreateTemplateDtos() {
+            return Stream.of(
+                    Arguments.of(TemplateCreateDto.builder().name("foo").icon(null).build()),
+                    Arguments.of(TemplateCreateDto.builder().name("bar").icon("icon").build()),
+                    Arguments.of(TemplateCreateDto.builder().name("baz").icon("icon").items(null).build()),
+                    Arguments.of(TemplateCreateDto.builder().name("baz").icon("icon").items(List.of("item-1", "item-2")).build())
+            );
+        }
 
-            var result = client.post().uri(URI).body(newTemplate)
+        private static Stream<Arguments> invalidCreateTemplateDtos() {
+            return Stream.of(
+                    Arguments.of(new Object()),
+                    Arguments.of(TemplateCreateDto.builder().name(null).build())
+            );
+        }
+
+        @ParameterizedTest
+        @MethodSource("validCreateTemplateDtos")
+        void shouldCreateTemplate(TemplateCreateDto createTemplateDto) {
+            var result = client.post().uri(URI).body(createTemplateDto)
                     .header("Authorization", "Bearer %s".formatted(getJwt()))
                     .exchange()
                     .expectStatus().isCreated()
                     .returnResult();
 
             assertThat(result).isNotNull();
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidCreateTemplateDtos")
+        void shouldRejectInvalidTemplates(Object body) {
+            client.post().uri(URI).body(body)
+                    .header("Authorization", "Bearer %s".formatted(getJwt()))
+                    .exchange()
+                    .expectStatus().isBadRequest();
         }
 
         @Test
