@@ -2,6 +2,7 @@ package app.schwarzdavid.packlist.list.service.domain.template;
 
 import app.schwarzdavid.packlist.list.api.model.TemplateCreateDto;
 import app.schwarzdavid.packlist.list.api.model.TemplateDto;
+import app.schwarzdavid.packlist.list.api.model.TemplateItemDto;
 import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateEntity;
 import app.schwarzdavid.packlist.list.service.fixture.ApiTest;
 import org.junit.jupiter.api.Nested;
@@ -48,9 +49,21 @@ public class TemplateControllerIT extends ApiTest {
                     .header("Authorization", "Bearer %s".formatted(getJwt()))
                     .exchange()
                     .expectStatus().isCreated()
-                    .returnResult();
+                    .returnResult(TemplateDto.class)
+                    .getResponseBody();
 
             assertThat(result).isNotNull();
+            assertThat(result.getName()).isEqualTo(createTemplateDto.getName());
+            assertThat(result.getIcon()).isEqualTo(createTemplateDto.getIcon());
+            assertThat(result.getTemplateId()).isPositive();
+            assertThat(result.getItems())
+                    .isNotNull()
+                    .allSatisfy(item -> {
+                        assertThat(item).isNotNull();
+                        assertThat(item.getTemplateItemId()).isPositive();
+                        assertThat(item.getName()).isNotNull();
+                    })
+                    .extracting(TemplateItemDto::getName).containsExactlyElementsOf(createTemplateDto.getItems() == null ? List.of() : createTemplateDto.getItems());
         }
 
         @ParameterizedTest
