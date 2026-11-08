@@ -11,9 +11,13 @@ public abstract class ApiTest {
     @Value("${USER_SERVICE_HOSTNAME}")
     private String userServiceHostname;
 
-    protected String getJwt() {
-        return client.get().uri("%s/test-user".formatted(userServiceHostname)).exchange()
+    protected String getJwt(Long userId) {
+        return client.get().uri("%s/test-user?userId=%d".formatted(userServiceHostname, userId)).exchange()
                 .expectStatus().isOk()
                 .returnResult(String.class).getResponseBody();
+    }
+
+    protected String getJwt() {
+        return getJwt(1L);
     }
 }

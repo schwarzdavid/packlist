@@ -1,14 +1,14 @@
 {
   "request": {
     "method": "GET",
-    "url": "/test-user"
+    "urlPath": "/test-user"
   },
   "response": {
     "status": 200,
     "headers": {
-      "Content-Type": "plain/text"
+      "Content-Type": "text/plain"
     },
-    "body": "{{{jwt alg='RS256' sub='1' maxAge='1 hours'}}}",
+    "body": "{{{jwt alg='RS256' sub=request.query.userId.first maxAge='1 hours'}}}",
     "transformers": [
       "response-template"
     ]

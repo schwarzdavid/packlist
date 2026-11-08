@@ -3,7 +3,9 @@ package app.schwarzdavid.packlist.list.service.domain.template;
 import app.schwarzdavid.packlist.list.api.model.TemplateCreateDto;
 import app.schwarzdavid.packlist.list.api.model.TemplateDto;
 import app.schwarzdavid.packlist.list.api.model.TemplateItemDto;
+import app.schwarzdavid.packlist.list.api.model.TemplatePreviewDto;
 import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateEntity;
+import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateItemEntity;
 import app.schwarzdavid.packlist.list.service.fixture.ApiTest;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -98,6 +102,69 @@ public class TemplateControllerIT extends ApiTest {
             assertThat(result.getTemplateId()).isNotEqualTo(existingTemplate.getTemplateId());
             assertThat(result.getName()).isEqualTo("foo");
             assertThat(result.getIcon()).isEqualTo(null);
+        }
+    }
+
+    @Nested
+    public class GetTemplatePreviews {
+        private static final String URI = "/api/templates";
+
+        @Test
+        void shouldGetTemplatePreviews() {
+            var templateEntity = TemplateEntity.builder().name("foo").icon("bar").createdBy(2L).items(new ArrayList<>()).build();
+            for (int i = 1; i < 3; i++) {
+                var item = TemplateItemEntity.builder().name("item-%d".formatted(i)).template(templateEntity).build();
+                templateEntity.getItems().add(item);
+            }
+            templateRepository.save(templateEntity);
+
+            var templates = client.get().uri(URI).header("Authorization", "Bearer %s".formatted(getJwt(2L))).exchange().expectStatus().isOk().expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
+            }).returnResult().getResponseBody();
+
+            assertThat(templates).satisfiesExactly(template -> {
+                assertThat(template.getTemplateId()).isPositive();
+                assertThat(template.getName()).isEqualTo("foo");
+                assertThat(template.getIcon()).isEqualTo("bar");
+                assertThat(template.getItemsCount()).isEqualTo(2);
+            });
+        }
+
+        @Test
+        void shouldRejectUnauthenticatedRequests() {
+            client.get().uri(URI).exchange().expectStatus().isUnauthorized();
+        }
+
+        @Test
+        void shouldStillHaveIconSetIfNull() {
+            templateRepository.save(TemplateEntity.builder().name("foo").icon(null).createdBy(2L).items(List.of()).build());
+
+            var templates = client.get().uri(URI).header("Authorization", "Bearer %s".formatted(getJwt(2L))).exchange().expectStatus().isOk().expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
+            }).returnResult().getResponseBody();
+
+            assertThat(templates).satisfiesExactly(template -> {
+                assertThat(template.getTemplateId()).isPositive();
+                assertThat(template.getName()).isEqualTo("foo");
+                assertThat(template.getIcon()).isNull();
+                assertThat(template.getItemsCount()).isEqualTo(0);
+            });
+        }
+
+        @Test
+        void shouldReturnEmptyListIfNoTemplatesExist() {
+            var templates = client.get().uri(URI).header("Authorization", "Bearer %s".formatted(getJwt())).exchange().expectStatus().isOk().expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
+            }).returnResult().getResponseBody();
+
+            assertThat(templates).isEmpty();
+        }
+
+        @Test
+        void shouldIgnoreOtherUsersTemplates() {
+            templateRepository.save(TemplateEntity.builder().name("foo").icon(null).createdBy(2L).items(List.of()).build());
+
+            var templates = client.get().uri(URI).header("Authorization", "Bearer %s".formatted(getJwt())).exchange().expectStatus().isOk().expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
+            }).returnResult().getResponseBody();
+
+            assertThat(templates).isEmpty();
         }
     }
 }

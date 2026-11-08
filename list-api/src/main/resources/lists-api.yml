@@ -8,6 +8,7 @@ security:
 paths:
   /api/templates:
     get:
+      # TODO: add pagination
       operationId: getTemplates
       tags:
         - template
