@@ -1,8 +1,10 @@
 package app.schwarzdavid.packlist.list.service.domain.template;
 
+import app.schwarzdavid.packlist.common.security.CurrentUserProvider;
 import app.schwarzdavid.packlist.list.api.TemplateApi;
 import app.schwarzdavid.packlist.list.api.model.TemplateCreateDto;
 import app.schwarzdavid.packlist.list.api.model.TemplateDto;
+import app.schwarzdavid.packlist.list.api.model.TemplatePreviewDto;
 import app.schwarzdavid.packlist.list.service.domain.template.mapper.TemplateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,10 +18,11 @@ import java.util.List;
 public class TemplateController implements TemplateApi {
     private final TemplateMapper templateMapper;
     private final TemplateService templateService;
+    private final CurrentUserProvider currentUserProvider;
 
     @Override
     public ResponseEntity<TemplateDto> createTemplate(TemplateCreateDto templateCreateDto) {
-        var createData = templateMapper.toData(templateCreateDto);
+        var createData = templateMapper.toData(templateCreateDto, currentUserProvider.getUserId());
         var template = templateService.createTemplate(createData);
         var templateDto = templateMapper.toDto(template);
 
@@ -27,7 +30,11 @@ public class TemplateController implements TemplateApi {
     }
 
     @Override
-    public ResponseEntity<List<TemplateDto>> getTemplates() {
-        return null;
+    public ResponseEntity<List<TemplatePreviewDto>> getTemplates() {
+        var userId = currentUserProvider.getUserId();
+        var templatePreviews = templateService.getTemplatePreviewsForUser(userId);
+        var templatePreviewDtos = templateMapper.toDto(templatePreviews);
+
+        return ResponseEntity.ok(templatePreviewDtos);
     }
 }

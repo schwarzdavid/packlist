@@ -7,7 +7,8 @@ import java.util.List;
 public record TemplateCreateData(
         String name,
         @Nullable String icon,
-        List<String> items
+        List<String> items,
+        Long createdBy
 ) {
     public TemplateCreateData {
         items = items == null ? List.of() : items;

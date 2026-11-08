@@ -1,6 +1,5 @@
 package app.schwarzdavid.packlist.list.service.domain.template;
 
-import app.schwarzdavid.packlist.common.security.CurrentUserProvider;
 import app.schwarzdavid.packlist.list.service.domain.template.data.TemplateCreateData;
 import app.schwarzdavid.packlist.list.service.domain.template.data.TemplateData;
 import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateEntity;
@@ -25,21 +24,17 @@ public class TemplateServiceTest {
     @Mock
     private TemplateRepository templateRepository;
 
-    @Mock
-    private CurrentUserProvider currentUserProvider;
-
     private TemplateService templateService;
 
     @BeforeEach
     void setup() {
-        templateService = new TemplateService(templateRepository, templateMapper, currentUserProvider);
+        templateService = new TemplateService(templateRepository, templateMapper);
     }
 
     @Test
     void shouldCreateTemplate() {
-        var createData = new TemplateCreateData("foo", null, List.of());
+        var createData = new TemplateCreateData("foo", null, List.of(), 1L);
 
-        when(currentUserProvider.getUserId()).thenReturn(1L);
         when(templateRepository.save(any(TemplateEntity.class))).then(answer -> {
             var entity = answer.getArgument(0, TemplateEntity.class);
             entity.setTemplateId(1L);
@@ -58,9 +53,8 @@ public class TemplateServiceTest {
 
     @Test
     void shouldCreateTemplateWithIcon() {
-        var createData = new TemplateCreateData("foo", "mdi-account", List.of());
+        var createData = new TemplateCreateData("foo", "mdi-account", List.of(), 1L);
 
-        when(currentUserProvider.getUserId()).thenReturn(1L);
         when(templateRepository.save(any(TemplateEntity.class))).then(answer -> {
             var entity = answer.getArgument(0, TemplateEntity.class);
             entity.setTemplateId(1L);
@@ -81,10 +75,10 @@ public class TemplateServiceTest {
         var createData = new TemplateCreateData(
                 "foo",
                 "icon",
-                List.of("item1", "item2")
+                List.of("item1", "item2"),
+                1L
         );
 
-        when(currentUserProvider.getUserId()).thenReturn(1L);
         when(templateRepository.save(any(TemplateEntity.class))).then(answer -> {
             var entity = answer.getArgument(0, TemplateEntity.class);
             entity.setTemplateId(1L);

@@ -30,7 +30,7 @@ public class TemplateServiceIT {
         @WithJwtUser(20L)
         @Transactional
         void shouldCreateTemplateWithItems() {
-            var templateCreateData = new TemplateCreateData("foo", "bar", List.of("item-1", "item-2"));
+            var templateCreateData = new TemplateCreateData("foo", "bar", List.of("item-1", "item-2"), 20L);
 
             var result = templateService.createTemplate(templateCreateData);
 
@@ -72,7 +72,7 @@ public class TemplateServiceIT {
         @Transactional
         @WithJwtUser
         void shouldCreateTemplateWithoutItems() {
-            var templateCreate = new TemplateCreateData("foo", null, List.of());
+            var templateCreate = new TemplateCreateData("foo", null, List.of(), 1L);
 
             var result = templateService.createTemplate(templateCreate);
 

@@ -19,7 +19,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TemplateDto'
+                  $ref: '#/components/schemas/TemplatePreviewDto'
         default:
           $ref: '#/components/responses/Problem'
     post:
@@ -92,17 +92,12 @@ components:
       allOf:
         - $ref: '#/components/schemas/TemplateTagDto'
         - type: object
+          required:
+            - itemsCount
           properties:
-            ownItemsCount:
+            itemsCount:
               type: integer
               readOnly: true
-            inheritedItemsCount:
-              type: integer
-              readOnly: true
-            inherits:
-              type: array
-              items:
-                $ref: '#/components/schemas/TemplateTagDto'
     TemplateCreateDto:
       type: object
       required:
