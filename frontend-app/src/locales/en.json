@@ -31,6 +31,9 @@
     },
     "cta": {
       "create": "Create template"
+    },
+    "preview": {
+      "count": "{count} items"
     }
   },
   "navigation": {
