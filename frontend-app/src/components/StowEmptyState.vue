@@ -9,7 +9,7 @@
       <span class="text-label-large">{{ headline }}</span>
     </template>
     <template v-if="title" #title>
-      <h1 class="my-0 text-headline-large">{{ title }}</h1>
+      <h1 class="my-0 text-headline-small">{{ title }}</h1>
     </template>
     <template v-if="text" #text>
       <p class="text-body-large text-medium-emphasis my-1">{{ text }}</p>

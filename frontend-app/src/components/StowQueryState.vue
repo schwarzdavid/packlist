@@ -3,7 +3,9 @@
     <VFadeTransition mode="out-in">
       <slot v-if="defaultSlotProps" v-bind="defaultSlotProps"/>
       <slot v-else-if="query.isPending.value" name="loading">
-        <VProgressCircular indeterminate/>
+        <div class="stow-query-state__spinner">
+          <VProgressCircular indeterminate size="64"/>
+        </div>
       </slot>
       <template v-else-if="showErrorState">
         <slot v-if="isAccessDeniedError" :error="query.error.value!" name="accessDenied"/>
@@ -69,3 +71,13 @@
     }
   })
 </script>
+
+<style lang="scss" scoped>
+.stow-query-state__spinner {
+  display: flex;
+  width: calc(100dvw - var(--v-layout-left) - var(--v-layout-right));
+  height: calc(100dvh - var(--v-layout-top) - var(--v-layout-bottom));
+  align-items: center;
+  justify-content: center;
+}
+</style>

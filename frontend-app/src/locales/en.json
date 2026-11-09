@@ -29,6 +29,9 @@
         "description": "Create your first template to get started."
       }
     },
+    "detail": {
+      "no-items": "No items added yet"
+    },
     "cta": {
       "create": "Create template",
       "delete": "Delete template"
