@@ -6,8 +6,10 @@ import {i18n} from "@/plugins/i18n.ts";
 import {createPinia} from "pinia";
 import {PiniaColada} from "@pinia/colada";
 import {configureZod} from "@/config/configureZod.ts";
-import '@schwarzdavid/ui-kit/styles'
 import {uiKit} from "@/plugins/uiKit.ts";
+
+import '@schwarzdavid/ui-kit/styles'
+import '@/styles/main.scss'
 
 const app = createApp(App)
 const pinia = createPinia();

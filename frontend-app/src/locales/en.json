@@ -30,7 +30,8 @@
       }
     },
     "cta": {
-      "create": "Create template"
+      "create": "Create template",
+      "delete": "Delete template"
     },
     "preview": {
       "count": "{count} items"
