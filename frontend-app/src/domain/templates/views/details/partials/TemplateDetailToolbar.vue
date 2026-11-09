@@ -8,7 +8,7 @@
                  base-color="error"/>
     </VList>
   </DefineActions>
-  <VToolbar class="position-sticky top-0">
+  <VToolbar class="position-sticky top-0" style="z-index: 1">
     <template #prepend>
       <VBtn icon="mdi-chevron-left" @click="goBack()"/>
     </template>

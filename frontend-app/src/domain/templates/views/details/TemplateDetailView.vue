@@ -1,14 +1,8 @@
 <template>
   <div>
-    <TemplateDetailHeader/>
+    <TemplateDetailToolbar/>
     <VContainer>
-      <div class="d-flex align-center gc-3 mb-3 py-6">
-        <VAvatar color="secondary" icon="mdi-account" rounded="sm" size="x-large" variant="tonal"/>
-        <div>
-          <h1 class="my-0 text-title-large font-weight-bold">Title</h1>
-          <span>0 items</span>
-        </div>
-      </div>
+      <TemplateDetailsHeader v-if="data" :template="data"/>
       <VCard>
         <VList v-if="data?.items.length">
           <VListItem title="Placehodler"/>
@@ -36,12 +30,14 @@
 </template>
 
 <script lang="ts" setup>
-  import TemplateDetailHeader
-    from "@/domain/templates/views/details/partials/TemplateDetailHeader.vue";
+  import TemplateDetailToolbar
+    from "@/domain/templates/views/details/partials/TemplateDetailToolbar.vue";
   import {useQuery} from "@pinia/colada";
   import {useTemplateQuery} from "@/domain/templates/queries/useTemplateQuery.ts";
   import {useRouteParams} from "@vueuse/router";
   import {useI18n} from "vue-i18n";
+  import TemplateDetailsHeader
+    from "@/domain/templates/views/details/partials/TemplateDetailsHeader.vue";
 
   const templateId = useRouteParams('templateId', '', {transform: Number})
   const {data} = useQuery(useTemplateQuery(templateId))

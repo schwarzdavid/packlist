@@ -11,7 +11,7 @@
       </VScrollXTransition>
     </RouterView>
   </VMain>
-  <VBottomNavigation>
+  <VBottomNavigation border="t">
     <VBtn :text="t('navigation.lists')" :to="{name: ListRoutes.LIST}"
           prepend-icon="mdi-playlist-check"/>
     <VBtn :text="t('navigation.templates')" :to="{name: TemplateRoutes.LIST}"

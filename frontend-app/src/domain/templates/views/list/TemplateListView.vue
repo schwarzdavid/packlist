@@ -2,7 +2,7 @@
   <StowQueryState :query="query">
     <template #default="{data}">
       <div>
-        <TemplateListHeader/>
+        <TemplateListToolbar/>
         <VContainer>
           <TemplatePreviewList :items="data"/>
           <Teleport to="body">
@@ -36,7 +36,7 @@
   import {useTemplatesQuery} from "@/domain/templates/queries/useTemplatesQuery.ts";
   import TemplatePreviewList from "@/domain/templates/views/list/partials/TemplatePreviewList.vue";
   import StowQueryState from "@/components/StowQueryState.vue";
-  import TemplateListHeader from "@/domain/templates/views/list/partials/TemplateListHeader.vue";
+  import TemplateListToolbar from "@/domain/templates/views/list/partials/TemplateListToolbar.vue";
 
   const {t} = useI18n()
   const dialog = useDialog()
