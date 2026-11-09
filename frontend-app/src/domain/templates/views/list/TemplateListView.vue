@@ -1,14 +1,20 @@
 <template>
-  <VFadeTransition mode="out-in">
-    <VProgressCircular v-if="isLoading" indeterminate/>
-    <VContainer v-else-if="data">
-      <TemplatePreviewList :items="data"/>
-    </VContainer>
-    <StowEmptyState v-else :text="t('templates.list.empty.description')"
-                    :title="t('templates.list.empty.title')" icon="mdi-tag-plus-outline">
-      <VBtn :text="t('templates.cta.create')" color="primary" @click="createTemplate"/>
-    </StowEmptyState>
-  </VFadeTransition>
+  <div>
+    <VFadeTransition mode="out-in">
+      <VProgressCircular v-if="isLoading" indeterminate/>
+      <VContainer v-else-if="data">
+        <TemplatePreviewList :items="data"/>
+        <Teleport to="body">
+          <VFab app appear icon="mdi-plus" location="bottom right" order="10" rounded="pill"
+                @click="createTemplate"/>
+        </Teleport>
+      </VContainer>
+      <StowEmptyState v-else :text="t('templates.list.empty.description')"
+                      :title="t('templates.list.empty.title')" icon="mdi-tag-plus-outline">
+        <VBtn :text="t('templates.cta.create')" color="primary" @click="createTemplate"/>
+      </StowEmptyState>
+    </VFadeTransition>
+  </div>
 </template>
 
 <script lang="ts" setup>
