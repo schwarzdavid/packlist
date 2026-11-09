@@ -14,7 +14,7 @@
     <template v-if="text" #text>
       <p class="text-body-large text-medium-emphasis my-1">{{ text }}</p>
     </template>
-    <template v-if="(target && targetTitle) || showBack || slots.default()" #actions>
+    <template v-if="(target && targetTitle) || showBack || slots.default?.()" #actions>
       <div class="d-flex flex-column align-center gr-3">
         <slot>
           <VBtn v-if="target" :text="targetTitle" :to="target" color="primary"/>

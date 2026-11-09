@@ -128,5 +128,10 @@ export const vuetify = createVuetify({
     VSnackbar: {color: 'surface-variant', rounded: 'lg', timeout: 5000},
     VDialog: {maxWidth: 440},
     VBottomSheet: {inset: true},
+    VToolbar: {
+      VBtn: {
+        rounded: 'pill'
+      }
+    }
   }
 })

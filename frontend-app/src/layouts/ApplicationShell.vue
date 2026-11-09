@@ -1,4 +1,9 @@
 <template>
+  <RouterView v-slot="{Component}" name="header">
+    <VFadeTransition mode="out-in">
+      <component :is="Component"/>
+    </VFadeTransition>
+  </RouterView>
   <VMain>
     <RouterView v-slot="{Component}">
       <VScrollXTransition mode="out-in">

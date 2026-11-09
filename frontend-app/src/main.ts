@@ -18,7 +18,7 @@ app.use(router)
 app.use(vuetify)
 app.use(i18n)
 app.use(pinia)
-app.use(PiniaColada, {pinia})
+app.use(PiniaColada, {pinia, queryOptions: {refetchOnWindowFocus: false}})
 app.use(uiKit)
 
 configureZod(i18n.global.t)
