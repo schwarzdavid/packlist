@@ -27,7 +27,7 @@ public class TemplateControllerIT extends ApiTest {
     private TemplateRepository templateRepository;
 
     @Nested
-    public class CreateTemplate {
+    class CreateTemplate {
         private static final String URI = "/api/templates";
 
         private static Stream<Arguments> validCreateTemplateDtos() {
@@ -106,7 +106,7 @@ public class TemplateControllerIT extends ApiTest {
     }
 
     @Nested
-    public class GetTemplatePreviews {
+    class GetTemplatePreviews {
         private static final String URI = "/api/templates";
 
         @Test
@@ -151,8 +151,13 @@ public class TemplateControllerIT extends ApiTest {
 
         @Test
         void shouldReturnEmptyListIfNoTemplatesExist() {
-            var templates = client.get().uri(URI).header("Authorization", "Bearer %s".formatted(getJwt())).exchange().expectStatus().isOk().expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
-            }).returnResult().getResponseBody();
+            var templates = client.get().uri(URI)
+                    .header("Authorization", "Bearer %s".formatted(getJwt()))
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
+                    })
+                    .returnResult().getResponseBody();
 
             assertThat(templates).isEmpty();
         }
@@ -161,10 +166,84 @@ public class TemplateControllerIT extends ApiTest {
         void shouldIgnoreOtherUsersTemplates() {
             templateRepository.save(TemplateEntity.builder().name("foo").icon(null).createdBy(2L).items(List.of()).build());
 
-            var templates = client.get().uri(URI).header("Authorization", "Bearer %s".formatted(getJwt())).exchange().expectStatus().isOk().expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
-            }).returnResult().getResponseBody();
+            var templates = client.get().uri(URI)
+                    .header("Authorization", "Bearer %s".formatted(getJwt()))
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(new ParameterizedTypeReference<List<TemplatePreviewDto>>() {
+                    })
+                    .returnResult().getResponseBody();
 
             assertThat(templates).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetTemplate {
+        private static final String URI = "/api/templates/{templateId}";
+
+        @Test
+        void shouldReturnTemplate() {
+            var createdTemplateEntity = templateRepository.save(TemplateEntity.builder().name("foo").icon("bar").createdBy(1L).build());
+
+            var result = client.get().uri(URI, createdTemplateEntity.getTemplateId())
+                    .header("Authorization", "Bearer %s".formatted(getJwt(1L)))
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(TemplateDto.class)
+                    .returnResult().getResponseBody();
+
+            assertThat(result).isNotNull();
+            assertThat(result.getTemplateId()).isEqualTo(createdTemplateEntity.getTemplateId());
+            assertThat(result.getName()).isEqualTo("foo");
+            assertThat(result.getIcon()).isEqualTo("bar");
+            assertThat(result.getItems()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnTemplateWithItems() {
+            var templateEntity = TemplateEntity.builder().name("foo").icon("bar").items(new ArrayList<>()).createdBy(1L).build();
+            for (int i = 1; i < 3; i++) {
+                templateEntity.getItems().add(TemplateItemEntity.builder().name("item %d".formatted(i)).template(templateEntity).build());
+            }
+            var createdTemplateEntity = templateRepository.save(templateEntity);
+
+            var result = client.get().uri(URI, createdTemplateEntity.getTemplateId())
+                    .header("Authorization", "Bearer %s".formatted(getJwt(1L)))
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(TemplateDto.class)
+                    .returnResult().getResponseBody();
+
+            assertThat(result).isNotNull();
+            assertThat(result.getTemplateId()).isEqualTo(createdTemplateEntity.getTemplateId());
+            assertThat(result.getName()).isEqualTo("foo");
+            assertThat(result.getIcon()).isEqualTo("bar");
+            assertThat(result.getItems()).satisfiesExactlyInAnyOrder(
+                    item -> {
+                        assertThat(item.getTemplateItemId()).isPositive();
+                        assertThat(item.getName()).isEqualTo("item 1");
+                    },
+                    item -> {
+                        assertThat(item.getTemplateItemId()).isPositive();
+                        assertThat(item.getName()).isEqualTo("item 2");
+                    }
+            );
+        }
+
+        @Test
+        void shouldRejectUnauthorized() {
+            client.get().uri(URI, 1L).exchange().expectStatus().isUnauthorized();
+        }
+
+        @Test
+        void shouldReturnNotFoundWhenNotBelongingToUser() {
+            var createdTemplateEntity = templateRepository.save(TemplateEntity.builder().name("foo").icon("bar").createdBy(2L).build());
+
+            client.get().uri(URI, createdTemplateEntity.getTemplateId())
+                    .header("Authorization", "Bearer %s".formatted(getJwt(1L)))
+                    .exchange()
+                    .expectStatus().isNotFound();
         }
     }
 }

@@ -92,7 +92,7 @@ public class TemplateServiceTest {
         var result = templateService.createTemplate(createData);
 
         assertThat(result).isInstanceOf(TemplateData.class);
-        assertThat(result.items()).elements().satisfiesExactly(
+        assertThat(result.items()).satisfiesExactly(
                 item -> {
                     assertThat(item.templateItemId()).isEqualTo(1L);
                     assertThat(item.name()).isEqualTo("item1");

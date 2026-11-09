@@ -6,10 +6,12 @@ import app.schwarzdavid.packlist.list.service.domain.template.data.TemplatePrevi
 import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateEntity;
 import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateItemEntity;
 import app.schwarzdavid.packlist.list.service.domain.template.mapper.TemplateMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,5 +41,11 @@ public class TemplateService {
 
     public List<TemplatePreviewData> getTemplatePreviewsForUser(Long userId) {
         return templateRepository.findAllPreviewsByUserId(userId);
+    }
+
+    @Transactional
+    public Optional<TemplateData> getTemplateForUser(Long templateId, Long userId) {
+        return templateRepository.findByTemplateIdAndCreatedBy(templateId, userId)
+                .map(templateMapper::toData);
     }
 }
