@@ -9,7 +9,7 @@
             <VList v-if="data?.items.length">
               <VListItem title="Placehodler"/>
             </VList>
-            <VEmptyState v-else>
+            <VEmptyState v-else class="py-8">
               <template #media>
                 <VAvatar color="primary" size="x-large" variant="tonal">
                   <VIcon icon="mdi-playlist-remove" size="x-large"/>
@@ -30,8 +30,7 @@
         </VContainer>
         <VFab :active="!!data?.items.length" app appear color="secondary"
               density="compact" order="10" prepend-icon="mdi-playlist-plus"
-              text="Create from template"></VFab>
-        <h1 style="height:200vh;">Template Details</h1>
+              text="Create from template"/>
       </div>
     </template>
   </StowQueryState>
