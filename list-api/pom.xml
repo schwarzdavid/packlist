@@ -59,6 +59,7 @@
                                 <sourceFolder>src/gen/java/main</sourceFolder>
                                 <useJakartaEE>true</useJakartaEE>
                                 <useSpringBoot4>true</useSpringBoot4>
+                                <useSpringBuiltInValidation>true</useSpringBuiltInValidation>
                                 <useJackson3>true</useJackson3>
                                 <useTags>true</useTags>
                                 <requestMappingMode>api_interface</requestMappingMode>

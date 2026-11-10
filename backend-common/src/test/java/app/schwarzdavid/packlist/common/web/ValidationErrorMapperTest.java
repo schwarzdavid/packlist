@@ -1,4 +1,4 @@
-package app.schwarzdavid.packlist.user.service.web;
+package app.schwarzdavid.packlist.common.web;
 
 import jakarta.validation.Validation;
 import jakarta.validation.constraints.Email;

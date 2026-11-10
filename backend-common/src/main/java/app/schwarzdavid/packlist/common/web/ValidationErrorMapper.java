@@ -1,6 +1,6 @@
-package app.schwarzdavid.packlist.user.service.web;
+package app.schwarzdavid.packlist.common.web;
 
-import app.schwarzdavid.packlist.user.api.model.ProblemDetailsFieldDto;
+import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsFieldDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +34,9 @@ public class ValidationErrorMapper {
     }
 
     private ProblemDetailsFieldDto withoutArguments(String error) {
-        return ProblemDetailsFieldDto.builder().error(error).build();
+        var field = new ProblemDetailsFieldDto();
+        field.setError(error);
+        return field;
     }
 
     private ProblemDetailsFieldDto mapSize(Size size, ConstraintViolation<?> violation) {
@@ -43,8 +45,14 @@ public class ValidationErrorMapper {
             if (size.min() == 1) {
                 return withoutArguments(REQUIRED);
             }
-            return ProblemDetailsFieldDto.builder().error(MIN_LENGTH).params(Map.of("min", size.min())).build();
+            var field = new ProblemDetailsFieldDto();
+            field.setError(MIN_LENGTH);
+            field.setParams(Map.of("min", size.min()));
+            return field;
         }
-        return ProblemDetailsFieldDto.builder().error(MAX_LENGTH).params(Map.of("max", size.max())).build();
+        var field = new ProblemDetailsFieldDto();
+        field.setError(MAX_LENGTH);
+        field.setParams(Map.of("max", size.max()));
+        return field;
     }
 }
