@@ -23,7 +23,7 @@ public class TemplateServiceTest {
     private final TemplateMapper templateMapper = Mappers.getMapper(TemplateMapper.class);
 
     @Mock
-    private TemplateAccessServiceTest templateAccessService;
+    private TemplateAccessService templateAccessService;
 
     @Mock
     private CurrentUserProvider currentUserProvider;

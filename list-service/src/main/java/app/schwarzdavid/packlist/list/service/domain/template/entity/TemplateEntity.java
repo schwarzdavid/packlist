@@ -25,6 +25,6 @@ public class TemplateEntity {
     private Long createdBy;
 
     @OrderColumn(name = "position")
-    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "template", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<TemplateItemEntity> items;
 }
