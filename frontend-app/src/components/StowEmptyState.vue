@@ -1,8 +1,8 @@
 <template>
   <VEmptyState>
     <template v-if="icon" #media>
-      <VAvatar :color="color || 'primary'" class="mb-6" size="128" variant="tonal">
-        <VIcon :icon="icon" size="72"/>
+      <VAvatar :color="color || 'primary'" class="mb-6" size="92" variant="tonal">
+        <VIcon :icon="icon" size="40"/>
       </VAvatar>
     </template>
     <template v-if="headline" #headline>

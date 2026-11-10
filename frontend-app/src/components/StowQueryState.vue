@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-flex flex-column justify-start align-stretch h-100">
     <VFadeTransition mode="out-in">
       <slot v-if="defaultSlotProps" v-bind="defaultSlotProps"/>
       <slot v-else-if="query.isPending.value" name="loading">
@@ -13,7 +13,7 @@
         <slot v-else :error="query.error.value!" name="error"/>
       </template>
       <slot v-else name="empty">
-        <StowEmptyState/>
+        <StowEmptyState class="justify-center"/>
       </slot>
     </VFadeTransition>
   </div>
