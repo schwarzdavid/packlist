@@ -1,9 +1,11 @@
 package app.schwarzdavid.packlist.common.web;
 
 import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsDto;
+import jakarta.validation.constraints.Min;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,11 +25,27 @@ public class CommonControllerAdviceIT {
         assertThat(result.getFields()).isEmpty();
     }
 
+    @Test
+    void shouldReturnProblemDetailsOnInvalidPathParam() {
+        var result = client.get().uri("/test/path/-1").exchange().expectStatus().is4xxClientError().expectBody(ProblemDetailsDto.class).returnResult().getResponseBody();
+
+        assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo("Bad Request");
+        assertThat(result.getStatus()).isEqualTo(400);
+        assertThat(result.getDetail()).isNull();
+        assertThat(result.getFields()).hasSize(1);
+    }
+
     @RestController
     static class TestController {
         @GetMapping("/test/exception")
         public void testException() {
             throw new RuntimeException("Test exception");
+        }
+
+        @GetMapping("/test/path/{id}")
+        public void testPath(@PathVariable("id") @Min(0) Integer id) {
+            // do nothing
         }
     }
 }

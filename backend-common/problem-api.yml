@@ -1,0 +1,50 @@
+openapi: 3.1.2
+
+info:
+  title: Common Problem
+  description: Common schemas for error handling across all services
+  version: 1.0.0
+
+components:
+  responses:
+    Problem:
+      description: Problem details
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetailsDto'
+  schemas:
+    ProblemDetailsDto:
+      type: object
+      required:
+        - status
+        - title
+      properties:
+        type:
+          type: string
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        status:
+          type: integer
+          readOnly: true
+        detail:
+          type: string
+          readOnly: true
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProblemDetailsFieldDto'
+    ProblemDetailsFieldDto:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          readOnly: true
+        params:
+          type: object
+          additionalProperties: true
+          readOnly: true

@@ -130,11 +130,7 @@ components:
       bearerFormat: JWT
   responses:
     Problem:
-      description: Problem details
-      content:
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/ProblemDetailsDto'
+      $ref: '../../../../backend-common/problem-api.yml#/components/responses/Problem'
   schemas:
     TemplateDto:
       additionalProperties: false
@@ -227,36 +223,4 @@ components:
     ListCreateDto:
       type: object
     ProblemDetailsDto:
-      type: object
-      required:
-        - status
-        - title
-      properties:
-        type:
-          type: string
-          readOnly: true
-        title:
-          type: string
-          readOnly: true
-        status:
-          type: integer
-          readOnly: true
-        detail:
-          type: string
-          readOnly: true
-        fields:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/ProblemDetailsFieldDto'
-    ProblemDetailsFieldDto:
-      type: object
-      required:
-        - error
-      properties:
-        error:
-          type: string
-          readOnly: true
-        params:
-          type: object
-          additionalProperties: true
-          readOnly: true
+      $ref: '../../../../backend-common/problem-api.yml#/components/schemas/ProblemDetailsDto'

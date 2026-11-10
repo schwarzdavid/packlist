@@ -25,6 +25,10 @@ public class ValidationErrorMapper {
 
         var violation = fieldError.unwrap(ConstraintViolation.class);
 
+        return mapConstraintViolation(violation);
+    }
+
+    public ProblemDetailsFieldDto mapConstraintViolation(ConstraintViolation<?> violation) {
         return switch (violation.getConstraintDescriptor().getAnnotation()) {
             case NotNull ignored -> withoutArguments(REQUIRED);
             case Email ignored -> withoutArguments(EMAIL);

@@ -33,22 +33,21 @@ public class CommonControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Override
     protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
-        var problemDetailsFields = new HashMap<String, ProblemDetailsFieldDto>();
+        var problemDetailsFieldMap = new HashMap<String, ProblemDetailsFieldDto>();
         for (FieldError fieldError : ex.getFieldErrors()) {
             var problemDetailsField = ValidationErrorMapper.mapFieldError(fieldError);
-            problemDetailsFields.put(fieldError.getField(), problemDetailsField);
+            problemDetailsFieldMap.put(fieldError.getField(), problemDetailsField);
         }
-        ex.getBody().setProperty("fields", problemDetailsFields);
+        ex.getBody().setProperty("fields", problemDetailsFieldMap);
         return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
     @Override
     protected @Nullable ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
-        var problemDetailsFields = new HashMap<String, ProblemDetailsFieldDto>();
-        for (var result : ex.getParameterValidationResults()) {
-            problemDetailsFields.put((String) result.getContainerKey(), null);
-        }
-        ex.getBody().setProperty("fields", problemDetailsFields);
+        var visitor = new HandlerMethodValidationVisitor();
+        ex.visitResults(visitor);
+        ex.getBody().setProperty("fields", visitor.getFieldsMap());
+        ex.getBody().setProperty("params", visitor.getParamsMap());
         return super.handleHandlerMethodValidationException(ex, headers, status, request);
     }
 }

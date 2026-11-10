@@ -1,6 +1,6 @@
 package app.schwarzdavid.packlist.user.service.web;
 
-import app.schwarzdavid.packlist.user.api.model.ProblemDetailsFieldDto;
+import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsFieldDto;
 import app.schwarzdavid.packlist.user.service.domain.user.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -13,9 +13,8 @@ import java.util.Map;
 public class GlobalExceptionHandler {
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        var field = ProblemDetailsFieldDto.builder()
-                .error("validation.%sTaken".formatted(ex.getField().getPropertyName()))
-                .build();
+        var field = new ProblemDetailsFieldDto();
+        field.setError("validation.%sTaken".formatted(ex.getField().getPropertyName()));
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problemDetail.setDetail(ex.getMessage());

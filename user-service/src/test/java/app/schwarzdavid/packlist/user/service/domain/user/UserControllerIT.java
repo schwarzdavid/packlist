@@ -1,6 +1,6 @@
 package app.schwarzdavid.packlist.user.service.domain.user;
 
-import app.schwarzdavid.packlist.user.api.model.ProblemDetailsDto;
+import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsDto;
 import app.schwarzdavid.packlist.user.api.model.UserDto;
 import app.schwarzdavid.packlist.user.service.fixture.ApiTest;
 import org.junit.jupiter.api.Nested;
