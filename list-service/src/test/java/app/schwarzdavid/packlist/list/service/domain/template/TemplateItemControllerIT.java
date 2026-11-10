@@ -29,6 +29,9 @@ public class TemplateItemControllerIT extends ApiTest {
             return Stream.of(
                     Arguments.of(TemplateItemEditDto.builder().build()),
                     Arguments.of(TemplateItemEditDto.builder().name("").build()),
+                    Arguments.of(TemplateItemEditDto.builder().name(" ").build()),
+                    Arguments.of(TemplateItemEditDto.builder().name(" foo").build()),
+                    Arguments.of(TemplateItemEditDto.builder().name("foo ").build()),
                     Arguments.of(TemplateItemEditDto.builder().name("x".repeat(300)).build()),
                     Arguments.of(new Object())
             );
