@@ -30,7 +30,8 @@
       }
     },
     "detail": {
-      "no-items": "No items added yet"
+      "no-items": "No items added yet",
+      "create-list": "Create new list"
     },
     "cta": {
       "create": "Create template",

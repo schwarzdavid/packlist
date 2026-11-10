@@ -30,7 +30,7 @@
         </VContainer>
         <VFab :active="!!data?.items.length" app appear color="secondary"
               density="compact" order="10" prepend-icon="mdi-playlist-plus"
-              text="Create from template"/>
+              :text="t('templates.detail.create-list')"/>
       </div>
     </template>
   </StowQueryState>
