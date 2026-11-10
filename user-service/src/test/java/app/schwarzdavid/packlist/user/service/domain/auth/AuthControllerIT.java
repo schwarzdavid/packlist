@@ -1,6 +1,11 @@
 package app.schwarzdavid.packlist.user.service.domain.auth;
 
-import app.schwarzdavid.packlist.user.api.model.*;
+import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsDto;
+import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsFieldDto;
+import app.schwarzdavid.packlist.user.api.model.AuthDto;
+import app.schwarzdavid.packlist.user.api.model.CredentialsDto;
+import app.schwarzdavid.packlist.user.api.model.RegistrationDto;
+import app.schwarzdavid.packlist.user.api.model.UserDto;
 import app.schwarzdavid.packlist.user.service.domain.user.UserRepository;
 import app.schwarzdavid.packlist.user.service.domain.user.entity.UserEntity;
 import app.schwarzdavid.packlist.user.service.fixture.ApiTest;
@@ -120,13 +125,14 @@ public class AuthControllerIT extends ApiTest {
 
             var response = result.returnResult().getResponseBody();
             var existingUsers = userRepository.findAll();
+            var expectedProblemDetailField = new ProblemDetailsFieldDto();
+            expectedProblemDetailField.setError("validation.emailTaken");
 
-            var expectedProblem = ProblemDetailsDto.builder()
-                    .title("Conflict")
-                    .detail("User already exists")
-                    .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("username", ProblemDetailsFieldDto.builder().error("validation.usernameTaken").build()))
-                    .build();
+            var expectedProblem = new ProblemDetailsDto();
+            expectedProblem.setTitle("Conflict");
+            expectedProblem.setDetail("Uer already exists");
+            expectedProblem.setStatus(HttpStatus.CONFLICT.value());
+            expectedProblem.setFields(Map.of("username", expectedProblemDetailField));
 
             assertThat(response).isNotNull();
             assertThat(response).isEqualTo(expectedProblem);
@@ -153,12 +159,14 @@ public class AuthControllerIT extends ApiTest {
             var response = result.returnResult().getResponseBody();
             var existingUsers = userRepository.findAll();
 
-            var expectedProblem = ProblemDetailsDto.builder()
-                    .title("Conflict")
-                    .detail("User already exists")
-                    .status(HttpStatus.CONFLICT.value())
-                    .fields(Map.of("email", ProblemDetailsFieldDto.builder().error("validation.emailTaken").build()))
-                    .build();
+            var expectedProblemField = new ProblemDetailsFieldDto();
+            expectedProblemField.setError("validation.emailTaken");
+
+            var expectedProblem = new ProblemDetailsDto();
+            expectedProblem.setTitle("Conflict");
+            expectedProblem.setDetail("User already exists");
+            expectedProblem.setStatus(HttpStatus.CONFLICT.value());
+            expectedProblem.setFields(Map.of("email", expectedProblemField));
 
             assertThat(response).isNotNull();
             assertThat(response).isEqualTo(expectedProblem);

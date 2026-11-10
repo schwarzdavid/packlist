@@ -1,7 +1,9 @@
 package app.schwarzdavid.packlist.common.web;
 
 import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsDto;
+import app.schwarzdavid.packlist.common.web.dto.ProblemDetailsFieldDto;
 import jakarta.validation.constraints.Min;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.client.RestTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +34,14 @@ public class CommonControllerAdviceIT {
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("Bad Request");
         assertThat(result.getStatus()).isEqualTo(400);
-        assertThat(result.getDetail()).isNull();
-        assertThat(result.getFields()).hasSize(1);
+        assertThat(result.getDetail()).isEqualTo("Validation failure");
+        assertThat(result.getFields()).hasSize(0);
+        assertThat(result.getParams())
+                .containsOnlyKeys("id")
+                .extractingByKey("id", InstanceOfAssertFactories.type(ProblemDetailsFieldDto.class))
+                .satisfies(param -> {
+                    assertThat(param.getError()).isEqualTo("validation.invalid");
+                });
     }
 
     @RestController

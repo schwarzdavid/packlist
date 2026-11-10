@@ -16,5 +16,6 @@ public class ProblemDetailsDto {
     private @Nullable String type;
     private @Nullable String detail;
     private Map<String, @Valid ProblemDetailsFieldDto> fields = new HashMap<>();
+    private Map<String, @Valid ProblemDetailsFieldDto> params = new HashMap<>();
 }
 
