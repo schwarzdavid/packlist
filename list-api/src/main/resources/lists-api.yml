@@ -206,15 +206,11 @@ components:
         - type: object
           required:
             - templateItemId
-            - position
           properties:
             templateItemId:
               type: integer
               format: int64
               readOnly: true
-            position:
-              type: integer
-              minimum: 0
     TemplateItemEditDto:
       type: object
       additionalProperties: false

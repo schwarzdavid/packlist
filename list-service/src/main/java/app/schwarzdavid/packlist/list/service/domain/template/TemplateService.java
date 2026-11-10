@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.list.service.domain.template;
 
+import app.schwarzdavid.packlist.common.security.CurrentUserProvider;
 import app.schwarzdavid.packlist.list.service.domain.template.data.TemplateCreateData;
 import app.schwarzdavid.packlist.list.service.domain.template.data.TemplateData;
 import app.schwarzdavid.packlist.list.service.domain.template.data.TemplatePreviewData;
@@ -19,12 +20,13 @@ public class TemplateService {
     private final TemplateRepository templateRepository;
     private final TemplateMapper templateMapper;
     private final TemplateAccessService templateAccessService;
+    private final CurrentUserProvider currentUserProvider;
 
     public TemplateData createTemplate(TemplateCreateData templateCreateData) {
         var entity = TemplateEntity.builder()
                 .name(templateCreateData.name())
                 .icon(templateCreateData.icon())
-                .createdBy(templateCreateData.createdBy())
+                .createdBy(currentUserProvider.getUserId())
                 .items(templateCreateData.items().stream().map(item -> TemplateItemEntity.builder()
                         .name(item)
                         .build()).collect(Collectors.toList()))
@@ -39,12 +41,13 @@ public class TemplateService {
         return templateMapper.toData(entity);
     }
 
-    public List<TemplatePreviewData> getTemplatePreviewsForUser(Long userId) {
+    public List<TemplatePreviewData> getTemplatePreviews() {
+        var userId = currentUserProvider.getUserId();
         return templateRepository.findAllPreviewsByUserId(userId);
     }
 
     @Transactional
-    public TemplateData getTemplateForUser(Long templateId) {
+    public TemplateData getTemplate(Long templateId) {
         var templateEntity = templateAccessService.getOwnedTemplateEntity(templateId);
 
         return templateMapper.toData(templateEntity);

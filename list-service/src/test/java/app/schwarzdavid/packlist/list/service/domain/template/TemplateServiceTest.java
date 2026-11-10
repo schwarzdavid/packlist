@@ -1,5 +1,6 @@
 package app.schwarzdavid.packlist.list.service.domain.template;
 
+import app.schwarzdavid.packlist.common.security.CurrentUserProvider;
 import app.schwarzdavid.packlist.list.service.domain.template.data.TemplateCreateData;
 import app.schwarzdavid.packlist.list.service.domain.template.data.TemplateData;
 import app.schwarzdavid.packlist.list.service.domain.template.entity.TemplateEntity;
@@ -22,19 +23,26 @@ public class TemplateServiceTest {
     private final TemplateMapper templateMapper = Mappers.getMapper(TemplateMapper.class);
 
     @Mock
+    private TemplateAccessServiceTest templateAccessService;
+
+    @Mock
+    private CurrentUserProvider currentUserProvider;
+
+    @Mock
     private TemplateRepository templateRepository;
 
     private TemplateService templateService;
 
     @BeforeEach
     void setup() {
-        templateService = new TemplateService(templateRepository, templateMapper);
+        templateService = new TemplateService(templateRepository, templateMapper, templateAccessService, currentUserProvider);
     }
 
     @Test
     void shouldCreateTemplate() {
-        var createData = new TemplateCreateData("foo", null, List.of(), 1L);
+        var createData = new TemplateCreateData("foo", null, List.of());
 
+        when(currentUserProvider.getUserId()).thenReturn(1L);
         when(templateRepository.save(any(TemplateEntity.class))).then(answer -> {
             var entity = answer.getArgument(0, TemplateEntity.class);
             entity.setTemplateId(1L);
@@ -53,8 +61,9 @@ public class TemplateServiceTest {
 
     @Test
     void shouldCreateTemplateWithIcon() {
-        var createData = new TemplateCreateData("foo", "mdi-account", List.of(), 1L);
+        var createData = new TemplateCreateData("foo", "mdi-account", List.of());
 
+        when(currentUserProvider.getUserId()).thenReturn(1L);
         when(templateRepository.save(any(TemplateEntity.class))).then(answer -> {
             var entity = answer.getArgument(0, TemplateEntity.class);
             entity.setTemplateId(1L);
@@ -75,10 +84,10 @@ public class TemplateServiceTest {
         var createData = new TemplateCreateData(
                 "foo",
                 "icon",
-                List.of("item1", "item2"),
-                1L
+                List.of("item1", "item2")
         );
 
+        when(currentUserProvider.getUserId()).thenReturn(1L);
         when(templateRepository.save(any(TemplateEntity.class))).then(answer -> {
             var entity = answer.getArgument(0, TemplateEntity.class);
             entity.setTemplateId(1L);

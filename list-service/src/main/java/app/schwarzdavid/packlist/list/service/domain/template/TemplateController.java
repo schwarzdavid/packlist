@@ -1,6 +1,5 @@
 package app.schwarzdavid.packlist.list.service.domain.template;
 
-import app.schwarzdavid.packlist.common.security.CurrentUserProvider;
 import app.schwarzdavid.packlist.list.api.TemplateApi;
 import app.schwarzdavid.packlist.list.api.model.TemplateCreateDto;
 import app.schwarzdavid.packlist.list.api.model.TemplateDto;
@@ -18,11 +17,10 @@ import java.util.List;
 public class TemplateController implements TemplateApi {
     private final TemplateMapper templateMapper;
     private final TemplateService templateService;
-    private final CurrentUserProvider currentUserProvider;
 
     @Override
     public ResponseEntity<TemplateDto> createTemplate(TemplateCreateDto templateCreateDto) {
-        var createData = templateMapper.toData(templateCreateDto, currentUserProvider.getUserId());
+        var createData = templateMapper.toData(templateCreateDto);
         var template = templateService.createTemplate(createData);
         var templateDto = templateMapper.toDto(template);
 
@@ -31,7 +29,7 @@ public class TemplateController implements TemplateApi {
 
     @Override
     public ResponseEntity<TemplateDto> getTemplate(Long templateId) {
-        var templateData = templateService.getTemplateForUser(templateId);
+        var templateData = templateService.getTemplate(templateId);
         var templateDto = templateMapper.toDto(templateData);
 
         return ResponseEntity.ok(templateDto);
@@ -39,8 +37,7 @@ public class TemplateController implements TemplateApi {
 
     @Override
     public ResponseEntity<List<TemplatePreviewDto>> getTemplates() {
-        var userId = currentUserProvider.getUserId();
-        var templatePreviews = templateService.getTemplatePreviewsForUser(userId);
+        var templatePreviews = templateService.getTemplatePreviews();
         var templatePreviewDtos = templateMapper.toDto(templatePreviews);
 
         return ResponseEntity.ok(templatePreviewDtos);
