@@ -166,6 +166,8 @@ Errors follow [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457)
 - [x] Playwright E2E against the Docker stack
 - [ ] Packing templates (in progress)
 - [ ] Packing lists created from templates
+- [ ] 2FA and passkeys/login with google
+- [ ] Sharing lists with other users
 
 ---
 
