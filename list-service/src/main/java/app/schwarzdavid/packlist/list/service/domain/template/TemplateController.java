@@ -31,13 +31,9 @@ public class TemplateController implements TemplateApi {
 
     @Override
     public ResponseEntity<TemplateDto> getTemplate(Long templateId) {
-        var templateOptional = templateService.getTemplateForUser(templateId, currentUserProvider.getUserId());
+        var templateData = templateService.getTemplateForUser(templateId);
+        var templateDto = templateMapper.toDto(templateData);
 
-        if (templateOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        var templateDto = templateMapper.toDto(templateOptional.get());
         return ResponseEntity.ok(templateDto);
     }
 

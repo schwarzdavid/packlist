@@ -33,6 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
+    // TODO: move into backend-common
     @ExceptionHandler(RuntimeException.class)
     public ProblemDetail handleAnyException(RuntimeException ex) {
         logger.error("Unexpected exception", ex);
@@ -42,6 +43,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problemDetail;
     }
 
+    // TODO: move into backend-common
     @Override
     protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatusCode status, @NonNull WebRequest request) {
         var problemDetailsFields = new HashMap<String, ProblemDetailsFieldDto>();

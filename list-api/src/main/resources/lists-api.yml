@@ -72,6 +72,36 @@ paths:
                 $ref: '#/components/schemas/ProblemDetailsDto'
         default:
           $ref: '#/components/responses/Problem'
+  /api/templates/{templateId}/items:
+    parameters:
+      - in: path
+        name: templateId
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+    post:
+      operationId: addTemplateItem
+      tags:
+        - template-item
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateItemEditDto'
+      responses:
+        201:
+          description: Item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateDto'
+        default:
+          $ref: '#/components/responses/Problem'
   /api/lists:
     post:
       operationId: createList
@@ -170,13 +200,27 @@ components:
           minLength: 1
           maxLength: 255
     TemplateItemDto:
+      additionalProperties: false
+      allOf:
+        - $ref: '#/components/schemas/TemplateItemEditDto'
+        - type: object
+          required:
+            - templateItemId
+            - position
+          properties:
+            templateItemId:
+              type: integer
+              format: int64
+              readOnly: true
+            position:
+              type: integer
+              minimum: 0
+    TemplateItemEditDto:
       type: object
       additionalProperties: false
+      required:
+        - name
       properties:
-        templateItemId:
-          type: integer
-          format: int64
-          readOnly: true
         name:
           type: string
           minLength: 1

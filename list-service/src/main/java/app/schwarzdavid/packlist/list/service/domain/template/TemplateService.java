@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 public class TemplateService {
     private final TemplateRepository templateRepository;
     private final TemplateMapper templateMapper;
+    private final TemplateAccessService templateAccessService;
 
     public TemplateData createTemplate(TemplateCreateData templateCreateData) {
         var entity = TemplateEntity.builder()
@@ -44,8 +44,9 @@ public class TemplateService {
     }
 
     @Transactional
-    public Optional<TemplateData> getTemplateForUser(Long templateId, Long userId) {
-        return templateRepository.findByTemplateIdAndCreatedBy(templateId, userId)
-                .map(templateMapper::toData);
+    public TemplateData getTemplateForUser(Long templateId) {
+        var templateEntity = templateAccessService.getOwnedTemplateEntity(templateId);
+
+        return templateMapper.toData(templateEntity);
     }
 }
