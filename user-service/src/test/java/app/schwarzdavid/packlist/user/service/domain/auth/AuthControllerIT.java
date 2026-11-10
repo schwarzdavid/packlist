@@ -126,11 +126,11 @@ public class AuthControllerIT extends ApiTest {
             var response = result.returnResult().getResponseBody();
             var existingUsers = userRepository.findAll();
             var expectedProblemDetailField = new ProblemDetailsFieldDto();
-            expectedProblemDetailField.setError("validation.emailTaken");
+            expectedProblemDetailField.setError("validation.usernameTaken");
 
             var expectedProblem = new ProblemDetailsDto();
             expectedProblem.setTitle("Conflict");
-            expectedProblem.setDetail("Uer already exists");
+            expectedProblem.setDetail("User already exists");
             expectedProblem.setStatus(HttpStatus.CONFLICT.value());
             expectedProblem.setFields(Map.of("username", expectedProblemDetailField));
 
